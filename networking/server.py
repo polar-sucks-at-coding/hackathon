@@ -1,294 +1,333 @@
-import sys
-import os
 import socket
+import json
 import threading
-
-# Add parent directory to path for imports
+import os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../notes')))
 from notes import note
+from user import User
+from user_profile import Profile
 
-# Configuration
-HOST = '0.0.0.0'
+
+HOST = 'localhost'
 PORT = 5000
+DATA_DIR = 'data'
 
-# Data folder paths (relative to this file's location)
-DATA_FOLDER = '../data'
-ACCOUNTS_FILE = os.path.join(DATA_FOLDER, 'accounts.txt')
-NOTES_FILE = os.path.join(DATA_FOLDER, 'notes.txt')
-NEXT_ID_FILE = os.path.join(DATA_FOLDER, 'next_id.txt')
-LIKES_FILE = os.path.join(DATA_FOLDER, 'likes.txt')
+# Ensure data directory exists
+os.makedirs(DATA_DIR, exist_ok=True)
 
-# Make sure data folder exists
-if not os.path.exists(DATA_FOLDER):
-    os.makedirs(DATA_FOLDER)
+# File paths
+ACCOUNTS_FILE = os.path.join(DATA_DIR, 'accounts.txt')
+NOTES_FILE = os.path.join(DATA_DIR, 'notes.txt')
+NEXT_ID_FILE = os.path.join(DATA_DIR, 'next_id.txt')
+LIKES_FILE = os.path.join(DATA_DIR, 'likes.txt')
+PROFILES_FILE = os.path.join(DATA_DIR, 'user_profiles.txt')
 
-# Make sure files exist
-if not os.path.exists(ACCOUNTS_FILE):
+# In-memory data structures
+users = {}  # {username: User}
+notes = {}  # {note_id: Note}
+authenticated_users = {}  # {connection_id: username}
+user_likes = {}  # {(username, note_id): True}
+next_note_id = 1
+lock = threading.Lock()
+
+def load_data():
+    """Load all persistent data from files."""
+    global next_note_id, users, notes, user_likes
+
+    # Load accounts
+    if os.path.exists(ACCOUNTS_FILE):
+        with open(ACCOUNTS_FILE, 'r') as f:
+            for line in f:
+                user = User.from_string(line)
+                if user:
+                    users[user.username] = user
+
+    # Load profiles
+    if os.path.exists(PROFILES_FILE):
+        with open(PROFILES_FILE, 'r') as f:
+            for line in f:
+                profile = Profile.from_string(line)
+                if profile and profile.username in users:
+                    users[profile.username].profile = profile
+
+    # Load next ID
+    if os.path.exists(NEXT_ID_FILE):
+        with open(NEXT_ID_FILE, 'r') as f:
+            try:
+                next_note_id = int(f.read().strip())
+            except ValueError:
+                next_note_id = 1
+
+    # Load notes
+    if os.path.exists(NOTES_FILE):
+        with open(NOTES_FILE, 'r') as f:
+            for line in f:
+                note = Note.from_string(line)
+                if note:
+                    notes[note.id] = note
+
+    # Load likes
+    if os.path.exists(LIKES_FILE):
+        with open(LIKES_FILE, 'r') as f:
+            for line in f:
+                parts = line.strip().split('|')
+                if len(parts) == 2:
+                    user_likes[(parts[0], int(parts[1]))] = True
+
+def save_accounts():
+    """Save user accounts to file."""
     with open(ACCOUNTS_FILE, 'w') as f:
-        f.write("")
-if not os.path.exists(NOTES_FILE):
+        for user in users.values():
+            f.write(user.to_string() + '\n')
+
+def save_profiles():
+    """Save user profiles to file."""
+    with open(PROFILES_FILE, 'w') as f:
+        for user in users.values():
+            f.write(user.profile.to_string() + '\n')
+
+def save_notes():
+    """Save notes to file."""
     with open(NOTES_FILE, 'w') as f:
-        f.write("")
-if not os.path.exists(NEXT_ID_FILE):
+        for note in notes.values():
+            f.write(note.to_string() + '\n')
+
+def save_next_id():
+    """Save the next note ID to file."""
     with open(NEXT_ID_FILE, 'w') as f:
-        f.write("1")
-if not os.path.exists(LIKES_FILE):
+        f.write(str(next_note_id))
+
+def save_likes():
+    """Save likes to file."""
     with open(LIKES_FILE, 'w') as f:
-        f.write("")
+        for (username, note_id) in user_likes.keys():
+            f.write(f"{username}|{note_id}\n")
 
-def get_next_id():
-    """Get the next available note ID."""
-    with open(NEXT_ID_FILE, 'r') as f:
-        next_id = int(f.read().strip())
-    return next_id
+def handle_register(data):
+    """Handle REGISTER command."""
+    username = data.get('username')
+    password = data.get('password')
 
-def increment_id():
-    """Increment the next available ID."""
-    next_id = get_next_id()
-    with open(NEXT_ID_FILE, 'w') as f:
-        f.write(str(next_id + 1))
-    return next_id
+    if not username or not password:
+        return {"status": "error", "message": "Username and password required"}
 
-def load_accounts():
-    """Read all accounts from file into a dictionary."""
-    accounts = {}
-    with open(ACCOUNTS_FILE, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if line and ':' in line:
-                username, password = line.split(':', 1)
-                accounts[username] = password
-    return accounts
+    with lock:
+        if username in users:
+            return {"status": "error", "message": "Username already exists"}
 
-def load_notes():
-    """Read all notes from file into a list."""
-    notes = []
-    with open(NOTES_FILE, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if line and ':' in line:
-                parts = line.split(':', 3)  # Split into max 4 parts
-                if len(parts) >= 3:
-                    note_id = int(parts[0])
-                    title = parts[1]
-                    content = parts[2]
-                    likes = int(parts[3]) if len(parts) > 3 else 0
-                    note_obj = note.Note(title, content, _id=note_id, likes=likes)
-                    notes.append(note_obj)
-    return notes
+        user = User(username, password, Profile(username))
+        users[username] = user
+        save_accounts()
+        save_profiles()
+        return {"status": "success", "message": "Account created"}
 
-def load_likes():
-    """Read all likes from file into a set of tuples (username, note_id)."""
-    likes = set()
-    with open(LIKES_FILE, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if line and ':' in line:
-                username, note_id = line.split(':', 1)
-                try:
-                    likes.add((username, int(note_id)))
-                except ValueError:
-                    continue
-    return likes
+def handle_login(data):
+    """Handle LOGIN command."""
+    username = data.get('username')
+    password = data.get('password')
 
-def get_note_by_id(note_id):
-    """Retrieve a single note by its ID."""
-    notes = load_notes()
-    for note_obj in notes:
-        if note_obj.id == note_id:
-            return note_obj
-    return None
+    if not username or not password:
+        return {"status": "error", "message": "Username and password required"}
 
-def save_accounts(accounts):
-    """Write all accounts to file."""
-    with open(ACCOUNTS_FILE, 'w') as f:
-        for username, password in accounts.items():
-            f.write(f"{username}:{password}\n")
+    with lock:
+        if username not in users:
+            return {"status": "error", "message": "User not found"}
 
-def save_notes(notes):
-    """Write all notes to file."""
-    with open(NOTES_FILE, 'w') as f:
-        for note_obj in notes:
-            f.write(f"{note_obj.id}:{note_obj.title}:{note_obj.content}:{note_obj.likes}\n")
+        if users[username].password != password:
+            return {"status": "error", "message": "Invalid password"}
 
-def save_likes(likes):
-    """Write all likes to file."""
-    with open(LIKES_FILE, 'w') as f:
-        for username, note_id in likes:
-            f.write(f"{username}:{note_id}\n")
+        return {"status": "success", "message": "Login successful"}
 
-def user_has_liked(username, note_id):
-    """Check if a user has already liked a note."""
-    likes = load_likes()
-    return (username, note_id) in likes
+def handle_logout(data):
+    """Handle LOGOUT command."""
+    username = data.get('username')
 
-def add_like(username, note_id):
-    """Record that a user has liked a note."""
-    likes = load_likes()
-    likes.add((username, note_id))
-    save_likes(likes)
+    if not username:
+        return {"status": "error", "message": "Username required"}
 
-def handle_client(client_socket, client_address):
-    """Handle a single client connection."""
-    print(f"[NEW CONNECTION] Client connected from {client_address}")
+    return {"status": "success", "message": "Logout successful"}
 
-    # Track authenticated user for this connection
-    authenticated_user = None
+def handle_create_note(data):
+    """Handle CREATE_NOTE command."""
+    username = data.get('username')
+    title = data.get('title')
+    content = data.get('content')
 
+    if not username or not title or not content:
+        return {"status": "error", "message": "Username, title, and content required"}
+
+    with lock:
+        if username not in users:
+            return {"status": "error", "message": "User not found"}
+
+        global next_note_id
+        note = Note(next_note_id, title, content, username)
+        notes[next_note_id] = note
+        users[username].profile.add_note(next_note_id)
+        next_note_id += 1
+
+        save_notes()
+        save_next_id()
+        save_profiles()
+
+        return {"status": "success", "message": "Note created", "note_id": note.id}
+
+def handle_get_note(data):
+    """Handle GET_NOTE command."""
+    note_id = data.get('note_id')
+
+    if note_id is None:
+        return {"status": "error", "message": "Note ID required"}
+
+    note_id = int(note_id)
+
+    with lock:
+        if note_id not in notes:
+            return {"status": "error", "message": "Note not found"}
+
+        note = notes[note_id]
+        return {
+            "status": "success",
+            "note": {
+                "id": note.id,
+                "title": note.title,
+                "content": note.content,
+                "author": note.author,
+                "likes": note.likes
+            }
+        }
+
+def handle_get_all_notes(data):
+    """Handle GET_ALL_NOTES command."""
+    with lock:
+        notes_list = []
+        for note in notes.values():
+            notes_list.append({
+                "id": note.id,
+                "title": note.title,
+                "content": note.content,
+                "author": note.author,
+                "likes": note.likes
+            })
+        return {"status": "success", "notes": notes_list}
+
+def handle_get_note_author(data):
+    """Handle GET_NOTE_AUTHOR command."""
+    note_id = data.get('note_id')
+
+    if note_id is None:
+        return {"status": "error", "message": "Note ID required"}
+
+    note_id = int(note_id)
+
+    with lock:
+        if note_id not in notes:
+            return {"status": "error", "message": "Note not found"}
+
+        return {"status": "success", "author": notes[note_id].author}
+
+def handle_get_user_notes(data):
+    """Handle GET_USER_NOTES command."""
+    username = data.get('username')
+
+    if not username:
+        return {"status": "error", "message": "Username required"}
+
+    with lock:
+        if username not in users:
+            return {"status": "error", "message": "User not found"}
+
+        note_ids = users[username].profile.note_ids
+        return {"status": "success", "note_ids": note_ids}
+
+def handle_like_note(data):
+    """Handle LIKE_NOTE command."""
+    username = data.get('username')
+    note_id = data.get('note_id')
+
+    if not username or note_id is None:
+        return {"status": "error", "message": "Username and note ID required"}
+
+    note_id = int(note_id)
+
+    with lock:
+        if username not in users:
+            return {"status": "error", "message": "User not found"}
+
+        if note_id not in notes:
+            return {"status": "error", "message": "Note not found"}
+
+        if (username, note_id) in user_likes:
+            return {"status": "error", "message": "User has already liked this note"}
+
+        notes[note_id].likes += 1
+        user_likes[(username, note_id)] = True
+        save_notes()
+        save_likes()
+
+        return {"status": "success", "message": "Note liked", "likes": notes[note_id].likes}
+
+def handle_client(conn, addr):
+    """Handle a client connection."""
     try:
-        while True:
-            data = client_socket.recv(1024).decode('utf-8')
+        data = conn.recv(4096).decode('utf-8')
+        if not data:
+            return
 
-            if not data:
-                break
+        request = json.loads(data)
+        command = request.get('command')
 
-            print(f"[RECEIVED] From {client_address}: {data}")
+        if command == 'REGISTER':
+            response = handle_register(request)
+        elif command == 'LOGIN':
+            response = handle_login(request)
+        elif command == 'LOGOUT':
+            response = handle_logout(request)
+        elif command == 'CREATE_NOTE':
+            response = handle_create_note(request)
+        elif command == 'GET_NOTE':
+            response = handle_get_note(request)
+        elif command == 'GET_ALL_NOTES':
+            response = handle_get_all_notes(request)
+        elif command == 'GET_NOTE_AUTHOR':
+            response = handle_get_note_author(request)
+        elif command == 'GET_USER_NOTES':
+            response = handle_get_user_notes(request)
+        elif command == 'LIKE_NOTE':
+            response = handle_like_note(request)
+        else:
+            response = {"status": "error", "message": "Unknown command"}
 
-            parts = data.split(':', 2)
-            command = parts[0]
-            response = "ERROR:Unknown command"
-
-            accounts = load_accounts()
-
-            if command == "REGISTER":
-                if len(parts) < 3:
-                    response = "ERROR:Invalid format. Use REGISTER:username:password"
-                else:
-                    username = parts[1]
-                    password = parts[2]
-
-                    if username in accounts:
-                        response = "ERROR:Username already exists"
-                    else:
-                        accounts[username] = password
-                        save_accounts(accounts)
-                        response = "SUCCESS:Account created!"
-
-            elif command == "LOGIN":
-                if len(parts) < 3:
-                    response = "ERROR:Invalid format. Use LOGIN:username:password"
-                else:
-                    username = parts[1]
-                    password = parts[2]
-
-                    if username not in accounts:
-                        response = "ERROR:Username not found"
-                    elif accounts[username] != password:
-                        response = "ERROR:Incorrect password"
-                    else:
-                        authenticated_user = username
-                        response = f"SUCCESS:Welcome {username}!"
-
-            elif command == "CREATE_NOTE":
-                if len(parts) < 3:
-                    response = "ERROR:Invalid format. Use CREATE_NOTE:title:content"
-                else:
-                    title = parts[1]
-                    content = parts[2]
-
-                    # Get next ID and increment
-                    note_id = increment_id()
-
-                    # Create note with ID
-                    notes = load_notes()
-                    new_note = note.Note(title, content, _id=note_id, likes=0)
-                    notes.append(new_note)
-                    save_notes(notes)
-
-                    response = f"SUCCESS:Note created with ID {note_id}!"
-
-            elif command == "GET_NOTE":
-                if len(parts) < 2:
-                    response = "ERROR:Invalid format. Use GET_NOTE:id"
-                else:
-                    try:
-                        note_id = int(parts[1])
-                        found_note = get_note_by_id(note_id)
-
-                        if found_note is None:
-                            response = f"ERROR:Note with ID {note_id} not found"
-                        else:
-                            response = f"SUCCESS:ID={found_note.id}|Title={found_note.title}|Content={found_note.content}|Likes={found_note.likes}"
-                    except ValueError:
-                        response = "ERROR:ID must be a number"
-
-            elif command == "GET_ALL_NOTES":
-                notes = load_notes()
-                if not notes:
-                    response = "SUCCESS:No notes found"
-                else:
-                    notes_str = ";".join([f"ID={n.id}|Title={n.title}|Likes={n.likes}" for n in notes])
-                    response = f"SUCCESS:{notes_str}"
-
-            elif command == "LIKE_NOTE":
-                if authenticated_user is None:
-                    response = "ERROR:You must be logged in to like notes. Use LOGIN:username:password first"
-                elif len(parts) < 2:
-                    response = "ERROR:Invalid format. Use LIKE_NOTE:id"
-                else:
-                    try:
-                        note_id = int(parts[1])
-
-                        # Check if note exists
-                        found_note = get_note_by_id(note_id)
-                        if found_note is None:
-                            response = f"ERROR:Note with ID {note_id} not found"
-                        # Check if user has already liked this note
-                        elif user_has_liked(authenticated_user, note_id):
-                            response = f"ERROR:You have already liked note {note_id}"
-                        else:
-                            # Add the like
-                            add_like(authenticated_user, note_id)
-
-                            # Update the note's like count
-                            notes = load_notes()
-                            for note_obj in notes:
-                                if note_obj.id == note_id:
-                                    note_obj.likes += 1
-                                    break
-                            save_notes(notes)
-
-                            response = f"SUCCESS:Note {note_id} liked! Total likes: {note_obj.likes}"
-                    except ValueError:
-                        response = "ERROR:ID must be a number"
-
-            elif command == "LOGOUT":
-                authenticated_user = None
-                response = "SUCCESS:Logged out successfully"
-
-            client_socket.send(response.encode('utf-8'))
-            print(f"[SENT] To {client_address}: {response}")
-
+        conn.sendall(json.dumps(response).encode('utf-8'))
     except Exception as e:
-        print(f"[ERROR] {e}")
+        response = {"status": "error", "message": str(e)}
+        conn.sendall(json.dumps(response).encode('utf-8'))
     finally:
-        client_socket.close()
-        print(f"[DISCONNECTED] Client from {client_address} disconnected")
+        conn.close()
 
 def start_server():
-    """Main server loop."""
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((HOST, PORT))
-    server_socket.listen(5)
+    """Start the server and listen for client connections."""
+    load_data()
 
-    print(f"[STARTING] Server listening on {HOST}:{PORT}")
-    print("Waiting for connections...\n")
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server_socket.bind((HOST, PORT))
+        server_socket.listen(5)
+        print(f"Server started on {HOST}:{PORT}")
 
-    try:
-        while True:
-            client_socket, client_address = server_socket.accept()
-            client_thread = threading.Thread(
-                target=handle_client,
-                args=(client_socket, client_address)
-            )
-            client_thread.daemon = True
-            client_thread.start()
+        try:
+            while True:
+                conn, addr = server_socket.accept()
+                print(f"Connection from {addr}")
+                thread = threading.Thread(target=handle_client, args=(conn, addr))
+                thread.daemon = True
+                thread.start()
+        except KeyboardInterrupt:
+            print("\nServer shutting down...")
+        finally:
+            server_socket.close()
 
-    except KeyboardInterrupt:
-        print("\n[SHUTDOWN] Server shutting down...")
-    finally:
-        server_socket.close()
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     start_server()
