@@ -1,5 +1,7 @@
 import customtkinter as ctk
-from networking import server_interaction as si
+# Networking klasöründen interaction modülünü içeri aktarıyoruz
+# (Eğer register.py ile server_interaction aynı klasördeyse doğrudan import edebilirsin)
+from networking import server_interaction
 
 class RegisterPage(ctk.CTkFrame):
     def __init__(self, parent, switch_to_login):
@@ -25,10 +27,10 @@ class RegisterPage(ctk.CTkFrame):
         )
         self.welcome_label.grid(row=0, column=0, sticky="w", pady=(0, 15))
 
-        # --- Ad Soyad Alanı ---
-        self.name_label = ctk.CTkLabel(self.card, text="Ad Soyad", font=ctk.CTkFont(size=12, weight="bold"), text_color="#A6ADC8", anchor="w")
+        # --- Ad Soyad / Kullanıcı Adı Alanı ---
+        self.name_label = ctk.CTkLabel(self.card, text="Kullanıcı Adı", font=ctk.CTkFont(size=12, weight="bold"), text_color="#A6ADC8", anchor="w")
         self.name_label.grid(row=1, column=0, sticky="w", pady=(0, 2))
-        self.name_entry = ctk.CTkEntry(self.card, height=40, placeholder_text="Adınız Soyadınız", border_color="#313244", fg_color="#181825", corner_radius=8)
+        self.name_entry = ctk.CTkEntry(self.card, height=40, placeholder_text="Kullanıcı adınızı girin", border_color="#313244", fg_color="#181825", corner_radius=8)
         self.name_entry.grid(row=2, column=0, sticky="ew", pady=(0, 12))
 
         # --- Şifre Alanı ---
@@ -66,16 +68,35 @@ class RegisterPage(ctk.CTkFrame):
         self.login_btn.pack(side="left")
 
     def register_event(self):
-        name = self.name_entry.get().strip()
+        username = self.name_entry.get().strip()
         password = self.password_entry.get().strip()
         password_confirm = self.password_confirm_entry.get().strip()
 
-        if not name or not password or not password_confirm:
+        # 1. Boş Alan Kontrolü
+        if not username or not password or not password_confirm:
             self.info_label.configure(text_color="#F38BA8", text="⚠️ Lütfen tüm alanları eksiksiz doldurun!")
             return
+
+        # 2. Şifre Eşleşme Kontrolü
         if password != password_confirm:
             self.info_label.configure(text_color="#F38BA8", text="❌ Şifreler birbiriyle uyuşmuyor!")
             return
-        if si.send_register(name,password)=="SUCCESS:Account created!":
-            self.info_label.configure(text_color="#A6E3A1", text="✅ Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...",)
-        #self.after(800, self.switch_to_login)
+
+        # 3. Sunucuya İstek Atma (Networking Entegrasyonu)
+        try:
+            # server_interaction.py içerisindeki fonksiyonu çağırıyoruz
+            response = server_interaction.send_register(username, password)
+
+            # Sunucudan gelen cevabı işliyoruz (Örn: "SUCCESS:Account created!" veya "ERROR:Username already exists")
+            if response.startswith("SUCCESS"):
+                self.info_label.configure(text_color="#A6E3A1", text="✅ Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...")
+                # 1 saniye sonra smooth bir şekilde login ekranına geri at
+                self.after(1000, self.switch_to_login)
+            else:
+                # Sunucudan gelen hata mesajı (Örn: "ERROR:Username already exists" -> "Username already exists")
+                error_msg = response.split(":", 1)[1] if ":" in response else "Bilinmeyen hata"
+                self.info_label.configure(text_color="#F38BA8", text=f"❌ {error_msg}")
+
+        except Exception as e:
+            self.info_label.configure(text_color="#F38BA8", text="❌ Sunucuya bağlanılamadı!")
+            print(f"[NETWORK ERROR] {e}")

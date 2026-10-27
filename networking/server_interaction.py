@@ -1,5 +1,5 @@
-import client
-import server
+from . import client
+from . import server
 
 #receives a response
 def send_register(usr: str, passwd: str):
