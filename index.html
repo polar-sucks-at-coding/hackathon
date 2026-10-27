@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAÜ Connect - Sakarya Üniversitesi Kampüs Platformu</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================
+           Dinamik Tema Değişkenleri (Theme Switcher)
+           ========================================== */
+        :root {
+            --bg-base: #11111B;
+            --bg-card: #1E1E2E;
+            --bg-input: #181825;
+            --accent: #89B4FA;
+            --accent-hover: #74C7EC;
+            --text-main: #CDD6F4;
+            --text-sub: #A6ADC8;
+            --border-color: #313244;
+            --shadow-color: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Özel Renk Sınıfları */
+        .bg-theme-base { background-color: var(--bg-base); }
+        .bg-theme-card { background-color: var(--bg-card); }
+        .bg-theme-input { background-color: var(--bg-input); }
+        .border-theme { border-color: var(--border-color); }
+        .text-theme-main { color: var(--text-main); }
+        .text-theme-sub { color: var(--text-sub); }
+        .text-theme-accent { color: var(--accent); }
+        .bg-theme-accent { background-color: var(--accent); color: #11111B; }
+        .bg-theme-accent:hover { background-color: var(--accent-hover); }
+        .border-theme-accent { border-color: var(--accent); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Glassmorphism & Hover Efektleri */
+        .glass-panel {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+        }
+
+        .glow-hover {
+            transition: all 0.25s ease-in-out;
+        }
+        .glow-hover:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(137, 180, 250, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Animasyonlar */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+
+    <!-- Toast Bildirim Alanı -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- =================================================================== -->
+    <!-- 1. GİRİŞ VE KAYIT EKRANI (AUTH VIEW) -->
+    <!-- =================================================================== -->
+    <div id="authView" class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-theme-base">
+        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden border border-theme shadow-2xl bg-theme-card">
+            
+            <!-- Sol Sütun: SAÜ Branding & Banner -->
+            <div class="p-8 md:p-12 flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-blue-900/40 via-purple-900/20 to-slate-900">
+                <div class="absolute -top-20 -left-20 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-20 -right-20 w-60 h-60 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-theme-accent flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight text-theme-main">SAÜ Connect</h1>
+                            <p class="text-xs text-theme-sub uppercase tracking-wider font-semibold">Kampüs Platformu</p>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-theme-main leading-tight mb-4">
+                        Sakarya Üniversitesi Dijital Kampüs Ağı
+                    </h2>
+                    <p class="text-theme-sub text-sm leading-relaxed mb-6">
+                        Ders notlarınızı paylaşın, soru sorun, projelere katılın ve kampüsteki diğer öğrencilerle anında etkileşime geçin.
+                    </p>
+                </div>
+
+                <div class="relative z-10 space-y-3 border-t border-theme pt-6">
+                    <div class="flex items-center gap-3 text-sm text-theme-sub">
+                        <i class="fa-solid fa-book-bookmark text-theme-accent"></i>
+                        <span>Anında Ders Notu Paylaşımı & İndirme</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-theme-sub">
+                        <i class="fa-solid fa-comments text-theme-accent"></i>
+                        <span>İstek Havuzu ve İnteraktif Yorumlar</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-theme-sub">
+                        <i class="fa-solid fa-palette text-theme-accent"></i>
+                        <span>Kişiselleştirilebilir 5 Farklı Tema Özelliği</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ Sütun: Form Alanı -->
+            <div class="p-8 md:p-12 flex flex-col justify-center bg-theme-card">
+                <!-- Giriş Formu -->
+                <div id="loginFormContainer" class="animate-fade-in">
+                    <h3 class="text-2xl font-bold text-theme-main mb-2">Giriş Yap</h3>
+                    <p class="text-sm text-theme-sub mb-6">Hesabınıza erişmek için bilgilerinizi giriniz.</p>
+
+                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Kullanıcı Adı</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" id="loginUsername" required class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="Kullanıcı adınız">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Şifre</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="loginPassword" required class="w-full pl-10 pr-10 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="••••••••">
+                                <button type="button" onclick="togglePassword('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-sub hover:text-theme-main">
+                                    <i id="loginEyeIcon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 rounded-lg bg-theme-accent font-semibold text-slate-950 transition-transform active:scale-[0.98] shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                            <span>Giriş Yap</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    <div class="mt-6 text-center text-sm text-theme-sub">
+                        Hesabınız yok mu?
+                        <button onclick="switchAuthTab('register')" class="text-theme-accent font-semibold hover:underline ml-1">Hemen Kayıt Olun</button>
+                    </div>
+                </div>
+
+                <!-- Kayıt Ol Formu -->
+                <div id="registerFormContainer" class="hidden animate-fade-in">
+                    <h3 class="text-2xl font-bold text-theme-main mb-2">Hesap Oluştur</h3>
+                    <p class="text-sm text-theme-sub mb-6">SAÜ Connect topluluğuna katılmak için formu doldurun.</p>
+
+                    <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Kullanıcı Adı</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-user-plus"></i></span>
+                                <input type="text" id="regUsername" required class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="Kullanıcı adı belirleyin">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Şifre</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="regPassword" required class="w-full pl-10 pr-10 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="••••••••">
+                                <button type="button" onclick="togglePassword('regPassword', 'regEyeIcon1')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-sub hover:text-theme-main">
+                                    <i id="regEyeIcon1" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Şifre Tekrarı</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-shield-check"></i></span>
+                                <input type="password" id="regPasswordConfirm" required class="w-full pl-10 pr-10 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="••••••••">
+                                <button type="button" onclick="togglePassword('regPasswordConfirm', 'regEyeIcon2')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-sub hover:text-theme-main">
+                                    <i id="regEyeIcon2" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 rounded-lg bg-theme-accent font-semibold text-slate-950 transition-transform active:scale-[0.98] shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                            <span>Hesabımı Oluştur</span>
+                            <i class="fa-solid fa-user-check"></i>
+                        </button>
+                    </form>
+
+                    <div class="mt-6 text-center text-sm text-theme-sub">
+                        Zaten hesabınız var mı?
+                        <button onclick="switchAuthTab('login')" class="text-theme-accent font-semibold hover:underline ml-1">Giriş Yapın</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- 2. ANA PANEL (MAIN APP LAYOUT) -->
+    <!-- =================================================================== -->
+    <div id="mainView" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-theme-base">
+        
+        <!-- Sol Yan Menü (Sidebar) -->
+        <aside class="w-full md:w-64 bg-theme-card border-b md:border-b-0 md:border-r border-theme flex flex-col justify-between shrink-0">
+            <div>
+                <!-- Logo & Başlık -->
+                <div class="p-5 border-b border-theme flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-theme-accent flex items-center justify-center text-slate-950 font-bold text-xl shadow">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-bold text-theme-main leading-none">SAÜ Connect</h2>
+                            <span class="text-[11px] text-theme-sub uppercase tracking-wider">Kampüs Platformu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigasyon Linkleri -->
+                <nav class="p-3 space-y-1">
+                    <button onclick="switchTab('notes')" id="nav-notes" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left transition-colors bg-theme-accent text-slate-950">
+                        <i class="fa-solid fa-book-open w-5 text-center"></i>
+                        <span>📖 Ders Notları</span>
+                    </button>
+
+                    <button onclick="switchTab('polls')" id="nav-polls" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                        <span>📊 Anketler</span>
+                    </button>
+
+                    <button onclick="switchTab('teams')" id="nav-teams" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                        <i class="fa-solid fa-users-gear w-5 text-center"></i>
+                        <span>❖ Takımlar</span>
+                    </button>
+
+                    <button onclick="switchTab('social')" id="nav-social" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                        <i class="fa-solid fa-users w-5 text-center"></i>
+                        <span>👥 Sosyal</span>
+                    </button>
+
+                    <button onclick="switchTab('profile')" id="nav-profile" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                        <i class="fa-solid fa-circle-user w-5 text-center"></i>
+                        <span>👤 Profilim</span>
+                    </button>
+
+                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                        <i class="fa-solid fa-gear w-5 text-center"></i>
+                        <span>⚙️ Ayarlar</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Alt Çıkış Yap & Durum Bilgisi -->
+            <div class="p-4 border-t border-theme space-y-3">
+                <div id="connectionBadge" class="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-md bg-theme-input border border-theme">
+                    <span class="text-theme-sub">Sunucu Bağlantısı:</span>
+                    <span id="apiStatusText" class="font-semibold text-emerald-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> API Bağlı
+                    </span>
+                </div>
+
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Çıkış Yap</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sağ İçerik Alanı -->
+        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+            
+            <!-- Üst Header Bar -->
+            <header class="h-16 border-b border-theme bg-theme-card px-6 flex items-center justify-between sticky top-0 z-20">
+                <div class="flex items-center gap-3">
+                    <h2 id="currentTabTitle" class="text-lg font-bold text-theme-main">Ders Notları</h2>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-theme-input border border-theme">
+                        <div class="w-7 h-7 rounded-full bg-theme-accent text-slate-950 font-bold text-xs flex items-center justify-center uppercase" id="userAvatar">
+                            U
+                        </div>
+                        <span class="text-sm font-semibold text-theme-main" id="headerUsername">Kullanıcı</span>
+                    </div>
+
+                    <button onclick="switchTab('profile')" class="p-2 text-theme-sub hover:text-theme-main rounded-lg hover:bg-theme-input transition-colors" title="Profilim">
+                        <i class="fa-solid fa-user-circle text-lg"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- İçerik Görünümleri -->
+            <div class="p-4 md:p-8 flex-1">
+                
+                <!-- TAB 1: DERS NOTLARI VE İSTEKLER -->
+                <section id="section-notes" class="space-y-6">
+                    
+                    <!-- Üst Anahtar (Segmented Control) & Kontroller -->
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-theme-card p-4 rounded-xl border border-theme shadow-sm">
+                        
+                        <!-- Segmented Switcher -->
+                        <div class="flex p-1 bg-theme-input rounded-lg border border-theme self-start">
+                            <button onclick="switchNoteTab('notes')" id="subnav-notes" class="px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow">
+                                📖 Ders Notları
+                            </button>
+                            <button onclick="switchNoteTab('requests')" id="subnav-requests" class="px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main">
+                                🙋‍♂️ Not İstekleri
+                            </button>
+                        </div>
+
+                        <!-- Arama, Sıralama & Action Butonu -->
+                        <div class="flex flex-wrap items-center gap-3 flex-1 lg:justify-end">
+                            
+                            <!-- Arama Çubuğu -->
+                            <div class="relative flex-1 min-w-[200px] max-w-xs">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="searchInput" oninput="filterAndRender()" class="w-full pl-9 pr-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Notlarda ara...">
+                            </div>
+
+                            <!-- Sıralama Dropdown -->
+                            <select id="sortSelect" onchange="filterAndRender()" class="px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent cursor-pointer">
+                                <option value="likes">❤️ Beğeniye Göre</option>
+                                <option value="date_desc">📅 Tarihe Göre (En Yeni)</option>
+                                <option value="alpha_asc">🔤 A'dan Z'ye</option>
+                                <option value="alpha_desc">🔤 Z'den A'ya</option>
+                            </select>
+
+                            <!-- Not veya İstek Ekle Butonu -->
+                            <button id="primaryActionButton" onclick="openAddModal()" class="px-4 py-2 rounded-lg bg-theme-accent font-semibold text-slate-950 hover:bg-theme-accent-hover transition-colors shadow flex items-center gap-2 text-sm shrink-0">
+                                <i class="fa-solid fa-plus"></i>
+                                <span id="actionButtonText">Not Ekle</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Not Kartları Izgarası (Notes Grid) -->
+                    <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        <!-- JS Tarafından Dinamik Doldurulur -->
+                    </div>
+
+                    <!-- Not İstekleri Listesi (Requests View) -->
+                    <div id="requestsList" class="hidden space-y-4">
+                        <!-- JS Tarafından Dinamik Doldurulur -->
+                    </div>
+                </section>
+
+                <!-- TAB 2: ANKETLER (POLLS) -->
+                <section id="section-polls" class="hidden space-y-6">
+                    <div class="bg-theme-card p-6 rounded-xl border border-theme">
+                        <h3 class="text-xl font-bold text-theme-main mb-2">📊 Kampüs Anketleri</h3>
+                        <p class="text-theme-sub text-sm mb-6">Sakarya Üniversitesi öğrencileri tarafından başlatılan güncel oylamalar.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Örnek Anket 1 -->
+                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-4">
+                                <span class="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-400 text-xs font-semibold">Kütüphane</span>
+                                <h4 class="font-bold text-theme-main">Merkez Kütüphane Vize Döneminde 24 Saat Açık Kalmalı mı?</h4>
+                                <div class="space-y-2">
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent transition-colors flex justify-between">
+                                        <span>Evet, 24 saat açık olmalı</span>
+                                        <span class="text-theme-accent font-bold">%88</span>
+                                    </button>
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent transition-colors flex justify-between">
+                                        <span>Hayır, mevcut çalışma saatleri yeterli</span>
+                                        <span class="text-theme-sub">%12</span>
+                                    </button>
+                                </div>
+                                <div class="text-xs text-theme-sub text-right">Toplam 342 Oy</div>
+                            </div>
+
+                            <!-- Örnek Anket 2 -->
+                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-4">
+                                <span class="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-400 text-xs font-semibold">Yemekhane</span>
+                                <h4 class="font-bold text-theme-main">Kampüs Yemekhanesindeki Öğle Menüsü Kalitesini Nasıl Buluyorsunuz?</h4>
+                                <div class="space-y-2">
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent transition-colors flex justify-between">
+                                        <span>👍 Çok Başarılı</span>
+                                        <span class="text-theme-accent font-bold">%45</span>
+                                    </button>
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent transition-colors flex justify-between">
+                                        <span>😐 Geliştirilebilir</span>
+                                        <span class="text-theme-sub">%55</span>
+                                    </button>
+                                </div>
+                                <div class="text-xs text-theme-sub text-right">Toplam 215 Oy</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: TAKIMLAR (TEAMS) -->
+                <section id="section-teams" class="hidden space-y-6">
+                    <div class="bg-theme-card p-6 rounded-xl border border-theme">
+                        <h3 class="text-xl font-bold text-theme-main mb-2">❖ Mühendislik & Proje Takımları</h3>
+                        <p class="text-theme-sub text-sm mb-6">Teknofest, Formula Student ve AR-GE projelerinde yer alan öğrenci takımları.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-3 glow-hover">
+                                <div class="w-12 h-12 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <h4 class="font-bold text-theme-main">SAÜ ROV Otonom Takımı</h4>
+                                <p class="text-xs text-theme-sub">İnsansız Su Altı Sistemleri ve Yazılım Geliştirme Grubu.</p>
+
+                                <div class="pt-2 flex items-center justify-between border-t border-theme">
+                                    <span class="text-xs text-theme-accent font-semibold">12 Üye</span>
+                                    <button onclick="showToast('Başvuru isteğiniz takıma iletildi!', 'info')" class="px-3 py-1 rounded-md bg-theme-accent text-slate-950 font-semibold text-xs">Katıl</button>
+                                </div>
+                            </div>
+
+                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-3 glow-hover">
+                                <div class="w-12 h-12 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl font-bold">
+                                    <i class="fa-solid fa-car"></i>
+                                </div>
+                                <h4 class="font-bold text-theme-main">SAÜ Formula Student</h4>
+                                <p class="text-xs text-theme-sub">Elektrikli Yarış Aracı Tasarım ve Üretim Ekibi.</p>
+
+                                <div class="pt-2 flex items-center justify-between border-t border-theme">
+                                    <span class="text-xs text-theme-accent font-semibold">24 Üye</span>
+                                    <button onclick="showToast('Başvuru isteğiniz takıma iletildi!', 'info')" class="px-3 py-1 rounded-md bg-theme-accent text-slate-950 font-semibold text-xs">Katıl</button>
+                                </div>
+                            </div>
+
+                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-3 glow-hover">
+                                <div class="w-12 h-12 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl font-bold">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                </div>
+                                <h4 class="font-bold text-theme-main">SAÜ Siber Güvenlik Topluluğu</h4>
+                                <p class="text-xs text-theme-sub">CTF Yarışmaları, Sızma Testleri ve Ağ Güvenliği Çalışmaları.</p>
+
+                                <div class="pt-2 flex items-center justify-between border-t border-theme">
+                                    <span class="text-xs text-theme-accent font-semibold">45 Üye</span>
+                                    <button onclick="showToast('Başvuru isteğiniz takıma iletildi!', 'info')" class="px-3 py-1 rounded-md bg-theme-accent text-slate-950 font-semibold text-xs">Katıl</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: SOSYAL (SOCIAL) -->
+                <section id="section-social" class="hidden space-y-6">
+                    <div class="bg-theme-card p-6 rounded-xl border border-theme">
+                        <h3 class="text-xl font-bold text-theme-main mb-2">👥 Kampüs Sosyal Akışı</h3>
+                        <p class="text-theme-sub text-sm mb-6">Etkinlikler, çalışma grupları ve kampüs haberleri.</p>
+
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-xl border border-theme bg-theme-input flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold shrink-0">
+                                    <i class="fa-solid fa-calendar-day"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h4 class="font-semibold text-theme-main text-sm">Python & Yapay Zeka Atölyesi</h4>
+                                    <p class="text-xs text-theme-sub">Bu Perşembe saat 15:00'te M7 Binası Konferans Salonu'nda buluşuyoruz!</p>
+                                    <span class="text-[11px] text-theme-accent font-semibold">27 Ekim 2026 - SAÜ Yazılım Kulübü</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-xl border border-theme bg-theme-input flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold shrink-0">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h4 class="font-semibold text-theme-main text-sm">Algoritma Çalışma Grubu</h4>
+                                    <p class="text-xs text-theme-sub">Kütüphane 3. katta C++ dersi vize öncesi soru çözümü yapıyoruz, katılmak isteyen herkes davetlidir.</p>
+                                    <span class="text-[11px] text-theme-accent font-semibold">27 Ekim 2026 - Öğrenci Topluluğu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: PROFİLİM (PROFILE) -->
+                <section id="section-profile" class="hidden space-y-6">
+                    <div class="bg-theme-card p-6 rounded-xl border border-theme relative overflow-hidden">
+                        <div class="flex flex-col sm:flex-row items-center gap-6 relative z-10">
+                            <div class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg" id="profileLargeAvatar">
+                                U
+                            </div>
+                            <div class="text-center sm:text-left space-y-1">
+                                <h3 class="text-2xl font-bold text-theme-main" id="profileUsername">Kullanıcı Adı</h3>
+                                <p class="text-sm text-theme-sub">Sakarya Üniversitesi Öğrencisi</p>
+                                <div class="pt-2 flex flex-wrap justify-center sm:justify-start gap-2">
+                                    <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+                                        <i class="fa-solid fa-circle-check mr-1"></i> Aktif Hesap
+                                    </span>
+                                    <span class="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-semibold border border-blue-500/30">
+                                        <i class="fa-solid fa-graduation-cap mr-1"></i> Lisans
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- İstatistik Kartları -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-extrabold text-theme-main" id="statMyNotesCount">0</div>
+                                <div class="text-xs text-theme-sub">Paylaşılan Notlar</div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl font-bold">
+                                <i class="fa-solid fa-heart"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-extrabold text-theme-main" id="statMyLikesCount">0</div>
+                                <div class="text-xs text-theme-sub">Aldığı Toplam Beğeni</div>
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-extrabold text-theme-main" id="statMyRequestsCount">0</div>
+                                <div class="text-xs text-theme-sub">Açılan İstekler</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kullanıcının Yüklediği Notlar -->
+                    <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-4">
+                        <h4 class="font-bold text-theme-main text-lg border-b border-theme pb-3">Paylaştığım Ders Notları</h4>
+                        <div id="myNotesList" class="space-y-3">
+                            <!-- JS ile doldurulur -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: AYARLAR VE TEMA SEÇİCİ (SETTINGS & THEME) -->
+                <section id="section-settings" class="hidden space-y-6">
+                    <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-theme-main mb-1">⚙️ Uygulama Ayarları</h3>
+                            <p class="text-theme-sub text-sm">Görünüm temalarını değiştirin ve sunucu bağlantısını yapılandırın.</p>
+                        </div>
+
+                        <!-- 5 Tema Seçeneği -->
+                        <div class="space-y-4 border-t border-theme pt-5">
+                            <label class="block text-sm font-bold text-theme-main">🎨 Görünüm Teması Seçin</label>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                
+                                <!-- Tema 1: Catppuccin Mocha -->
+                                <button onclick="selectTheme('catppuccin')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#1E1E2E] border-[#313244]" id="theme-btn-catppuccin">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-[#CDD6F4]">Catppuccin Mocha</span>
+                                        <div class="w-4 h-4 rounded-full bg-[#89B4FA]"></div>
+                                    </div>
+                                    <div class="flex gap-1.5">
+                                        <span class="w-5 h-5 rounded bg-[#11111B]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#1E1E2E]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#89B4FA]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#A6ADC8]"></span>
+                                    </div>
+                                </button>
+
+                                <!-- Tema 2: Dracula Dark -->
+                                <button onclick="selectTheme('dracula')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#282A36] border-[#44475A]" id="theme-btn-dracula">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-[#F8F8F2]">Dracula Dark</span>
+                                        <div class="w-4 h-4 rounded-full bg-[#BD93F9]"></div>
+                                    </div>
+                                    <div class="flex gap-1.5">
+                                        <span class="w-5 h-5 rounded bg-[#21222C]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#282A36]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#BD93F9]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#6272A4]"></span>
+                                    </div>
+                                </button>
+
+                                <!-- Tema 3: Emerald Night -->
+                                <button onclick="selectTheme('emerald')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#1E293B] border-[#334155]" id="theme-btn-emerald">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-[#F1F5F9]">Emerald Night</span>
+                                        <div class="w-4 h-4 rounded-full bg-[#34D399]"></div>
+                                    </div>
+                                    <div class="flex gap-1.5">
+                                        <span class="w-5 h-5 rounded bg-[#0F172A]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#1E293B]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#34D399]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#94A3B8]"></span>
+                                    </div>
+                                </button>
+
+                                <!-- Tema 4: Sunset Orange -->
+                                <button onclick="selectTheme('sunset')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#27272A] border-[#3F3F46]" id="theme-btn-sunset">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-[#FAFAFA]">Sunset Orange</span>
+                                        <div class="w-4 h-4 rounded-full bg-[#FB923C]"></div>
+                                    </div>
+                                    <div class="flex gap-1.5">
+                                        <span class="w-5 h-5 rounded bg-[#18181B]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#27272A]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#FB923C]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#A1A1AA]"></span>
+                                    </div>
+                                </button>
+
+                                <!-- Tema 5: Cyberpunk Neon -->
+                                <button onclick="selectTheme('cyberpunk')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#12121F] border-[#272738]" id="theme-btn-cyberpunk">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-xs text-[#FFF1F2]">Cyberpunk Neon</span>
+                                        <div class="w-4 h-4 rounded-full bg-[#F43F5E]"></div>
+                                    </div>
+                                    <div class="flex gap-1.5">
+                                        <span class="w-5 h-5 rounded bg-[#05050A]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#12121F]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#F43F5E]"></span>
+                                        <span class="w-5 h-5 rounded bg-[#FDA4AF]"></span>
+                                    </div>
+                                </button>
+
+                            </div>
+                        </div>
+
+                        <!-- Backend API Ayarı -->
+                        <div class="space-y-3 border-t border-theme pt-5">
+                            <label class="block text-sm font-bold text-theme-main">🔌 Backend Sunucu Endpoint URL</label>
+                            <div class="flex gap-2 max-w-md">
+                                <input type="text" id="apiEndpointInput" class="flex-1 px-3.5 py-2 rounded-lg bg-theme-input border border-theme text-sm text-theme-main focus:outline-none focus:border-theme-accent" value="/api/command">
+                                <button onclick="saveApiEndpoint()" class="px-4 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm">Kaydet</button>
+                            </div>
+                            <p class="text-xs text-theme-sub">Varsayılan: <code>/api/command</code> (Sunucu port 5000 üzerinde çalışmaktadır)</p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODALLAR (MODALS) -->
+    <!-- =================================================================== -->
+
+    <!-- Modal 1: NOT DETAY MODALI -->
+    <div id="noteDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+        <div class="w-full max-w-2xl bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex items-start justify-between border-b border-theme pb-4">
+                <div class="space-y-1">
+                    <h3 id="modalNoteTitle" class="text-xl font-bold text-theme-main leading-tight">Not Başlığı</h3>
+                    <div class="flex items-center gap-3 text-xs text-theme-sub">
+                        <span><i class="fa-solid fa-user mr-1 text-theme-accent"></i><strong id="modalNoteAuthor">Yazar</strong></span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-clock mr-1"></i><span id="modalNoteDate">Tarih</span></span>
+                    </div>
+                </div>
+                <button onclick="closeModal('noteDetailModal')" class="p-1.5 text-theme-sub hover:text-theme-main rounded-lg hover:bg-theme-input transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div id="modalNoteContent" class="flex-1 overflow-y-auto text-sm text-theme-main leading-relaxed whitespace-pre-wrap py-2">
+                Not İçeriği...
+            </div>
+
+            <!-- Ekli Dosya Rozeti & İndir -->
+            <div id="modalFileContainer" class="p-3.5 rounded-xl border border-theme bg-theme-input flex items-center justify-between">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div id="modalFileName" class="text-xs font-semibold text-theme-main truncate">dosya.pdf</div>
+                        <div id="modalFileSize" class="text-[11px] text-theme-sub">0 KB</div>
+                    </div>
+                </div>
+                <button onclick="downloadCurrentNoteFile()" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-download"></i>
+                    <span>İndir</span>
+                </button>
+            </div>
+
+            <!-- Modal Footer Actions -->
+            <div class="flex items-center justify-between border-t border-theme pt-4">
+                <button id="modalLikeButton" onclick="toggleLikeCurrentNote()" class="px-4 py-2 rounded-lg border border-theme bg-theme-input hover:border-rose-500/50 text-sm font-semibold transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-rose-500"></i>
+                    <span id="modalLikeCount">0 Beğeni</span>
+                </button>
+
+                <div class="flex items-center gap-2">
+                    <button id="modalDeleteButton" onclick="confirmDeleteCurrentNote()" class="hidden px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 text-sm font-semibold transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Sil</span>
+                    </button>
+                    <button onclick="closeModal('noteDetailModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm font-semibold">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: NOT EKLE MODALI -->
+    <div id="addNoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+        <div class="w-full max-w-lg bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-theme pb-3">
+                <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-theme-accent"></i>
+                    <span>Yeni Ders Notu Paylaş</span>
+                </h3>
+                <button onclick="closeModal('addNoteModal')" class="text-theme-sub hover:text-theme-main"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="submitNewNote(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Ders & Not Başlığı</label>
+                    <input type="text" id="newNoteTitle" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Örn: Algoritmalar Vize Özet Notları">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Açıklama / İçerik</label>
+                    <textarea id="newNoteContent" required rows="4" class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Not hakkında kısa bilgi, işlenen konular vb..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Dosya Ekle (İsteğe Bağlı)</label>
+                    <input type="file" id="newNoteFile" class="w-full text-xs text-theme-sub file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-theme-input file:text-theme-main hover:file:bg-theme-card border border-theme rounded-lg p-1">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('addNoteModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm hover:bg-theme-accent-hover">Paylaş</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 3: İSTEK EKLE MODALI -->
+    <div id="addRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+        <div class="w-full max-w-lg bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-theme pb-3">
+                <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
+                    <i class="fa-solid fa-comment-medical text-theme-accent"></i>
+                    <span>Yeni Not İstegi Oluştur</span>
+                </h3>
+                <button onclick="closeModal('addRequestModal')" class="text-theme-sub hover:text-theme-main"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="submitNewRequest(event)" class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-theme-sub">İstek Başlığı</label>
+                        <span id="reqTitleCounter" class="text-[11px] text-theme-sub">0/60</span>
+                    </div>
+                    <input type="text" id="newReqTitle" maxlength="60" oninput="updateCharCounter('newReqTitle', 'reqTitleCounter', 60)" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Hangi derse ait not arıyorsunuz?">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-semibold uppercase tracking-wider text-theme-sub">Detay / İhtiyaç Açıklaması</label>
+                        <span id="reqContentCounter" class="text-[11px] text-theme-sub">0/250</span>
+                    </div>
+                    <textarea id="newReqContent" maxlength="250" oninput="updateCharCounter('newReqContent', 'reqContentCounter', 250)" required rows="4" class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="İhtiyacınızı detaylandırın..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('addRequestModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm hover:bg-theme-accent-hover">İsteği Yayınla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 4: SILME ONAY MODALI (CONFIRM DELETE) -->
+    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
+        <div class="w-full max-w-sm bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xl font-bold mx-auto">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-bold text-theme-main">Silme Onayı</h3>
+            <p id="confirmDeleteText" class="text-xs text-theme-sub">Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+
+            <div class="flex justify-center gap-3 pt-2">
+                <button onclick="closeModal('confirmDeleteModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-xs font-semibold text-theme-main">İptal</button>
+                <button id="confirmDeleteSubmitBtn" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- UYGULAMA MANTIĞI & JAVASCRIPT (APP LOGIC) -->
+    <!-- =================================================================== -->
+    <script>
+        /* TEMALAR */
+        const THEMES = {
+            catppuccin: { name: 'Catppuccin Mocha', bgBase: '#11111B', bgCard: '#1E1E2E', bgInput: '#181825', accent: '#89B4FA', accentHover: '#74C7EC', textMain: '#CDD6F4', textSub: '#A6ADC8', borderColor: '#313244' },
+            dracula: { name: 'Dracula Dark', bgBase: '#21222C', bgCard: '#282A36', bgInput: '#191A21', accent: '#BD93F9', accentHover: '#FF79C6', textMain: '#F8F8F2', textSub: '#6272A4', borderColor: '#44475A' },
+            emerald: { name: 'Emerald Night', bgBase: '#0F172A', bgCard: '#1E293B', bgInput: '#090D16', accent: '#34D399', accentHover: '#10B981', textMain: '#F1F5F9', textSub: '#94A3B8', borderColor: '#334155' },
+            sunset: { name: 'Sunset Orange', bgBase: '#18181B', bgCard: '#27272A', bgInput: '#09090B', accent: '#FB923C', accentHover: '#F97316', textMain: '#FAFAFA', textSub: '#A1A1AA', borderColor: '#3F3F46' },
+            cyberpunk: { name: 'Cyberpunk Neon', bgBase: '#05050A', bgCard: '#12121F', bgInput: '#0A0A12', accent: '#F43F5E', accentHover: '#FB7185', textMain: '#FFF1F2', textSub: '#FDA4AF', borderColor: '#272738' }
+        };
+
+        /* UYGULAMA DURUMU (STATE) */
+        let state = {
+            currentUser: null,
+            activeTab: 'notes',         // 'notes', 'polls', 'teams', 'social', 'profile', 'settings'
+            activeNoteSubTab: 'notes',  // 'notes', 'requests'
+            notes: [],
+            requests: [],
+            currentSelectedNote: null,
+            isOnlineMode: true
+        };
+
+        /* ILK DEMO VERILERI (Local Fallback için) */
+        const INITIAL_DEMO_NOTES = [
+            { id: 1, title: 'Yazılım Müh. - Algoritmalar Vize Özet', content: 'Ağaçlar, Grafik Teorisi, Sıralama Algoritmaları (QuickSort, MergeSort) detaylı anlatımı ve C++ örnekleri.', author: 'ahmet_sau', likes: 14, date: '26.10.2026 10:30', file_name: 'algoritmalar_vize_ozet.pdf', file_size: '1.2 MB' },
+            { id: 2, title: 'İşletim Sistemleri - Süreç Yönetimi', content: 'Process Sync, Deadlocks, Semaphore kullanımı ve CPU Scheduling algoritmalarının soru çözümleri.', author: 'zeynep_cs', likes: 21, date: '27.10.2026 14:15', file_name: 'isletim_sistemleri_ch1_5.pdf', file_size: '850 KB' },
+            { id: 3, title: 'Elektrik-Elektronik - Sinyaller ve Sistemler', content: 'Fourier Dönüşümü, Laplace Dönüşümü ve LTI Sistemlerin frekans yanıtı özet soru çözümleri.', author: 'mehmet_ee', likes: 7, date: '27.10.2026 16:45', file_name: '', file_size: '' }
+        ];
+
+        const INITIAL_DEMO_REQUESTS = [
+            {
+                id: 1,
+                title: 'Makine Müh. - Akışkanlar Mekaniği Çıkmış Sorular',
+                content: 'Geçen yılın akışkanlar mekaniği 2. vize çıkmış soruları veya çözümleri olan var mı acaba?',
+                author: 'can_mkn',
+                date: '26.10.2026 11:00',
+                comments: [
+                    { author: 'elif_sau', content: 'Bende geçen senenin çözümlü PDF\'i var, birazdan yükleyeceğim!', date: '26.10.2026 14:20' }
+                ]
+            }
+        ];
+
+        /* ==========================================
+           1. API İLETİŞİM KATMANI (API CORE)
+           ========================================== */
+        async function apiCall(commandData) {
+            let apiUrl = localStorage.getItem('sau_api_url') || '/api/command';
+            
+            // Eğer doğrudan local dosya (file://) modundaysa varsayılan sunucu portuna yönlendir
+            if (window.location.protocol === 'file:' && apiUrl.startsWith('/')) {
+                apiUrl = 'http://localhost:5000/api/command';
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(commandData),
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const data = await response.json();
+                
+                updateApiStatus(true);
+                return data;
+            } catch (err) {
+                console.warn("[API ULAŞILAMADI - LOCAL FALLBACK MODU ETKİN]", err);
+                updateApiStatus(false);
+                return fallbackLocalApi(commandData);
+            }
+        }
+
+        function updateApiStatus(isOnline) {
+            state.isOnlineMode = isOnline;
+            const badgeText = document.getElementById('apiStatusText');
+            if (badgeText) {
+                if (isOnline) {
+                    badgeText.className = "font-semibold text-emerald-400 flex items-center gap-1.5";
+                    badgeText.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sunucu Bağlı`;
+                } else {
+                    badgeText.className = "font-semibold text-amber-400 flex items-center gap-1.5";
+                    badgeText.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Çevrimdışı (Local)`;
+                }
+            }
+        }
+
+        /* LOCALSTORAGE FALLBACK MANTIĞI */
+        function fallbackLocalApi(req) {
+            const cmd = req.command;
+            let localUsers = JSON.parse(localStorage.getItem('sau_users_local') || '{}');
+            let localNotes = JSON.parse(localStorage.getItem('sau_notes_local') || JSON.stringify(INITIAL_DEMO_NOTES));
+            let localRequests = JSON.parse(localStorage.getItem('sau_requests_local') || JSON.stringify(INITIAL_DEMO_REQUESTS));
+            let localLikes = JSON.parse(localStorage.getItem('sau_likes_local') || '{}');
+
+            if (cmd === 'REGISTER') {
+                if (localUsers[req.username]) {
+                    return { status: 'error', message: 'Bu kullanıcı adı zaten alınmış' };
+                }
+                localUsers[req.username] = { username: req.username, password: req.password };
+                localStorage.setItem('sau_users_local', JSON.stringify(localUsers));
+                return { status: 'success', message: 'Hesap oluşturuldu (Local)' };
+            }
+
+            if (cmd === 'LOGIN') {
+                if (!localUsers[req.username] || localUsers[req.username].password !== req.password) {
+                    return { status: 'error', message: 'Kullanıcı adı veya şifre hatalı' };
+                }
+                return { status: 'success', message: 'Giriş başarılı' };
+            }
+
+            if (cmd === 'GET_ALL_NOTES') {
+                return { status: 'success', notes: localNotes };
+            }
+
+            if (cmd === 'GET_NOTE') {
+                const note = localNotes.find(n => n.id === parseInt(req.note_id));
+                if (!note) return { status: 'error', message: 'Not bulunamadı' };
+                const isLiked = !!localLikes[`${req.username}_${note.id}`];
+                return { status: 'success', note: { ...note, is_liked: isLiked } };
+            }
+
+            if (cmd === 'CREATE_NOTE') {
+                const nextId = localNotes.length > 0 ? Math.max(...localNotes.map(n => n.id)) + 1 : 1;
+                const newNote = {
+                    id: nextId,
+                    title: req.title,
+                    content: req.content,
+                    author: req.username,
+                    likes: 0,
+                    date: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}),
+                    file_name: req.file_name || '',
+                    file_size: req.file_data ? '1.5 MB' : ''
+                };
+                localNotes.unshift(newNote);
+                localStorage.setItem('sau_notes_local', JSON.stringify(localNotes));
+                return { status: 'success', message: 'Not paylaşıldı', note_id: nextId };
+            }
+
+            if (cmd === 'DELETE_NOTE') {
+                localNotes = localNotes.filter(n => n.id !== parseInt(req.note_id));
+                localStorage.setItem('sau_notes_local', JSON.stringify(localNotes));
+                return { status: 'success', message: 'Not silindi' };
+            }
+
+            if (cmd === 'LIKE_NOTE') {
+                const key = `${req.username}_${req.note_id}`;
+                const note = localNotes.find(n => n.id === parseInt(req.note_id));
+                if (note) {
+                    if (localLikes[key]) {
+                        delete localLikes[key];
+                        note.likes = Math.max(0, note.likes - 1);
+                    } else {
+                        localLikes[key] = true;
+                        note.likes += 1;
+                    }
+                    localStorage.setItem('sau_notes_local', JSON.stringify(localNotes));
+                    localStorage.setItem('sau_likes_local', JSON.stringify(localLikes));
+                    return { status: 'success', likes: note.likes };
+                }
+            }
+
+            if (cmd === 'GET_ALL_REQUESTS') {
+                return { status: 'success', requests: localRequests };
+            }
+
+            if (cmd === 'CREATE_REQUEST') {
+                const nextReqId = localRequests.length > 0 ? Math.max(...localRequests.map(r => r.id)) + 1 : 1;
+                const newReq = {
+                    id: nextReqId,
+                    title: req.title,
+                    content: req.content,
+                    author: req.username,
+                    date: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}),
+                    comments: []
+                };
+                localRequests.unshift(newReq);
+                localStorage.setItem('sau_requests_local', JSON.stringify(localRequests));
+                return { status: 'success', message: 'İstek oluşturuldu', request_id: nextReqId };
+            }
+
+            if (cmd === 'DELETE_REQUEST') {
+                localRequests = localRequests.filter(r => r.id !== parseInt(req.request_id));
+                localStorage.setItem('sau_requests_local', JSON.stringify(localRequests));
+                return { status: 'success', message: 'İstek silindi' };
+            }
+
+            if (cmd === 'ADD_COMMENT') {
+                const target = localRequests.find(r => r.id === parseInt(req.request_id));
+                if (target) {
+                    const commentObj = {
+                        author: req.username,
+                        content: req.comment,
+                        date: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})
+                    };
+                    target.comments.push(commentObj);
+                    localStorage.setItem('sau_requests_local', JSON.stringify(localRequests));
+                    return { status: 'success', message: 'Yorum eklendi', comments: target.comments };
+                }
+            }
+
+            return { status: 'error', message: 'Bilinmeyen işlem' };
+        }
+
+        /* ==========================================
+           2. BAŞLATMA & OTURUM (INIT & AUTH)
+           ========================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            // Kayıtlı Temayı Yükle
+            const savedTheme = localStorage.getItem('sau_theme') || 'catppuccin';
+            selectTheme(savedTheme, false);
+
+            // Giriş Yapmış Kullanıcı Var mı?
+            const savedUser = localStorage.getItem('sau_active_user');
+            if (savedUser) {
+                state.currentUser = savedUser;
+                showAppUI();
+            } else {
+                showAuthUI();
+            }
+        });
+
+        function showAuthUI() {
+            document.getElementById('authView').classList.remove('hidden');
+            document.getElementById('mainView').classList.add('hidden');
+        }
+
+        function showAppUI() {
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('mainView').classList.remove('hidden');
+            
+            document.getElementById('headerUsername').innerText = state.currentUser;
+            document.getElementById('profileUsername').innerText = state.currentUser;
+            const initialLetter = state.currentUser.charAt(0).toUpperCase();
+            document.getElementById('userAvatar').innerText = initialLetter;
+            document.getElementById('profileLargeAvatar').innerText = initialLetter;
+
+            // Verileri Yükle
+            loadAllNotes();
+            loadAllRequests();
+        }
+
+        function switchAuthTab(tab) {
+            if (tab === 'login') {
+                document.getElementById('loginFormContainer').classList.remove('hidden');
+                document.getElementById('registerFormContainer').classList.add('hidden');
+            } else {
+                document.getElementById('loginFormContainer').classList.add('hidden');
+                document.getElementById('registerFormContainer').classList.remove('hidden');
+            }
+        }
+
+        function togglePassword(inputId, eyeIconId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeIconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                eye.className = 'fa-solid fa-eye';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+
+            const res = await apiCall({ command: 'LOGIN', username: u, password: p });
+            if (res.status === 'success') {
+                state.currentUser = u;
+                localStorage.setItem('sau_active_user', u);
+                showToast('Giriş başarılı! Hoş geldiniz.', 'success');
+                showAppUI();
+            } else {
+                showToast(res.message || 'Giriş hatası', 'error');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const u = document.getElementById('regUsername').value.trim();
+            const p1 = document.getElementById('regPassword').value.trim();
+            const p2 = document.getElementById('regPasswordConfirm').value.trim();
+
+            if (p1 !== p2) {
+                showToast('Şifreler eşleşmiyor!', 'error');
+                return;
+            }
+
+            const res = await apiCall({ command: 'REGISTER', username: u, password: p1 });
+            if (res.status === 'success') {
+                showToast('Hesap başarıyla oluşturuldu! Giriş yapabilirsiniz.', 'success');
+                switchAuthTab('login');
+                document.getElementById('loginUsername').value = u;
+            } else {
+                showToast(res.message || 'Kayıt hatası', 'error');
+            }
+        }
+
+        function handleLogout() {
+            state.currentUser = null;
+            localStorage.removeItem('sau_active_user');
+            showToast('Çıkış yapıldı', 'info');
+            showAuthUI();
+        }
+
+        /* ==========================================
+           3. TEMA DÜZENLEYİCİ (THEME ENGINE)
+           ========================================== */
+        function selectTheme(themeKey, triggerToast = true) {
+            const t = THEMES[themeKey] || THEMES.catppuccin;
+            const root = document.documentElement;
+
+            root.style.setProperty('--bg-base', t.bgBase);
+            root.style.setProperty('--bg-card', t.bgCard);
+            root.style.setProperty('--bg-input', t.bgInput);
+            root.style.setProperty('--accent', t.accent);
+            root.style.setProperty('--accent-hover', t.accentHover);
+            root.style.setProperty('--text-main', t.textMain);
+            root.style.setProperty('--text-sub', t.textSub);
+            root.style.setProperty('--border-color', t.borderColor);
+
+            localStorage.setItem('sau_theme', themeKey);
+
+            // Buton aktiflik sınıflarını güncelle
+            Object.keys(THEMES).forEach(k => {
+                const btn = document.getElementById(`theme-btn-${k}`);
+                if (btn) {
+                    if (k === themeKey) {
+                        btn.style.borderColor = t.accent;
+                        btn.classList.add('shadow-lg');
+                    } else {
+                        btn.style.borderColor = THEMES[k].borderColor;
+                        btn.classList.remove('shadow-lg');
+                    }
+                }
+            });
+
+            if (triggerToast) showToast(`Tema uygulandı: ${t.name}`, 'info');
+        }
+
+        function saveApiEndpoint() {
+            const val = document.getElementById('apiEndpointInput').value.trim();
+            if (val) {
+                localStorage.setItem('sau_api_url', val);
+                showToast('API Endpoint güncellendi', 'success');
+            }
+        }
+
+        /* ==========================================
+           4. NAVİGASYON & TAB YÖNETİMİ
+           ========================================== */
+        function switchTab(tabName) {
+            state.activeTab = tabName;
+            
+            const sections = ['notes', 'polls', 'teams', 'social', 'profile', 'settings'];
+            sections.forEach(s => {
+                const el = document.getElementById(`section-${s}`);
+                const nav = document.getElementById(`nav-${s}`);
+                if (s === tabName) {
+                    if (el) el.classList.remove('hidden');
+                    if (nav) {
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left transition-colors bg-theme-accent text-slate-950 font-bold";
+                    }
+                } else {
+                    if (el) el.classList.add('hidden');
+                    if (nav) {
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors";
+                    }
+                }
+            });
+
+            const titles = {
+                notes: '📖 Ders Notları ve İstekler',
+                polls: '📊 Kampüs Anketleri',
+                teams: '❖ Öğrenci Takımları',
+                social: '👥 Sosyal Akış',
+                profile: '👤 Profilim',
+                settings: '⚙️ Ayarlar'
+            };
+            document.getElementById('currentTabTitle').innerText = titles[tabName] || 'Arayüz';
+
+            if (tabName === 'profile') updateProfileStats();
+        }
+
+        function switchNoteTab(subTab) {
+            state.activeNoteSubTab = subTab;
+            const btnNotes = document.getElementById('subnav-notes');
+            const btnReqs = document.getElementById('subnav-requests');
+            const actionBtnText = document.getElementById('actionButtonText');
+            const searchInput = document.getElementById('searchInput');
+
+            if (subTab === 'notes') {
+                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow";
+                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main";
+                document.getElementById('notesGrid').classList.remove('hidden');
+                document.getElementById('requestsList').classList.add('hidden');
+                actionBtnText.innerText = "Not Ekle";
+                searchInput.placeholder = "Notlarda ara...";
+            } else {
+                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow";
+                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main";
+                document.getElementById('requestsList').classList.remove('hidden');
+                document.getElementById('notesGrid').classList.add('hidden');
+                actionBtnText.innerText = "İstek Ekle";
+                searchInput.placeholder = "İsteklerde ara...";
+            }
+
+            filterAndRender();
+        }
+
+        /* ==========================================
+           5. NOT VE İSTEK VERİ DÖNGÜSÜ (DATA RENDER)
+           ========================================== */
+        async function loadAllNotes() {
+            const res = await apiCall({ command: 'GET_ALL_NOTES' });
+            if (res.status === 'success') {
+                state.notes = res.notes || [];
+                filterAndRender();
+            }
+        }
+
+        async function loadAllRequests() {
+            const res = await apiCall({ command: 'GET_ALL_REQUESTS' });
+            if (res.status === 'success') {
+                state.requests = res.requests || [];
+                filterAndRender();
+            }
+        }
+
+        function filterAndRender() {
+            const query = (document.getElementById('searchInput').value || '').toLowerCase();
+            const sortMode = document.getElementById('sortSelect').value;
+
+            if (state.activeNoteSubTab === 'notes') {
+                let filtered = state.notes.filter(n => 
+                    (n.title && n.title.toLowerCase().includes(query)) ||
+                    (n.content && n.content.toLowerCase().includes(query)) ||
+                    (n.author && n.author.toLowerCase().includes(query))
+                );
+
+                // Sıralama Mantığı
+                if (sortMode === 'likes') filtered.sort((a,b) => (b.likes || 0) - (a.likes || 0));
+                else if (sortMode === 'date_desc') filtered.sort((a,b) => (b.id || 0) - (a.id || 0));
+                else if (sortMode === 'alpha_asc') filtered.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
+                else if (sortMode === 'alpha_desc') filtered.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
+
+                renderNotesGrid(filtered);
+            } else {
+                let filteredReqs = state.requests.filter(r => 
+                    (r.title && r.title.toLowerCase().includes(query)) ||
+                    (r.content && r.content.toLowerCase().includes(query)) ||
+                    (r.author && r.author.toLowerCase().includes(query))
+                );
+                renderRequestsList(filteredReqs);
+            }
+        }
+
+        function renderNotesGrid(notesList) {
+            const grid = document.getElementById('notesGrid');
+            grid.innerHTML = '';
+
+            if (notesList.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-2xl bg-theme-card">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-theme-sub"></i>
+                        <p class="font-semibold text-sm">Gösterilebilecek ders notu bulunamadı.</p>
+                    </div>`;
+                return;
+            }
+
+            notesList.forEach(n => {
+                const hasFile = !!n.file_name;
+                const card = document.createElement('div');
+                card.className = "p-5 rounded-xl border border-theme bg-theme-card glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs text-theme-sub">
+                            <span class="font-semibold text-theme-accent flex items-center gap-1">
+                                <i class="fa-solid fa-user-pen"></i> ${n.author}
+                            </span>
+                            <span>${n.date || 'Tarih Yok'}</span>
+                        </div>
+                        <h4 class="font-bold text-theme-main text-base line-clamp-2">${n.title}</h4>
+                        <p class="text-xs text-theme-sub line-clamp-3 leading-relaxed">${n.content}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-theme flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <button onclick="quickLikeNote(${n.id})" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 text-xs font-semibold hover:bg-rose-500/20 transition-colors">
+                                <i class="fa-solid fa-heart"></i>
+                                <span>${n.likes || 0}</span>
+                            </button>
+                            ${hasFile ? `<span class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-[11px] font-semibold"><i class="fa-solid fa-paperclip mr-1"></i>Ekli Dosya</span>` : ''}
+                        </div>
+
+                        <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-lg bg-theme-input hover:bg-theme-border text-theme-main text-xs font-semibold border border-theme transition-colors">
+                            Detay
+                        </button>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderRequestsList(requestsList) {
+            const list = document.getElementById('requestsList');
+            list.innerHTML = '';
+
+            if (requestsList.length === 0) {
+                list.innerHTML = `
+                    <div class="py-12 text-center text-theme-sub border border-dashed border-theme rounded-2xl bg-theme-card">
+                        <i class="fa-solid fa-comments text-4xl mb-3 text-theme-sub"></i>
+                        <p class="font-semibold text-sm">Henüz bir not isteği açılmamış.</p>
+                    </div>`;
+                return;
+            }
+
+            requestsList.forEach(r => {
+                const isAuthor = r.author === state.currentUser;
+                const card = document.createElement('div');
+                card.className = "p-5 rounded-xl border border-theme bg-theme-card space-y-4 animate-fade-in";
+
+                let commentsHtml = '';
+                if (r.comments && r.comments.length > 0) {
+                    r.comments.forEach(c => {
+                        commentsHtml += `
+                            <div class="p-2.5 rounded-lg bg-theme-input border border-theme text-xs space-y-1">
+                                <div class="flex justify-between font-semibold text-theme-sub">
+                                    <span class="text-theme-accent">@${c.author}</span>
+                                    <span class="text-[10px]">${c.date || ''}</span>
+                                </div>
+                                <p class="text-theme-main">${c.content}</p>
+                            </div>`;
+                    });
+                } else {
+                    commentsHtml = `<p class="text-xs text-theme-sub italic">Henüz yorum yapılmamış.</p>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[11px] font-semibold">Not İstegi</span>
+                            <h4 class="font-bold text-theme-main text-base">${r.title}</h4>
+                            <div class="flex items-center gap-3 text-xs text-theme-sub">
+                                <span><i class="fa-solid fa-user text-theme-accent mr-1"></i>${r.author}</span>
+                                <span>•</span>
+                                <span>${r.date || ''}</span>
+                            </div>
+                        </div>
+
+                        ${isAuthor ? `
+                            <button onclick="confirmDeleteRequest(${r.id})" class="px-2.5 py-1 rounded bg-red-500/20 text-red-400 text-xs font-semibold hover:bg-red-500/30">
+                                <i class="fa-solid fa-trash mr-1"></i>Sonlandır
+                            </button>` : ''}
+                    </div>
+
+                    <p class="text-xs text-theme-sub leading-relaxed">${r.content}</p>
+
+                    <!-- Yorumlar Bölümü -->
+                    <div class="pt-3 border-t border-theme space-y-3">
+                        <h5 class="text-xs font-bold text-theme-main flex items-center gap-1.5">
+                            <i class="fa-solid fa-comments text-theme-accent"></i>
+                            <span>Yorumlar ve Yanıtlar (${r.comments ? r.comments.length : 0})</span>
+                        </h5>
+
+                        <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            ${commentsHtml}
+                        </div>
+
+                        <!-- Yorum Ekleme Formu -->
+                        <div class="flex gap-2 pt-2">
+                            <input type="text" id="commentInput-${r.id}" class="flex-1 px-3 py-1.5 rounded-lg bg-theme-input border border-theme text-xs text-theme-main focus:outline-none focus:border-theme-accent" placeholder="Yanıt yazın...">
+                            <button onclick="submitComment(${r.id})" class="px-3 py-1.5 rounded-lg bg-theme-accent text-slate-950 font-semibold text-xs hover:bg-theme-accent-hover">Gönder</button>
+                        </div>
+                    </div>`;
+
+                list.appendChild(card);
+            });
+        }
+
+        /* ==========================================
+           6. NOT DETAY VE ETKİLEŞİMLER
+           ========================================== */
+        async function openNoteDetailModal(noteId) {
+            const res = await apiCall({ command: 'GET_NOTE', note_id: noteId, username: state.currentUser });
+            if (res.status === 'success' && res.note) {
+                const n = res.note;
+                state.currentSelectedNote = n;
+
+                document.getElementById('modalNoteTitle').innerText = n.title;
+                document.getElementById('modalNoteAuthor').innerText = n.author;
+                document.getElementById('modalNoteDate').innerText = n.date || 'Bilinmiyor';
+                document.getElementById('modalNoteContent').innerText = n.content;
+
+                // Beğeni Butonu
+                document.getElementById('modalLikeCount').innerText = `${n.likes || 0} Beğeni`;
+                
+                // Ekli Dosya Kontrolü
+                const fileContainer = document.getElementById('modalFileContainer');
+                if (n.file_name) {
+                    fileContainer.classList.remove('hidden');
+                    document.getElementById('modalFileName').innerText = n.file_name;
+                    document.getElementById('modalFileSize').innerText = n.file_size || 'Mevcut Dosya';
+                } else {
+                    fileContainer.classList.add('hidden');
+                }
+
+                // Sil Butonu (Yazar İse)
+                const deleteBtn = document.getElementById('modalDeleteButton');
+                if (n.author === state.currentUser) {
+                    deleteBtn.classList.remove('hidden');
+                } else {
+                    deleteBtn.classList.add('hidden');
+                }
+
+                openModal('noteDetailModal');
+            } else {
+                showToast(res.message || 'Not detayları alınamadı', 'error');
+            }
+        }
+
+        async function toggleLikeCurrentNote() {
+            if (!state.currentSelectedNote) return;
+            const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: state.currentSelectedNote.id });
+            if (res.status === 'success') {
+                state.currentSelectedNote.likes = res.likes;
+                document.getElementById('modalLikeCount').innerText = `${res.likes} Beğeni`;
+                showToast(res.action === 'liked' ? 'Not beğenildi!' : 'Beğeni geri çekildi', 'info');
+                loadAllNotes();
+            }
+        }
+
+        async function quickLikeNote(noteId) {
+            const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: noteId });
+            if (res.status === 'success') {
+                showToast('Beğeni güncellendi', 'info');
+                loadAllNotes();
+            }
+        }
+
+        async function downloadCurrentNoteFile() {
+            if (!state.currentSelectedNote) return;
+            const noteId = state.currentSelectedNote.id;
+
+            showToast('Dosya indiriliyor...', 'info');
+            const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: noteId });
+            
+            if (res.status === 'success' && res.file_data) {
+                // Base64 Indirme Tetikleyici
+                const link = document.createElement('a');
+                link.href = 'data:application/octet-stream;base64,' + res.file_data;
+                link.download = res.file_name || 'ders_notu.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('İndirme tamamlandı!', 'success');
+            } else {
+                // Mock Indirme Desteği (Demo/Offline Modda)
+                const fakeContent = "SAU Connect Kampus Platformu - " + state.currentSelectedNote.title;
+                const blob = new Blob([fakeContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = state.currentSelectedNote.file_name || 'ders_notu.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Örnek dosya başarıyla indirildi!', 'success');
+            }
+        }
+
+        /* ==========================================
+           7. YENİ NOT VE İSTEK OLUŞTURMA
+           ========================================== */
+        function openAddModal() {
+            if (state.activeNoteSubTab === 'notes') {
+                openModal('addNoteModal');
+            } else {
+                openModal('addRequestModal');
+            }
+        }
+
+        async function submitNewNote(e) {
+            e.preventDefault();
+            const title = document.getElementById('newNoteTitle').value.trim();
+            const content = document.getElementById('newNoteContent').value.trim();
+            const fileInput = document.getElementById('newNoteFile');
+
+            let fileName = '';
+            let fileData = '';
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                fileName = file.name;
+                fileData = await convertFileToBase64(file);
+            }
+
+            const res = await apiCall({
+                command: 'CREATE_NOTE',
+                username: state.currentUser,
+                title: title,
+                content: content,
+                file_name: fileName,
+                file_data: fileData
+            });
+
+            if (res.status === 'success') {
+                showToast('Ders notunuz başarıyla paylaşıldı!', 'success');
+                closeModal('addNoteModal');
+                document.getElementById('newNoteTitle').value = '';
+                document.getElementById('newNoteContent').value = '';
+                document.getElementById('newNoteFile').value = '';
+                loadAllNotes();
+            } else {
+                showToast(res.message || 'Not yükleme hatası', 'error');
+            }
+        }
+
+        async function submitNewRequest(e) {
+            e.preventDefault();
+            const title = document.getElementById('newReqTitle').value.trim();
+            const content = document.getElementById('newReqContent').value.trim();
+
+            const res = await apiCall({
+                command: 'CREATE_REQUEST',
+                username: state.currentUser,
+                title: title,
+                content: content
+            });
+
+            if (res.status === 'success') {
+                showToast('İsteğiniz yayınlandı!', 'success');
+                closeModal('addRequestModal');
+                document.getElementById('newReqTitle').value = '';
+                document.getElementById('newReqContent').value = '';
+                loadAllRequests();
+            } else {
+                showToast(res.message || 'İstek açma hatası', 'error');
+            }
+        }
+
+        async function submitComment(requestId) {
+            const input = document.getElementById(`commentInput-${requestId}`);
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+
+            const res = await apiCall({
+                command: 'ADD_COMMENT',
+                username: state.currentUser,
+                request_id: requestId,
+                comment: text
+            });
+
+            if (res.status === 'success') {
+                showToast('Yorumunuz eklendi!', 'success');
+                input.value = '';
+                loadAllRequests();
+            } else {
+                showToast(res.message || 'Yorum hatası', 'error');
+            }
+        }
+
+        /* ==========================================
+           8. SİLME ONAY DİYALOGLARI
+           ========================================== */
+        function confirmDeleteCurrentNote() {
+            if (!state.currentSelectedNote) return;
+            document.getElementById('confirmDeleteText').innerText = `"${state.currentSelectedNote.title}" notunu silmek istediğinizden emin misiniz?`;
+            
+            const submitBtn = document.getElementById('confirmDeleteSubmitBtn');
+            submitBtn.onclick = async () => {
+                const res = await apiCall({ command: 'DELETE_NOTE', username: state.currentUser, note_id: state.currentSelectedNote.id });
+                if (res.status === 'success') {
+                    showToast('Not silindi', 'info');
+                    closeModal('confirmDeleteModal');
+                    closeModal('noteDetailModal');
+                    loadAllNotes();
+                } else {
+                    showToast(res.message || 'Silme hatası', 'error');
+                }
+            };
+
+            openModal('confirmDeleteModal');
+        }
+
+        function confirmDeleteRequest(reqId) {
+            document.getElementById('confirmDeleteText').innerText = `Bu not isteğini sonlandırmak istediğinizden emin misiniz?`;
+            
+            const submitBtn = document.getElementById('confirmDeleteSubmitBtn');
+            submitBtn.onclick = async () => {
+                const res = await apiCall({ command: 'DELETE_REQUEST', username: state.currentUser, request_id: reqId });
+                if (res.status === 'success') {
+                    showToast('İstek sonlandırıldı', 'info');
+                    closeModal('confirmDeleteModal');
+                    loadAllRequests();
+                } else {
+                    showToast(res.message || 'Silme hatası', 'error');
+                }
+            };
+
+            openModal('confirmDeleteModal');
+        }
+
+        /* ==========================================
+           9. PROFİL İSTATİSTİKLERİ
+           ========================================== */
+        function updateProfileStats() {
+            const myNotes = state.notes.filter(n => n.author === state.currentUser);
+            const myLikes = myNotes.reduce((acc, curr) => acc + (curr.likes || 0), 0);
+            const myReqs = state.requests.filter(r => r.author === state.currentUser);
+
+            document.getElementById('statMyNotesCount').innerText = myNotes.length;
+            document.getElementById('statMyLikesCount').innerText = myLikes;
+            document.getElementById('statMyRequestsCount').innerText = myReqs.length;
+
+            const listContainer = document.getElementById('myNotesList');
+            listContainer.innerHTML = '';
+
+            if (myNotes.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Henüz bir ders notu paylaşmadınız.</p>`;
+                return;
+            }
+
+            myNotes.forEach(n => {
+                const row = document.createElement('div');
+                row.className = "p-3 rounded-lg border border-theme bg-theme-input flex items-center justify-between text-xs";
+                row.innerHTML = `
+                    <div class="space-y-0.5">
+                        <div class="font-bold text-theme-main">${n.title}</div>
+                        <div class="text-theme-sub">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
+                    </div>
+                    <button onclick="openNoteDetailModal(${n.id})" class="px-2.5 py-1 rounded bg-theme-card border border-theme text-theme-main hover:border-theme-accent">
+                        Görüntüle
+                    </button>`;
+                listContainer.appendChild(row);
+            });
+        }
+
+        /* ==========================================
+           10. YARDIMCI FONKSİYONLAR & UTILS
+           ========================================== */
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function updateCharCounter(inputId, counterId, maxLen) {
+            const val = document.getElementById(inputId).value;
+            document.getElementById(counterId).innerText = `${val.length}/${maxLen}`;
+        }
+
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    let encoded = reader.result.toString().replace(/^data:(.*,)?/, '');
+                    if ((encoded.length % 4) !== 0) {
+                        encoded += '='.repeat((4 - encoded.length % 4) % 4);
+                    }
+                    resolve(encoded);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        /* TOAST BİLDİRİM SİSTEMİ (No Alert) */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            const bgMap = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-red-600 text-white',
+                info: 'bg-blue-600 text-white'
+            };
+
+            const iconMap = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-exclamation',
+                info: 'fa-info-circle'
+            };
+
+            toast.className = `px-4 py-3 rounded-xl shadow-xl border border-white/10 font-semibold text-xs flex items-center gap-2.5 animate-fade-in pointer-events-auto ${bgMap[type] || bgMap.info}`;
+            toast.innerHTML = `<i class="fa-solid ${iconMap[type]} text-sm"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

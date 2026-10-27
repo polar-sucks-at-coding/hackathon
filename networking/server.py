@@ -1,20 +1,27 @@
-import socket
-import json
-import threading
 import os
 import sys
+import json
+import threading
 import datetime
 import base64
+from flask import Flask, request, jsonify, send_from_directory, send_file
+from flask_cors import CORS
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../notes')))
+# Proje dizin yapılandırması
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(BASE_DIR)
+sys.path.append(os.path.join(BASE_DIR, 'notes'))
+
 from notes.note import Note
 from user import User
 from user_profile import Profile
 
-HOST = 'localhost'
+app = Flask(__name__, static_folder=BASE_DIR, static_url_path='')
+CORS(app)  # Cross-Origin İstekleri Etkinleştir
+
+HOST = '0.0.0.0'
 PORT = 5000
-DATA_DIR = 'data'
+DATA_DIR = os.path.join(BASE_DIR, 'data')
 UPLOADS_DIR = os.path.join(DATA_DIR, 'uploads')
 
 os.makedirs(DATA_DIR, exist_ok=True)
@@ -35,6 +42,7 @@ next_note_id = 1
 next_request_id = 1
 lock = threading.Lock()
 
+
 def get_formatted_file_size(file_path):
     if not os.path.exists(file_path):
         return ""
@@ -46,39 +54,40 @@ def get_formatted_file_size(file_path):
     else:
         return f"{size_bytes / (1024 * 1024):.1f} MB"
 
+
 def load_data():
     global next_note_id, next_request_id, users, notes, user_likes, requests_data
 
     if os.path.exists(ACCOUNTS_FILE):
-        with open(ACCOUNTS_FILE, 'r') as f:
+        with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
             for line in f:
                 user = User.from_string(line)
                 if user:
                     users[user.username] = user
 
     if os.path.exists(PROFILES_FILE):
-        with open(PROFILES_FILE, 'r') as f:
+        with open(PROFILES_FILE, 'r', encoding='utf-8') as f:
             for line in f:
                 profile = Profile.from_string(line)
                 if profile and profile.username in users:
                     users[profile.username].profile = profile
 
     if os.path.exists(NEXT_ID_FILE):
-        with open(NEXT_ID_FILE, 'r') as f:
+        with open(NEXT_ID_FILE, 'r', encoding='utf-8') as f:
             try:
                 next_note_id = int(f.read().strip())
             except ValueError:
                 next_note_id = 1
 
     if os.path.exists(NOTES_FILE):
-        with open(NOTES_FILE, 'r') as f:
+        with open(NOTES_FILE, 'r', encoding='utf-8') as f:
             for line in f:
                 note = Note.from_string(line)
                 if note:
                     notes[note.id] = note
 
     if os.path.exists(LIKES_FILE):
-        with open(LIKES_FILE, 'r') as f:
+        with open(LIKES_FILE, 'r', encoding='utf-8') as f:
             for line in f:
                 parts = line.strip().split('|')
                 if len(parts) == 2:
@@ -93,29 +102,35 @@ def load_data():
         except Exception as e:
             print(f"[LOAD REQUESTS ERROR] {e}")
 
+
 def save_accounts():
-    with open(ACCOUNTS_FILE, 'w') as f:
+    with open(ACCOUNTS_FILE, 'w', encoding='utf-8') as f:
         for user in users.values():
             f.write(user.to_string() + '\n')
 
+
 def save_profiles():
-    with open(PROFILES_FILE, 'w') as f:
+    with open(PROFILES_FILE, 'w', encoding='utf-8') as f:
         for user in users.values():
             f.write(user.profile.to_string() + '\n')
 
+
 def save_notes():
-    with open(NOTES_FILE, 'w') as f:
+    with open(NOTES_FILE, 'w', encoding='utf-8') as f:
         for note in notes.values():
             f.write(note.to_string() + '\n')
 
+
 def save_next_id():
-    with open(NEXT_ID_FILE, 'w') as f:
+    with open(NEXT_ID_FILE, 'w', encoding='utf-8') as f:
         f.write(str(next_note_id))
 
+
 def save_likes():
-    with open(LIKES_FILE, 'w') as f:
+    with open(LIKES_FILE, 'w', encoding='utf-8') as f:
         for (username, note_id) in user_likes.keys():
             f.write(f"{username}|{note_id}\n")
+
 
 def save_requests():
     try:
@@ -123,6 +138,71 @@ def save_requests():
             json.dump({"requests": requests_data, "next_id": next_request_id}, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"[SAVE REQUESTS ERROR] {e}")
+
+
+# ==========================================
+# WEBSİTE VE ARAYÜZ YÖNLENDİRMELERİ
+# ==========================================
+
+@app.route('/')
+def index():
+    """Ana HTML Arayüzünü Sunar"""
+    index_path = os.path.join(BASE_DIR, 'index.html')
+    if os.path.exists(index_path):
+        return send_file(index_path)
+    return "index.html dosyası bulunamadı!", 404
+
+
+@app.route('/logo.jpeg')
+def logo():
+    logo_path = os.path.join(BASE_DIR, 'logo.jpeg')
+    if os.path.exists(logo_path):
+        return send_file(logo_path)
+    return "", 404
+
+
+# ==========================================
+# REST API ENDPOINTLERİ
+# ==========================================
+
+@app.route('/api/command', methods=['POST'])
+def handle_command():
+    request_data = request.get_json(force=True, silent=True) or {}
+    command = request_data.get('command')
+
+    if command == 'REGISTER':
+        return jsonify(handle_register(request_data))
+    elif command == 'LOGIN':
+        return jsonify(handle_login(request_data))
+    elif command == 'LOGOUT':
+        return jsonify(handle_logout(request_data))
+    elif command == 'CREATE_NOTE':
+        return jsonify(handle_create_note(request_data))
+    elif command == 'GET_NOTE':
+        return jsonify(handle_get_note(request_data))
+    elif command == 'DELETE_NOTE':
+        return jsonify(handle_delete_note(request_data))
+    elif command == 'GET_ALL_NOTES':
+        return jsonify(handle_get_all_notes(request_data))
+    elif command == 'LIKE_NOTE':
+        return jsonify(handle_like_note(request_data))
+    elif command == 'DOWNLOAD_FILE':
+        return jsonify(handle_download_file(request_data))
+    elif command == 'CREATE_REQUEST':
+        return jsonify(handle_create_request(request_data))
+    elif command == 'DELETE_REQUEST':
+        return jsonify(handle_delete_request(request_data))
+    elif command == 'GET_ALL_REQUESTS':
+        return jsonify(handle_get_all_requests(request_data))
+    elif command == 'ADD_COMMENT':
+        return jsonify(handle_add_comment(request_data))
+    else:
+        return jsonify({"status": "error", "message": "Bilinmeyen komut"})
+
+
+# ==========================================
+# İŞ MANTIĞI FONKSİYONLARI
+# ==========================================
 
 def handle_register(data):
     username = data.get('username')
@@ -139,7 +219,8 @@ def handle_register(data):
         users[username] = user
         save_accounts()
         save_profiles()
-        return {"status": "success", "message": "Hesap oluşturuldu"}
+        return {"status": "success", "message": "Hesap başarıyla oluşturuldu"}
+
 
 def handle_login(data):
     username = data.get('username')
@@ -157,12 +238,10 @@ def handle_login(data):
 
         return {"status": "success", "message": "Giriş başarılı"}
 
-def handle_logout(data):
-    username = data.get('username')
-    if not username:
-        return {"status": "error", "message": "Kullanıcı adı gerekli"}
 
+def handle_logout(data):
     return {"status": "success", "message": "Çıkış yapıldı"}
+
 
 def handle_create_note(data):
     username = data.get('username')
@@ -204,6 +283,7 @@ def handle_create_note(data):
 
         return {"status": "success", "message": "Not paylaşıldı", "note_id": note.id}
 
+
 def handle_get_note(data):
     note_id = data.get('note_id')
     username = data.get('username')
@@ -241,6 +321,7 @@ def handle_get_note(data):
             }
         }
 
+
 def handle_delete_note(data):
     username = data.get('username')
     note_id = data.get('note_id')
@@ -275,6 +356,7 @@ def handle_delete_note(data):
         save_likes()
         return {"status": "success", "message": "Not silindi"}
 
+
 def handle_download_file(data):
     note_id = data.get('note_id')
     if note_id is None:
@@ -305,6 +387,7 @@ def handle_download_file(data):
             }
         except Exception as e:
             return {"status": "error", "message": f"Dosya okuma hatası: {str(e)}"}
+
 
 def handle_like_note(data):
     username = data.get('username')
@@ -345,6 +428,7 @@ def handle_like_note(data):
                 "likes": notes[note_id].likes
             }
 
+
 def handle_get_all_notes(data):
     with lock:
         notes_list = []
@@ -366,6 +450,7 @@ def handle_get_all_notes(data):
                 "file_size": file_size
             })
         return {"status": "success", "notes": notes_list}
+
 
 def handle_create_request(data):
     username = data.get('username')
@@ -391,6 +476,7 @@ def handle_create_request(data):
         save_requests()
         return {"status": "success", "message": "İstek oluşturuldu", "request_id": req["id"]}
 
+
 def handle_delete_request(data):
     username = data.get('username')
     request_id = data.get('request_id')
@@ -410,11 +496,13 @@ def handle_delete_request(data):
         save_requests()
         return {"status": "success", "message": "İstek sonlandırıldı"}
 
+
 def handle_get_all_requests(data):
     with lock:
         req_list = list(requests_data.values())
         req_list.sort(key=lambda r: r["id"], reverse=True)
         return {"status": "success", "requests": req_list}
+
 
 def handle_add_comment(data):
     username = data.get('username')
@@ -439,70 +527,8 @@ def handle_add_comment(data):
         save_requests()
         return {"status": "success", "message": "Yorum eklendi", "comments": requests_data[request_id]["comments"]}
 
-def handle_client(conn, addr):
-    try:
-        data = conn.recv(1048576).decode('utf-8')
-        if not data:
-            return
-
-        request = json.loads(data)
-        command = request.get('command')
-
-        if command == 'REGISTER':
-            response = handle_register(request)
-        elif command == 'LOGIN':
-            response = handle_login(request)
-        elif command == 'LOGOUT':
-            response = handle_logout(request)
-        elif command == 'CREATE_NOTE':
-            response = handle_create_note(request)
-        elif command == 'GET_NOTE':
-            response = handle_get_note(request)
-        elif command == 'DELETE_NOTE':
-            response = handle_delete_note(request)
-        elif command == 'GET_ALL_NOTES':
-            response = handle_get_all_notes(request)
-        elif command == 'LIKE_NOTE':
-            response = handle_like_note(request)
-        elif command == 'DOWNLOAD_FILE':
-            response = handle_download_file(request)
-        elif command == 'CREATE_REQUEST':
-            response = handle_create_request(request)
-        elif command == 'DELETE_REQUEST':
-            response = handle_delete_request(request)
-        elif command == 'GET_ALL_REQUESTS':
-            response = handle_get_all_requests(request)
-        elif command == 'ADD_COMMENT':
-            response = handle_add_comment(request)
-        else:
-            response = {"status": "error", "message": "Bilinmeyen komut"}
-
-        conn.sendall(json.dumps(response).encode('utf-8'))
-    except Exception as e:
-        response = {"status": "error", "message": str(e)}
-        conn.sendall(json.dumps(response).encode('utf-8'))
-    finally:
-        conn.close()
-
-def start_server():
-    load_data()
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        server_socket.bind((HOST, PORT))
-        server_socket.listen(5)
-        print(f"Sunucu {HOST}:{PORT} üzerinde çalışıyor...")
-
-        try:
-            while True:
-                conn, addr = server_socket.accept()
-                thread = threading.Thread(target=handle_client, args=(conn, addr))
-                thread.daemon = True
-                thread.start()
-        except KeyboardInterrupt:
-            print("\nSunucu kapatılıyor...")
-        finally:
-            server_socket.close()
 
 if __name__ == '__main__':
-    start_server()
+    load_data()
+    print(f"🚀 SAÜ Connect Web Sunucusu Başlatılıyor: http://localhost:{PORT}")
+    app.run(host=HOST, port=PORT, debug=False, threaded=True)
