@@ -98,7 +98,7 @@
     <!-- =================================================================== -->
     <div id="authView" class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-theme-base">
         <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden border border-theme shadow-2xl bg-theme-card">
-            
+
             <!-- Sol Sütun: SAÜ Branding & Banner -->
             <div class="p-8 md:p-12 flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-blue-900/40 via-purple-900/20 to-slate-900">
                 <div class="absolute -top-20 -left-20 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -232,7 +232,7 @@
     <!-- 2. ANA PANEL (MAIN APP LAYOUT) -->
     <!-- =================================================================== -->
     <div id="mainView" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-theme-base">
-        
+
         <!-- Sol Yan Menü (Sidebar) -->
         <aside class="w-full md:w-64 bg-theme-card border-b md:border-b-0 md:border-r border-theme flex flex-col justify-between shrink-0">
             <div>
@@ -253,32 +253,32 @@
                 <nav class="p-3 space-y-1">
                     <button onclick="switchTab('notes')" id="nav-notes" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left transition-colors bg-theme-accent text-slate-950">
                         <i class="fa-solid fa-book-open w-5 text-center"></i>
-                        <span>📖 Ders Notları</span>
+                        <span> Ders Notları</span>
                     </button>
 
                     <button onclick="switchTab('polls')" id="nav-polls" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
                         <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                        <span>📊 Anketler</span>
+                        <span>Anketler</span>
                     </button>
 
                     <button onclick="switchTab('teams')" id="nav-teams" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
                         <i class="fa-solid fa-users-gear w-5 text-center"></i>
-                        <span>❖ Takımlar</span>
+                        <span> Takımlar</span>
                     </button>
 
                     <button onclick="switchTab('social')" id="nav-social" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
                         <i class="fa-solid fa-users w-5 text-center"></i>
-                        <span>👥 Sosyal</span>
+                        <span> Sosyal</span>
                     </button>
 
                     <button onclick="switchTab('profile')" id="nav-profile" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
                         <i class="fa-solid fa-circle-user w-5 text-center"></i>
-                        <span>👤 Profilim</span>
+                        <span> Profilim</span>
                     </button>
 
                     <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
                         <i class="fa-solid fa-gear w-5 text-center"></i>
-                        <span>⚙️ Ayarlar</span>
+                        <span>Ayarlar</span>
                     </button>
                 </nav>
             </div>
@@ -301,7 +301,7 @@
 
         <!-- Sağ İçerik Alanı -->
         <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-            
+
             <!-- Üst Header Bar -->
             <header class="h-16 border-b border-theme bg-theme-card px-6 flex items-center justify-between sticky top-0 z-20">
                 <div class="flex items-center gap-3">
@@ -324,13 +324,13 @@
 
             <!-- İçerik Görünümleri -->
             <div class="p-4 md:p-8 flex-1">
-                
+
                 <!-- TAB 1: DERS NOTLARI VE İSTEKLER -->
                 <section id="section-notes" class="space-y-6">
-                    
+
                     <!-- Üst Anahtar (Segmented Control) & Kontroller -->
                     <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-theme-card p-4 rounded-xl border border-theme shadow-sm">
-                        
+
                         <!-- Segmented Switcher -->
                         <div class="flex p-1 bg-theme-input rounded-lg border border-theme self-start">
                             <button onclick="switchNoteTab('notes')" id="subnav-notes" class="px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow">
@@ -343,7 +343,7 @@
 
                         <!-- Arama, Sıralama & Action Butonu -->
                         <div class="flex flex-wrap items-center gap-3 flex-1 lg:justify-end">
-                            
+
                             <!-- Arama Çubuğu -->
                             <div class="relative flex-1 min-w-[200px] max-w-xs">
                                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -382,7 +382,7 @@
                     <div class="bg-theme-card p-6 rounded-xl border border-theme">
                         <h3 class="text-xl font-bold text-theme-main mb-2">📊 Kampüs Anketleri</h3>
                         <p class="text-theme-sub text-sm mb-6">Sakarya Üniversitesi öğrencileri tarafından başlatılan güncel oylamalar.</p>
-                        
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Örnek Anket 1 -->
                             <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-4">
@@ -577,9 +577,9 @@
                         <!-- 5 Tema Seçeneği -->
                         <div class="space-y-4 border-t border-theme pt-5">
                             <label class="block text-sm font-bold text-theme-main">🎨 Görünüm Teması Seçin</label>
-                            
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                
+
                                 <!-- Tema 1: Catppuccin Mocha -->
                                 <button onclick="selectTheme('catppuccin')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#1E1E2E] border-[#313244]" id="theme-btn-catppuccin">
                                     <div class="flex items-center justify-between">
@@ -868,7 +868,7 @@
            ========================================== */
         async function apiCall(commandData) {
             let apiUrl = localStorage.getItem('sau_api_url') || '/api/command';
-            
+
             // Eğer doğrudan local dosya (file://) modundaysa varsayılan sunucu portuna yönlendir
             if (window.location.protocol === 'file:' && apiUrl.startsWith('/')) {
                 apiUrl = 'http://localhost:5000/api/command';
@@ -888,7 +888,7 @@
 
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 const data = await response.json();
-                
+
                 updateApiStatus(true);
                 return data;
             } catch (err) {
@@ -1055,7 +1055,7 @@
         function showAppUI() {
             document.getElementById('authView').classList.add('hidden');
             document.getElementById('mainView').classList.remove('hidden');
-            
+
             document.getElementById('headerUsername').innerText = state.currentUser;
             document.getElementById('profileUsername').innerText = state.currentUser;
             const initialLetter = state.currentUser.charAt(0).toUpperCase();
@@ -1181,7 +1181,7 @@
            ========================================== */
         function switchTab(tabName) {
             state.activeTab = tabName;
-            
+
             const sections = ['notes', 'polls', 'teams', 'social', 'profile', 'settings'];
             sections.forEach(s => {
                 const el = document.getElementById(`section-${s}`);
@@ -1262,7 +1262,7 @@
             const sortMode = document.getElementById('sortSelect').value;
 
             if (state.activeNoteSubTab === 'notes') {
-                let filtered = state.notes.filter(n => 
+                let filtered = state.notes.filter(n =>
                     (n.title && n.title.toLowerCase().includes(query)) ||
                     (n.content && n.content.toLowerCase().includes(query)) ||
                     (n.author && n.author.toLowerCase().includes(query))
@@ -1276,7 +1276,7 @@
 
                 renderNotesGrid(filtered);
             } else {
-                let filteredReqs = state.requests.filter(r => 
+                let filteredReqs = state.requests.filter(r =>
                     (r.title && r.title.toLowerCase().includes(query)) ||
                     (r.content && r.content.toLowerCase().includes(query)) ||
                     (r.author && r.author.toLowerCase().includes(query))
@@ -1302,7 +1302,7 @@
                 const hasFile = !!n.file_name;
                 const card = document.createElement('div');
                 card.className = "p-5 rounded-xl border border-theme bg-theme-card glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
-                
+
                 card.innerHTML = `
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-xs text-theme-sub">
@@ -1424,7 +1424,7 @@
 
                 // Beğeni Butonu
                 document.getElementById('modalLikeCount').innerText = `${n.likes || 0} Beğeni`;
-                
+
                 // Ekli Dosya Kontrolü
                 const fileContainer = document.getElementById('modalFileContainer');
                 if (n.file_name) {
@@ -1474,7 +1474,7 @@
 
             showToast('Dosya indiriliyor...', 'info');
             const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: noteId });
-            
+
             if (res.status === 'success' && res.file_data) {
                 // Base64 Indirme Tetikleyici
                 const link = document.createElement('a');
@@ -1596,7 +1596,7 @@
         function confirmDeleteCurrentNote() {
             if (!state.currentSelectedNote) return;
             document.getElementById('confirmDeleteText').innerText = `"${state.currentSelectedNote.title}" notunu silmek istediğinizden emin misiniz?`;
-            
+
             const submitBtn = document.getElementById('confirmDeleteSubmitBtn');
             submitBtn.onclick = async () => {
                 const res = await apiCall({ command: 'DELETE_NOTE', username: state.currentUser, note_id: state.currentSelectedNote.id });
@@ -1615,7 +1615,7 @@
 
         function confirmDeleteRequest(reqId) {
             document.getElementById('confirmDeleteText').innerText = `Bu not isteğini sonlandırmak istediğinizden emin misiniz?`;
-            
+
             const submitBtn = document.getElementById('confirmDeleteSubmitBtn');
             submitBtn.onclick = async () => {
                 const res = await apiCall({ command: 'DELETE_REQUEST', username: state.currentUser, request_id: reqId });
