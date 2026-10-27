@@ -22,54 +22,22 @@ def send_command(command):
         return f"ERROR:{str(e)}"
 
 # Frontend convenience functions
-def register(username, password):
+def send_register(username, password):
     """Register a new account."""
     return send_command(f"REGISTER:{username}:{password}")
 
-def login(username, password):
+def send_login(username, password):
     """Login to an account."""
     return send_command(f"LOGIN:{username}:{password}")
 
-def create_note(title, content):
-    """Create a new note. Returns the note ID if successful."""
-    response = send_command(f"CREATE_NOTE:{title}:{content}")
-    # Response format: "SUCCESS:Note created with ID 1!"
-    # Extract ID from response if successful
-    if response.startswith("SUCCESS"):
-        return response
-    return response
+def send_create_note(title, content):
+    """Create a new note."""
+    return send_command(f"CREATE_NOTE:{title}:{content}")
 
-def get_note(note_id):
+def send_get_note(note_id):
     """Retrieve a note by its ID."""
-    response = send_command(f"GET_NOTE:{note_id}")
-    # Response format: "SUCCESS:ID=1|Title=...|Content=...|Likes=..."
-    if response.startswith("SUCCESS"):
-        # Parse the response into a dictionary
-        data = response.replace("SUCCESS:", "").split("|")
-        note_dict = {}
-        for item in data:
-            if "=" in item:
-                key, value = item.split("=", 1)
-                note_dict[key] = value
-        return note_dict
-    return response
+    return send_command(f"GET_NOTE:{note_id}")
 
-def get_all_notes():
-    """Retrieve all notes with their IDs and titles."""
-    response = send_command("GET_ALL_NOTES")
-    # Response format: "SUCCESS:ID=1|Title=...|Likes=...;ID=2|Title=...|Likes=..."
-    if response.startswith("SUCCESS"):
-        data = response.replace("SUCCESS:", "")
-        if data == "No notes found":
-            return []
-        notes_list = []
-        for note_str in data.split(";"):
-            note_dict = {}
-            for item in note_str.split("|"):
-                if "=" in item:
-                    key, value = item.split("=", 1)
-                    note_dict[key] = value
-            if note_dict:
-                notes_list.append(note_dict)
-        return notes_list
-    return response
+def send_get_all_notes():
+    """Retrieve all notes."""
+    return send_command("GET_ALL_NOTES")
