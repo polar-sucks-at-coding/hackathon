@@ -2,15 +2,17 @@ import customtkinter as ctk
 import os
 import sys
 
-# Proje kök dizinini Python yoluna ekle
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.append(parent_dir)
+# 1. Projenin ana kök dizinini (/home/comp/Project/hackathon) Python yoluna ekle
+current_dir = os.path.dirname(os.path.abspath(__file__))  # /home/comp/Project/hackathon/ui
+parent_dir = os.path.dirname(current_dir)                 # /home/comp/Project/hackathon
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
-# Doğrudan bulunduğumuz klasörden import et
-from login import LoginPage
-from register import RegisterPage
-from mainmenu import MainMenuPage
+# 2. Artık alt klasörler (ui ve networking) sorunsuz içe aktarılabilir
+from ui.login import LoginPage
+from ui.register import RegisterPage
+from ui.mainmenu import MainMenuPage
+
 # Tema Paletleri (Catppuccin Mocha ve alternatif modern temalar)
 THEMES = {
     "Catppuccin Mocha": {
@@ -124,9 +126,14 @@ class SAUConnectApp(ctk.CTk):
     def show_main_menu(self, username):
         """Ana menüyü öne getirir ve kullanıcı adını eşitler"""
         self.main_menu_page.set_username(username)
-        # Eğer varsa notlar veya varsayılan sekmeyi tazeleyebiliriz
-        if hasattr(self.main_menu_page, "load_notes_from_server"):
-            self.main_menu_page.load_notes_from_server()
+
+        # Güvenli kontrol: Notlar sekmesi henüz açılmadıysa hata vermesini önle
+        if hasattr(self.main_menu_page, "notes_scroll_frame") and self.main_menu_page.notes_scroll_frame is not None:
+            try:
+                if self.main_menu_page.notes_scroll_frame.winfo_exists():
+                    self.main_menu_page.load_notes_from_server()
+            except Exception:
+                pass
 
         self.main_menu_page.tkraise()
         self.update_idletasks()

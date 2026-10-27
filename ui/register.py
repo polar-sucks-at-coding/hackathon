@@ -4,7 +4,7 @@ import os
 from networking import server_interaction
 
 class RegisterPage(ctk.CTkFrame):
-    def __init__(self, parent, switch_to_login, app_controller=None):
+    def __init__(self, parent, switch_to_login=None, app_controller=None, **kwargs):
         super().__init__(parent)
         self.switch_to_login = switch_to_login
         self.app = app_controller
@@ -146,9 +146,22 @@ class RegisterPage(ctk.CTkFrame):
             hover_color=p["entry"],
             text_color=p["text_sub"],
             font=ctk.CTkFont(size=12),
-            command=self.switch_to_login
+            command=self.open_login_page
         )
         self.switch_btn.pack()
+
+    def reset_fields(self):
+        """Kayıt alanlarını sıfırlar"""
+        self.username_entry.delete(0, "end")
+        self.password_entry.delete(0, "end")
+        self.confirm_password_entry.delete(0, "end")
+        self.info_label.configure(text="")
+        self.register_btn.configure(state="normal", text="Kayıt Ol")
+
+    def open_login_page(self):
+        self.reset_fields()
+        if self.switch_to_login:
+            self.switch_to_login()
 
     def register_event(self):
         username = self.username_entry.get().strip()
@@ -164,16 +177,22 @@ class RegisterPage(ctk.CTkFrame):
             return
 
         try:
+            self.info_label.configure(text_color="#A6ADC8", text="⏳ Hesap oluşturuluyor...")
+            self.register_btn.configure(state="disabled")
+            self.update_idletasks()
+
             response = server_interaction.send_register(username, password)
-            if response.startswith("SUCCESS"):
-                success_msg = response.split(":", 1)[1] if ":" in response else "Kayıt başarılı!"
+            if isinstance(response, dict) and response.get("status") == "success":
+                success_msg = response.get("message", "Kayıt başarılı!")
                 self.info_label.configure(text_color="#A6E3A1", text=f"✅ {success_msg}")
-                self.after(1000, self.switch_to_login)
+                self.after(1000, self.open_login_page)
             else:
-                error_msg = response.split(":", 1)[1] if ":" in response else "Kayıt başarısız"
+                error_msg = response.get("message", "Kayıt başarısız") if isinstance(response, dict) else "Kayıt başarısız"
                 self.info_label.configure(text_color="#F38BA8", text=f"❌ {error_msg}")
+                self.register_btn.configure(state="normal", text="Kayıt Ol")
         except Exception as e:
             self.info_label.configure(text_color="#F38BA8", text="❌ Sunucuya bağlanılamadı!")
+            self.register_btn.configure(state="normal", text="Kayıt Ol")
             print(f"[NETWORK ERROR] {e}")
 
     def apply_theme(self):

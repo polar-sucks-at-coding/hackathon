@@ -4,7 +4,7 @@ import os
 from networking import server_interaction
 
 class LoginPage(ctk.CTkFrame):
-    def __init__(self, parent, switch_to_register, on_login_success, app_controller=None):
+    def __init__(self, parent, switch_to_register, on_login_success, app_controller=None, **kwargs):
         super().__init__(parent)
         self.switch_to_register = switch_to_register
         self.on_login_success = on_login_success
@@ -150,9 +150,23 @@ class LoginPage(ctk.CTkFrame):
             hover_color=p["entry"],
             text_color=p["text_sub"],
             font=ctk.CTkFont(size=12),
-            command=self.switch_to_register
+            command=self.open_register_page
         )
         self.switch_btn.pack()
+
+    def reset_fields(self):
+        """Giriş alanlarını ve uyarı mesajlarını sıfırlar"""
+        self.username_entry.delete(0, "end")
+        self.password_entry.delete(0, "end")
+        self.password_entry.configure(show="*")
+        self.eye_btn.configure(text="👁️")
+        self.info_label.configure(text="")
+        self.login_btn.configure(state="normal", text="Giriş Yap")
+
+    def open_register_page(self):
+        self.reset_fields()
+        if self.switch_to_register:
+            self.switch_to_register()
 
     def toggle_password_visibility(self):
         if self.password_entry.cget("show") == "*":
@@ -171,16 +185,22 @@ class LoginPage(ctk.CTkFrame):
             return
 
         try:
+            self.info_label.configure(text_color="#A6ADC8", text="⏳ Giriş yapılıyor...")
+            self.login_btn.configure(state="disabled")
+            self.update_idletasks()
+
             response = server_interaction.send_login(username, password)
-            if response.startswith("SUCCESS"):
-                success_msg = response.split(":", 1)[1] if ":" in response else "Giriş başarılı!"
+            if isinstance(response, dict) and response.get("status") == "success":
+                success_msg = response.get("message", "Giriş başarılı!")
                 self.info_label.configure(text_color="#A6E3A1", text=f"✅ {success_msg}")
-                self.after(800, lambda: self.on_login_success(username))
+                self.after(800, lambda: (self.reset_fields(), self.on_login_success(username) if self.on_login_success else None))
             else:
-                error_msg = response.split(":", 1)[1] if ":" in response else "Giriş başarısız"
+                error_msg = response.get("message", "Giriş başarısız") if isinstance(response, dict) else "Giriş başarısız"
                 self.info_label.configure(text_color="#F38BA8", text=f"❌ {error_msg}")
+                self.login_btn.configure(state="normal", text="Giriş Yap")
         except Exception as e:
             self.info_label.configure(text_color="#F38BA8", text="❌ Sunucuya bağlanılamadı!")
+            self.login_btn.configure(state="normal", text="Giriş Yap")
             print(f"[NETWORK ERROR] {e}")
 
     def apply_theme(self):
