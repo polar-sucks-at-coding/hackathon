@@ -1,19 +1,75 @@
-from . import client
-from . import server
+import socket
 
-#receives a response
-def send_register(usr: str, passwd: str):
-    if not usr or not passwd:
-        return "ERROR:USERNAME_OR_PASS_EMPTY"
+# Configuration
+HOST = '127.0.0.1'
+PORT = 5000
 
-    command = f"REGISTER:{usr}:{passwd}"
-    response = client.send_command(command)
+def send_command(command):
+    """Send a command to the server and return the response."""
+    try:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((HOST, PORT))
+
+        client_socket.send(command.encode('utf-8'))
+        response = client_socket.recv(1024).decode('utf-8')
+
+        client_socket.close()
+        return response
+
+    except ConnectionRefusedError:
+        return "ERROR:Could not connect to server. Is it running?"
+    except Exception as e:
+        return f"ERROR:{str(e)}"
+
+# Frontend convenience functions
+def register(username, password):
+    """Register a new account."""
+    return send_command(f"REGISTER:{username}:{password}")
+
+def login(username, password):
+    """Login to an account."""
+    return send_command(f"LOGIN:{username}:{password}")
+
+def create_note(title, content):
+    """Create a new note. Returns the note ID if successful."""
+    response = send_command(f"CREATE_NOTE:{title}:{content}")
+    # Response format: "SUCCESS:Note created with ID 1!"
+    # Extract ID from response if successful
+    if response.startswith("SUCCESS"):
+        return response
     return response
-#receives a response
-def send_login(usr: str, passwd:str):
-    if not usr or not passwd:
-        return "ERROR:USERNAME_OR_PASS_EMPTY"
 
-    command = f"LOGIN:{usr}:{passwd}"
-    response = client.send_command(command)
+def get_note(note_id):
+    """Retrieve a note by its ID."""
+    response = send_command(f"GET_NOTE:{note_id}")
+    # Response format: "SUCCESS:ID=1|Title=...|Content=...|Likes=..."
+    if response.startswith("SUCCESS"):
+        # Parse the response into a dictionary
+        data = response.replace("SUCCESS:", "").split("|")
+        note_dict = {}
+        for item in data:
+            if "=" in item:
+                key, value = item.split("=", 1)
+                note_dict[key] = value
+        return note_dict
+    return response
+
+def get_all_notes():
+    """Retrieve all notes with their IDs and titles."""
+    response = send_command("GET_ALL_NOTES")
+    # Response format: "SUCCESS:ID=1|Title=...|Likes=...;ID=2|Title=...|Likes=..."
+    if response.startswith("SUCCESS"):
+        data = response.replace("SUCCESS:", "")
+        if data == "No notes found":
+            return []
+        notes_list = []
+        for note_str in data.split(";"):
+            note_dict = {}
+            for item in note_str.split("|"):
+                if "=" in item:
+                    key, value = item.split("=", 1)
+                    note_dict[key] = value
+            if note_dict:
+                notes_list.append(note_dict)
+        return notes_list
     return response

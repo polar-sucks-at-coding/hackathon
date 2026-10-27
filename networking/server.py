@@ -1,16 +1,38 @@
 import socket
 import os
 import threading
+from notes import note
 
 # Configuration
-HOST = '0.0.0.0'  # Listen on all network interfaces
-PORT = 5000        # The port to listen on
-ACCOUNTS_FILE = 'accounts.txt'  # File where we store usernames & passwords
+HOST = '0.0.0.0'
+PORT = 5000
+ACCOUNTS_FILE = 'accounts.txt'
+NOTES_FILE = 'notes.txt'
+NEXT_ID_FILE = 'next_id.txt'  # Track the next available note ID
 
-# Make sure accounts file exists
+# Make sure files exist
 if not os.path.exists(ACCOUNTS_FILE):
     with open(ACCOUNTS_FILE, 'w') as f:
-        f.write("")  # Create empty file
+        f.write("")
+if not os.path.exists(NOTES_FILE):
+    with open(NOTES_FILE, 'w') as f:
+        f.write("")
+if not os.path.exists(NEXT_ID_FILE):
+    with open(NEXT_ID_FILE, 'w') as f:
+        f.write("1")
+
+def get_next_id():
+    """Get the next available note ID."""
+    with open(NEXT_ID_FILE, 'r') as f:
+        next_id = int(f.read().strip())
+    return next_id
+
+def increment_id():
+    """Increment the next available ID."""
+    next_id = get_next_id()
+    with open(NEXT_ID_FILE, 'w') as f:
+        f.write(str(next_id + 1))
+    return next_id
 
 def load_accounts():
     """Read all accounts from file into a dictionary."""
@@ -23,65 +45,131 @@ def load_accounts():
                 accounts[username] = password
     return accounts
 
+def load_notes():
+    """Read all notes from file into a list."""
+    notes = []
+    with open(NOTES_FILE, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line and ':' in line:
+                parts = line.split(':', 3)  # Split into max 4 parts
+                if len(parts) >= 3:
+                    note_id = int(parts[0])
+                    title = parts[1]
+                    content = parts[2]
+                    likes = int(parts[3]) if len(parts) > 3 else 0
+                    note_obj = note.Note(title, content, _id=note_id, likes=likes)
+                    notes.append(note_obj)
+    return notes
+
+def get_note_by_id(note_id):
+    """Retrieve a single note by its ID."""
+    notes = load_notes()
+    for note_obj in notes:
+        if note_obj.id == note_id:
+            return note_obj
+    return None
+
 def save_accounts(accounts):
     """Write all accounts to file."""
     with open(ACCOUNTS_FILE, 'w') as f:
         for username, password in accounts.items():
             f.write(f"{username}:{password}\n")
 
+def save_notes(notes):
+    """Write all notes to file."""
+    with open(NOTES_FILE, 'w') as f:
+        for note_obj in notes:
+            f.write(f"{note_obj.id}:{note_obj.title}:{note_obj.content}:{note_obj.likes}\n")
+
 def handle_client(client_socket, client_address):
-    """
-    Handle a single client connection.
-    This runs in a separate thread for each client.
-    """
+    """Handle a single client connection."""
     print(f"[NEW CONNECTION] Client connected from {client_address}")
 
     try:
         while True:
-            # Receive data from client (up to 1024 bytes)
             data = client_socket.recv(1024).decode('utf-8')
 
             if not data:
-                # Client disconnected
                 break
 
             print(f"[RECEIVED] From {client_address}: {data}")
 
-            # Parse the command
-            parts = data.split(':')
+            parts = data.split(':', 2)
             command = parts[0]
+            response = "ERROR:Unknown command"
 
-            # Load current accounts
             accounts = load_accounts()
 
-            # REGISTER command: "REGISTER:username:password"
             if command == "REGISTER":
-                username = parts[1]
-                password = parts[2]
-
-                if username in accounts:
-                    response = "ERROR:Username already exists"
+                if len(parts) < 3:
+                    response = "ERROR:Invalid format. Use REGISTER:username:password"
                 else:
-                    accounts[username] = password
-                    save_accounts(accounts)
-                    response = "SUCCESS:Account created!"
+                    username = parts[1]
+                    password = parts[2]
 
-            # LOGIN command: "LOGIN:username:password"
+                    if username in accounts:
+                        response = "ERROR:Username already exists"
+                    else:
+                        accounts[username] = password
+                        save_accounts(accounts)
+                        response = "SUCCESS:Account created!"
+
             elif command == "LOGIN":
-                username = parts[1]
-                password = parts[2]
-
-                if username not in accounts:
-                    response = "ERROR:Username not found"
-                elif accounts[username] != password:
-                    response = "ERROR:Incorrect password"
+                if len(parts) < 3:
+                    response = "ERROR:Invalid format. Use LOGIN:username:password"
                 else:
-                    response = f"SUCCESS:Welcome {username}!"
+                    username = parts[1]
+                    password = parts[2]
 
-            else:
-                response = "ERROR:Unknown command"
+                    if username not in accounts:
+                        response = "ERROR:Username not found"
+                    elif accounts[username] != password:
+                        response = "ERROR:Incorrect password"
+                    else:
+                        response = f"SUCCESS:Welcome {username}!"
 
-            # Send response back to client
+            elif command == "CREATE_NOTE":
+                if len(parts) < 3:
+                    response = "ERROR:Invalid format. Use CREATE_NOTE:title:content"
+                else:
+                    title = parts[1]
+                    content = parts[2]
+
+                    # Get next ID and increment
+                    note_id = increment_id()
+
+                    # Create note with ID
+                    notes = load_notes()
+                    new_note = note.Note(title, content, _id=note_id, likes=0)
+                    notes.append(new_note)
+                    save_notes(notes)
+
+                    response = f"SUCCESS:Note created with ID {note_id}!"
+
+            elif command == "GET_NOTE":
+                if len(parts) < 2:
+                    response = "ERROR:Invalid format. Use GET_NOTE:id"
+                else:
+                    try:
+                        note_id = int(parts[1])
+                        found_note = get_note_by_id(note_id)
+
+                        if found_note is None:
+                            response = f"ERROR:Note with ID {note_id} not found"
+                        else:
+                            response = f"SUCCESS:ID={found_note.id}|Title={found_note.title}|Content={found_note.content}|Likes={found_note.likes}"
+                    except ValueError:
+                        response = "ERROR:ID must be a number"
+
+            elif command == "GET_ALL_NOTES":
+                notes = load_notes()
+                if not notes:
+                    response = "SUCCESS:No notes found"
+                else:
+                    notes_str = ";".join([f"ID={n.id}|Title={n.title}|Likes={n.likes}" for n in notes])
+                    response = f"SUCCESS:{notes_str}"
+
             client_socket.send(response.encode('utf-8'))
             print(f"[SENT] To {client_address}: {response}")
 
@@ -93,13 +181,8 @@ def handle_client(client_socket, client_address):
 
 def start_server():
     """Main server loop."""
-    # Create a socket object
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Bind to the host and port
     server_socket.bind((HOST, PORT))
-
-    # Listen for incoming connections (queue up to 5 clients)
     server_socket.listen(5)
 
     print(f"[STARTING] Server listening on {HOST}:{PORT}")
@@ -107,16 +190,12 @@ def start_server():
 
     try:
         while True:
-            # Accept a new client connection
             client_socket, client_address = server_socket.accept()
-
-            # Create a new thread to handle this client
-            # This way we can handle multiple clients at once
             client_thread = threading.Thread(
                 target=handle_client,
                 args=(client_socket, client_address)
             )
-            client_thread.daemon = True  # Thread dies if main program exits
+            client_thread.daemon = True
             client_thread.start()
 
     except KeyboardInterrupt:
