@@ -14,7 +14,36 @@
       ],
       "join_requests": [],
       "messages": []
+    },
+    "7": {
+      "id": 7,
+      "title": "Teknofest2",
+      "description": "Teknofest Bluewall isimli siber güvenlik sistemi için eleman arıyoruz",
+      "skills": "Python",
+      "author": "Mehmet Yusuf Yöndem",
+      "current_members": 2,
+      "target_members": 5,
+      "date": "28.10.2026 11:24",
+      "members": [
+        "Mehmet Yusuf Yöndem",
+        "Melih Ekinci"
+      ],
+      "join_requests": [],
+      "messages": [
+        {
+          "id": 1,
+          "author": "Mehmet Yusuf Yöndem",
+          "content": "asdasd",
+          "date": "28.10.2026 11:25"
+        },
+        {
+          "id": 2,
+          "author": "Melih Ekinci",
+          "content": "merhaba",
+          "date": "28.10.2026 11:25"
+        }
+      ]
     }
   },
-  "next_id": 5
+  "next_id": 8
 }

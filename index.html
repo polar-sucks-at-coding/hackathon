@@ -104,7 +104,7 @@
 
         .glow-hover { transition: all 0.3s ease; }
         .glow-hover:hover {
-            box-shadow: 10px 10px 22px var(--shadow-dark), -10px -10px 22px var(--shadow-light), 0 0 15px rgba(137, 180, 250, 0.15);
+            box-shadow: 10px 10px 22px var(--shadow-dark), -10px -10px 22px var(--shadow-light);
             transform: translateY(-3px);
         }
 
@@ -362,7 +362,6 @@
 
                             <select id="sortSelect" onchange="filterAndRender()" class="px-3.5 py-2 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none cursor-pointer">
                                 <option value="likes">❤️ Beğeniye Göre</option>
-                                <option value="views">👁️ Görüntülenmeye Göre</option>
                                 <option value="date_desc">📅 Tarihe Göre (En Yeni)</option>
                                 <option value="alpha_asc">🔤 A'dan Z'ye</option>
                                 <option value="alpha_desc">🔤 Z'den A'ya</option>
@@ -377,22 +376,13 @@
 
                     <!-- DERS NOTLARI KAPSAYICI ALANI -->
                     <div id="notesSectionContainer" class="space-y-6">
-                        <!-- 1. SIRA: SON 1 HAFTADA EN ÇOK BEĞENİLENLER -->
+                        <!-- SIRA: SON 1 HAFTADA EN ÇOK BEĞENİLENLER -->
                         <div id="topLikedSection" class="neu-flat p-5 rounded-3xl space-y-3">
                             <h3 class="text-sm font-bold text-theme-main flex items-center gap-2">
                                 <i class="fa-solid fa-fire text-rose-500"></i>
                                 <span>Son 1 Haftada En Çok Beğenilenler</span>
                             </h3>
                             <div id="topLikedGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-                        </div>
-
-                        <!-- 2. SIRA: SON 1 HAFTADA EN ÇOK GÖRÜNTÜLENENLER -->
-                        <div id="topViewedSection" class="neu-flat p-5 rounded-3xl space-y-3">
-                            <h3 class="text-sm font-bold text-theme-main flex items-center gap-2">
-                                <i class="fa-solid fa-eye text-blue-400"></i>
-                                <span>Son 1 Haftada En Çok Görüntülenenler</span>
-                            </h3>
-                            <div id="topViewedGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
                         </div>
 
                         <!-- SEÇİLEN SIRALAMAYA GÖRE LİSTE -->
@@ -997,8 +987,6 @@
                         <span><i class="fa-solid fa-user mr-1 text-theme-accent"></i><strong id="modalNoteAuthor">Yazar</strong></span>
                         <span>•</span>
                         <span><i class="fa-solid fa-clock mr-1"></i><span id="modalNoteDate">Tarih</span></span>
-                        <span>•</span>
-                        <span><i class="fa-solid fa-eye mr-1 text-blue-400"></i><span id="modalNoteViews">0 Görüntülenme</span></span>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -1039,8 +1027,8 @@
             </div>
 
             <div class="flex items-center justify-between border-t border-theme/40 pt-4">
-                <button id="modalLikeButton" onclick="toggleLikeCurrentNote()" class="px-4 py-2.5 rounded-xl neu-btn text-sm font-semibold transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-heart text-rose-500"></i>
+                <button id="modalLikeButton" onclick="toggleLikeCurrentNote()" class="px-4 py-2.5 rounded-xl neu-btn text-sm font-semibold transition-all flex items-center gap-2 text-theme-main">
+                    <i class="fa-solid fa-heart text-rose-400"></i>
                     <span id="modalLikeCount">0 Beğeni</span>
                 </button>
 
@@ -1331,7 +1319,19 @@
         async function silentReloadNotes() {
             const res = await apiCall({ command: 'GET_ALL_NOTES' });
             if (res.status === 'success') {
-                state.notes = res.notes || [];
+                const fetchedNotes = res.notes || [];
+
+                fetchedNotes.forEach(fn => {
+                    const existing = state.notes.find(old => old.id === fn.id);
+                    if (existing) {
+                        if (!fn.liked_by && existing.liked_by) {
+                            fn.liked_by = existing.liked_by;
+                        }
+                    }
+                    if (!fn.liked_by) fn.liked_by = [];
+                });
+
+                state.notes = fetchedNotes;
                 filterAndRender();
             }
         }
@@ -1544,18 +1544,13 @@
 
             if (state.activeNoteSubTab === 'notes') {
                 const topLikedSec = document.getElementById('topLikedSection');
-                const topViewedSec = document.getElementById('topViewedSection');
                 const gridTitle = document.getElementById('notesGridTitle');
 
                 if (query !== '') {
-                    // Arama yapılıyorsa en çok beğenilenler ve görüntülenenler gizlenir
                     if (topLikedSec) topLikedSec.classList.add('hidden');
-                    if (topViewedSec) topViewedSec.classList.add('hidden');
                     if (gridTitle) gridTitle.innerHTML = `<i class="fa-solid fa-magnifying-glass text-theme-accent"></i> <span>Arama Sonuçları ("${query}")</span>`;
                 } else {
-                    // Arama kutusu boşsa popüler bölümler tekrar gösterilir
                     if (topLikedSec) topLikedSec.classList.remove('hidden');
-                    if (topViewedSec) topViewedSec.classList.remove('hidden');
                     if (gridTitle) gridTitle.innerHTML = `<i class="fa-solid fa-list-ul text-theme-accent"></i> <span>Tüm Ders Notları (Seçilen Sıralamaya Göre)</span>`;
                     renderTopWeeklyNotes();
                 }
@@ -1567,7 +1562,6 @@
                 );
 
                 if (sortMode === 'likes') filtered.sort((a,b) => (b.likes || 0) - (a.likes || 0));
-                else if (sortMode === 'views') filtered.sort((a,b) => (b.views || 0) - (a.views || 0));
                 else if (sortMode === 'date_desc') filtered.sort((a,b) => (b.id || 0) - (a.id || 0));
                 else if (sortMode === 'alpha_asc') filtered.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
                 else if (sortMode === 'alpha_desc') filtered.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
@@ -1586,9 +1580,6 @@
         function renderTopWeeklyNotes() {
             const topLiked = [...state.notes].sort((a,b) => (b.likes || 0) - (a.likes || 0)).slice(0, 3);
             renderNoteHighlightGrid('topLikedGrid', topLiked);
-
-            const topViewed = [...state.notes].sort((a,b) => (b.views || 0) - (a.views || 0)).slice(0, 3);
-            renderNoteHighlightGrid('topViewedGrid', topViewed);
         }
 
         function renderNoteHighlightGrid(containerId, notesList) {
@@ -1602,6 +1593,7 @@
 
             grid.innerHTML = '';
             notesList.forEach(n => {
+                const isLiked = n.liked_by && Array.isArray(n.liked_by) && n.liked_by.includes(state.currentUser);
                 const card = document.createElement('div');
                 card.className = "p-4 rounded-2xl neu-pressed flex flex-col justify-between space-y-2.5";
                 card.innerHTML = `
@@ -1616,10 +1608,9 @@
                     </div>
 
                     <div class="flex items-center justify-between pt-2 border-t border-theme/30 text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="text-rose-400 font-bold"><i class="fa-solid fa-heart mr-1"></i>${n.likes || 0}</span>
-                            <span class="text-blue-400 font-bold"><i class="fa-solid fa-eye mr-1"></i>${n.views || 0}</span>
-                        </div>
+                        <button onclick="quickLikeNote(${n.id})" class="flex items-center gap-1 font-bold ${isLiked ? 'text-rose-500' : 'text-rose-400'}">
+                            <i class="fa-solid fa-heart"></i> ${n.likes || 0}
+                        </button>
                         <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1 rounded-xl neu-btn text-theme-main text-[11px] font-semibold">
                             İncele
                         </button>
@@ -1644,6 +1635,8 @@
             grid.innerHTML = '';
             notesList.forEach(n => {
                 const hasFile = !!n.file_name;
+                const isLiked = n.liked_by && Array.isArray(n.liked_by) && n.liked_by.includes(state.currentUser);
+
                 const card = document.createElement('div');
                 card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
 
@@ -1655,7 +1648,7 @@
                             </span>
                             <div class="flex items-center gap-2">
                                 <span>${n.date || 'Tarih Yok'}</span>
-                                <button onclick="openReportModal('gonderi', '${n.title.replace(/'/g, "\\'")}')" class="text-theme-sub hover:text-amber-400 transition-colors" title="Notu Rapor Et">
+                                <button onclick="openReportModal('gonderi', '${(n.title || '').replace(/'/g, "\\'")}')" class="text-theme-sub hover:text-amber-400 transition-colors" title="Notu Rapor Et">
                                     <i class="fa-solid fa-flag"></i>
                                 </button>
                             </div>
@@ -1666,14 +1659,10 @@
 
                     <div class="pt-3 border-t border-theme/40 flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <button onclick="quickLikeNote(${n.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-btn text-rose-400 text-xs font-semibold">
-                                <i class="fa-solid fa-heart"></i>
+                            <button onclick="quickLikeNote(${n.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-btn text-xs font-semibold transition-all ${isLiked ? 'text-rose-500 font-bold' : 'text-theme-sub hover:text-theme-main'}" title="${isLiked ? 'Beğeniyi Kaldır' : 'Beğen'}">
+                                <i class="fa-solid fa-heart ${isLiked ? 'text-rose-500' : 'text-rose-400'}"></i>
                                 <span>${n.likes || 0}</span>
                             </button>
-                            <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-pressed text-blue-400 text-xs font-semibold">
-                                <i class="fa-solid fa-eye"></i>
-                                <span>${n.views || 0}</span>
-                            </span>
                             ${hasFile ? `<span class="px-2.5 py-1.5 rounded-xl neu-pressed text-blue-400 text-[11px] font-semibold"><i class="fa-solid fa-paperclip mr-1"></i>Ekli Dosya</span>` : ''}
                         </div>
 
@@ -1686,56 +1675,122 @@
         }
 
         async function openNoteDetailModal(noteId) {
+            let noteInState = state.notes.find(item => item.id === noteId);
+
             const res = await apiCall({ command: 'GET_NOTE', note_id: noteId, username: state.currentUser });
+
+            let n = noteInState || { id: noteId, title: '', content: '', likes: 0, liked_by: [] };
+
             if (res.status === 'success' && res.note) {
-                const n = res.note;
-                state.currentSelectedNote = n;
-
-                document.getElementById('modalNoteTitle').innerText = n.title;
-                document.getElementById('modalNoteAuthor').innerText = n.author;
-                document.getElementById('modalNoteDate').innerText = n.date || 'Bilinmiyor';
-                document.getElementById('modalNoteViews').innerText = `${n.views || 0} Görüntülenme`;
-                document.getElementById('modalNoteContent').innerText = n.content;
-                document.getElementById('modalLikeCount').innerText = `${n.likes || 0} Beğeni`;
-
-                const fileContainer = document.getElementById('modalFileContainer');
-                if (n.file_name) {
-                    fileContainer.classList.remove('hidden');
-                    document.getElementById('modalFileName').innerText = n.file_name;
-                    document.getElementById('modalFileSize').innerText = n.file_size || 'Mevcut Dosya';
-                } else {
-                    fileContainer.classList.add('hidden');
+                n = { ...res.note };
+                if (!n.liked_by && noteInState && noteInState.liked_by) {
+                    n.liked_by = noteInState.liked_by;
                 }
+            }
 
-                const deleteBtn = document.getElementById('modalDeleteButton');
-                if (n.author === state.currentUser) {
-                    deleteBtn.classList.remove('hidden');
-                } else {
-                    deleteBtn.classList.add('hidden');
-                }
+            if (!n.liked_by) n.liked_by = [];
+            state.currentSelectedNote = n;
 
-                openModal('noteDetailModal');
+            const index = state.notes.findIndex(item => item.id === noteId);
+            if (index !== -1) {
+                state.notes[index] = n;
             } else {
-                showToast(res.message || 'Not detayları alınamadı', 'error');
+                state.notes.push(n);
+            }
+
+            filterAndRender();
+
+            document.getElementById('modalNoteTitle').innerText = n.title;
+            document.getElementById('modalNoteAuthor').innerText = n.author || '';
+            document.getElementById('modalNoteDate').innerText = n.date || 'Bilinmiyor';
+            document.getElementById('modalNoteContent').innerText = n.content || '';
+
+            const isLiked = n.liked_by && Array.isArray(n.liked_by) && n.liked_by.includes(state.currentUser);
+            updateModalLikeButton(isLiked, n.likes || 0);
+
+            const fileContainer = document.getElementById('modalFileContainer');
+            if (n.file_name) {
+                fileContainer.classList.remove('hidden');
+                document.getElementById('modalFileName').innerText = n.file_name;
+                document.getElementById('modalFileSize').innerText = n.file_size || 'Mevcut Dosya';
+            } else {
+                fileContainer.classList.add('hidden');
+            }
+
+            const deleteBtn = document.getElementById('modalDeleteButton');
+            if (n.author === state.currentUser) {
+                deleteBtn.classList.remove('hidden');
+            } else {
+                deleteBtn.classList.add('hidden');
+            }
+
+            openModal('noteDetailModal');
+        }
+
+        function updateModalLikeButton(isLiked, likeCount) {
+            const btn = document.getElementById('modalLikeButton');
+            if (!btn) return;
+
+            btn.className = "px-4 py-2.5 rounded-xl neu-btn text-sm font-semibold transition-colors flex items-center gap-2 text-theme-main";
+            if (isLiked) {
+                btn.innerHTML = `<i class="fa-solid fa-heart text-rose-500"></i> <span id="modalLikeCount">${likeCount} Beğeni</span>`;
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-heart text-rose-400"></i> <span id="modalLikeCount">${likeCount} Beğeni</span>`;
             }
         }
 
         async function toggleLikeCurrentNote() {
             if (!state.currentSelectedNote) return;
-            const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: state.currentSelectedNote.id });
+            const n = state.currentSelectedNote;
+            if (!n.liked_by) n.liked_by = [];
+
+            const userIndex = n.liked_by.indexOf(state.currentUser);
+            const isCurrentlyLiked = userIndex !== -1;
+
+            const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: n.id });
             if (res.status === 'success') {
-                state.currentSelectedNote.likes = res.likes;
-                document.getElementById('modalLikeCount').innerText = `${res.likes} Beğeni`;
-                await reloadAllDataSilently();
+                if (typeof res.likes === 'number') {
+                    n.likes = res.likes;
+                }
+                if (isCurrentlyLiked) {
+                    n.liked_by.splice(userIndex, 1);
+                } else {
+                    n.liked_by.push(state.currentUser);
+                }
+
+                const stateNote = state.notes.find(item => item.id === n.id);
+                if (stateNote) {
+                    stateNote.likes = n.likes;
+                    stateNote.liked_by = n.liked_by;
+                }
+
+                const nowLiked = n.liked_by.includes(state.currentUser);
+                updateModalLikeButton(nowLiked, n.likes);
+                filterAndRender();
             } else {
                 showToast(res.message || 'Beğeni hatası', 'error');
             }
         }
 
         async function quickLikeNote(noteId) {
+            const note = state.notes.find(n => n.id === noteId);
+            if (!note) return;
+            if (!note.liked_by) note.liked_by = [];
+
+            const userIndex = note.liked_by.indexOf(state.currentUser);
+            const isCurrentlyLiked = userIndex !== -1;
+
             const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: noteId });
             if (res.status === 'success') {
-                await reloadAllDataSilently();
+                if (typeof res.likes === 'number') {
+                    note.likes = res.likes;
+                }
+                if (isCurrentlyLiked) {
+                    note.liked_by.splice(userIndex, 1);
+                } else {
+                    note.liked_by.push(state.currentUser);
+                }
+                filterAndRender();
             } else {
                 showToast(res.message || 'Beğeni hatası', 'error');
             }
@@ -2600,7 +2655,7 @@
                         item.innerHTML = `
                             <div class="min-w-0 pr-3 space-y-1">
                                 <div class="font-bold text-theme-main truncate">${n.title}</div>
-                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni • 👁️ ${n.views || 0} Görüntülenme</div>
+                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
                             </div>
                             <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main text-xs font-semibold shrink-0">
                                 Detay
@@ -2781,7 +2836,7 @@
                         row.innerHTML = `
                             <div class="space-y-0.5 min-w-0 pr-2">
                                 <div class="font-bold text-theme-main truncate">${n.title}</div>
-                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni • 👁️ ${n.views || 0} Görüntülenme</div>
+                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
                             </div>
                             <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main shrink-0">
                                 Görüntüle
