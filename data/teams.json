@@ -1,4 +1,18 @@
 {
-  "teams": {},
-  "next_id": 3
+  "teams": {
+    "3": {
+      "id": 3,
+      "title": "bdsdf",
+      "description": "dfdfdf",
+      "skills": "dgfdfgf",
+      "author": "melodelomelo",
+      "current_members": 1,
+      "target_members": 5,
+      "date": "28.10.2026 04:25",
+      "members": [
+        "melodelomelo"
+      ]
+    }
+  },
+  "next_id": 4
 }

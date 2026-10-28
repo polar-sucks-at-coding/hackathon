@@ -588,9 +588,23 @@
                         </div>
                     </div>
 
-                    <div class="neu-flat p-6 rounded-3xl space-y-4">
-                        <h4 class="font-bold text-theme-main text-lg border-b border-theme/40 pb-3">Paylaştığım Ders Notları</h4>
-                        <div id="myNotesList" class="space-y-3"></div>
+                    <!-- Kendi Notlarım ve Takımlarım (Yan Yana Çift Sütun) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="neu-flat p-6 rounded-3xl space-y-4">
+                            <h4 class="font-bold text-theme-main text-base border-b border-theme/40 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-theme-accent"></i>
+                                <span>Paylaştığım Ders Notları</span>
+                            </h4>
+                            <div id="myNotesList" class="space-y-3"></div>
+                        </div>
+
+                        <div class="neu-flat p-6 rounded-3xl space-y-4">
+                            <h4 class="font-bold text-theme-main text-base border-b border-theme/40 pb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-users-gear text-theme-accent"></i>
+                                <span>Açtığım Takım İlanları</span>
+                            </h4>
+                            <div id="myTeamsList" class="space-y-3"></div>
+                        </div>
                     </div>
                 </section>
 
@@ -913,7 +927,7 @@
         </div>
     </div>
 
-    <!-- MODAL: NOT DETAY MODALI -->
+    <!-- MODAL: NOT DETAY MODALI (İNDİR & GÖRÜNTÜLE GÖZ BUTONU EKLENDİ) -->
     <div id="noteDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
         <div class="w-full max-w-2xl neu-flat rounded-3xl p-6 space-y-5 max-h-[90vh] flex flex-col">
             <div class="flex items-start justify-between border-b border-theme/40 pb-4">
@@ -934,6 +948,7 @@
                 Not İçeriği...
             </div>
 
+            <!-- Dosya Ekleri ve Aksiyon Butonları (İndir & Göz Butonu) -->
             <div id="modalFileContainer" class="p-4 rounded-2xl neu-pressed flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-xl neu-btn text-blue-400 flex items-center justify-center shrink-0">
@@ -944,10 +959,17 @@
                         <div id="modalFileSize" class="text-[11px] text-theme-sub">0 KB</div>
                     </div>
                 </div>
-                <button onclick="downloadCurrentNoteFile()" class="px-4 py-2.5 rounded-xl neu-btn text-blue-400 font-semibold text-xs transition-colors flex items-center gap-1.5 shrink-0">
-                    <i class="fa-solid fa-download"></i>
-                    <span>İndir</span>
-                </button>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="downloadCurrentNoteFile()" class="px-3.5 py-2 rounded-xl neu-btn text-blue-400 font-semibold text-xs transition-colors flex items-center gap-1.5" title="Dosyayı İndir">
+                        <i class="fa-solid fa-download"></i>
+                        <span>İndir</span>
+                    </button>
+                    <!-- İndir Butonunun Sağındaki Göz (Görüntüle) Butonu -->
+                    <button onclick="viewCurrentNoteFile()" class="px-3.5 py-2 rounded-xl neu-btn text-emerald-400 font-semibold text-xs transition-colors flex items-center gap-1.5" title="Dosyayı Görüntüle">
+                        <i class="fa-solid fa-eye"></i>
+                        <span>Görüntüle</span>
+                    </button>
+                </div>
             </div>
 
             <div class="flex items-center justify-between border-t border-theme/40 pt-4">
@@ -1247,6 +1269,24 @@
             if (cmd === 'GET_ALL_NOTES') return { status: 'success', notes: localNotes };
             if (cmd === 'GET_ALL_REQUESTS') return { status: 'success', requests: localRequests };
             if (cmd === 'GET_ALL_TEAMS') return { status: 'success', teams: localTeams };
+
+            if (cmd === 'GET_NOTE') {
+                const note = localNotes.find(n => n.id === parseInt(req.note_id));
+                if (note) return { status: 'success', note: note };
+                return { status: 'error', message: 'Not bulunamadı' };
+            }
+
+            if (cmd === 'DOWNLOAD_FILE') {
+                const note = localNotes.find(n => n.id === parseInt(req.note_id));
+                if (note) {
+                    return {
+                        status: 'success',
+                        file_name: note.file_name || 'ders_notu.pdf',
+                        file_data: 'JVBERi0xLjQKJQ==' // Örnek base64 verisi
+                    };
+                }
+                return { status: 'error', message: 'Dosya bulunamadı' };
+            }
 
             if (cmd === 'CREATE_TEAM') {
                 const nextId = localTeams.length > 0 ? Math.max(...localTeams.map(t => t.id)) + 1 : 1;
@@ -2357,6 +2397,46 @@
             }
         }
 
+        /* DOKÜMAN / GÖRSEL/ PDF DOSYASINI YENİ SEKMEDE GÖRÜNTÜLEME FONKSİYONU (GÖZ BUTONU) */
+        async function viewCurrentNoteFile() {
+            if (!state.currentSelectedNote) return;
+            const noteId = state.currentSelectedNote.id;
+
+            showToast('Dosya açılıyor...', 'info');
+            const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: noteId });
+
+            if (res.status === 'success' && res.file_data) {
+                try {
+                    const fileName = res.file_name || '';
+                    const ext = fileName.split('.').pop().toLowerCase();
+                    let mimeType = 'application/octet-stream';
+
+                    if (ext === 'pdf') mimeType = 'application/pdf';
+                    else if (['jpg', 'jpeg'].includes(ext)) mimeType = 'image/jpeg';
+                    else if (ext === 'png') mimeType = 'image/png';
+                    else if (ext === 'gif') mimeType = 'image/gif';
+                    else if (ext === 'txt') mimeType = 'text/plain';
+
+                    const byteCharacters = atob(res.file_data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: mimeType });
+
+                    const blobUrl = URL.createObjectURL(blob);
+                    window.open(blobUrl, '_blank');
+                    showToast('Dosya görüntülendi', 'success');
+                } catch (e) {
+                    console.error(e);
+                    showToast('Dosya görüntüleme hatası', 'error');
+                }
+            } else {
+                showToast('Dosya alınamadı', 'error');
+            }
+        }
+
         function openAddModal() {
             if (state.activeNoteSubTab === 'notes') {
                 openModal('addNoteModal');
@@ -2486,10 +2566,11 @@
             openModal('confirmDeleteModal');
         }
 
+        /* KENDİ PROFİLİNDEKİ İSTATİSTİK, NOT VE TAKIM LİSTELERİNİ GÜNCELLEME */
         function updateProfileStats() {
             const myNotes = state.notes.filter(n => n.author === state.currentUser);
             const myLikes = myNotes.reduce((acc, curr) => acc + (curr.likes || 0), 0);
-            const myTeams = state.teams.filter(t => t.author === state.currentUser);
+            const myTeams = state.teams.filter(t => t.author === state.currentUser || (t.members && t.members.includes(state.currentUser)));
 
             document.getElementById('statMyNotesCount').innerText = myNotes.length;
             document.getElementById('statMyLikesCount').innerText = myLikes;
@@ -2497,27 +2578,51 @@
 
             renderUserProfileDetails();
 
-            const listContainer = document.getElementById('myNotesList');
-            listContainer.innerHTML = '';
-
-            if (myNotes.length === 0) {
-                listContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Henüz bir ders notu paylaşmadınız.</p>`;
-                return;
+            // Kendi Ders Notlarım Listesi
+            const notesContainer = document.getElementById('myNotesList');
+            if (notesContainer) {
+                notesContainer.innerHTML = '';
+                if (myNotes.length === 0) {
+                    notesContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Henüz bir ders notu paylaşmadınız.</p>`;
+                } else {
+                    myNotes.forEach(n => {
+                        const row = document.createElement('div');
+                        row.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
+                        row.innerHTML = `
+                            <div class="space-y-0.5 min-w-0 pr-2">
+                                <div class="font-bold text-theme-main truncate">${n.title}</div>
+                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
+                            </div>
+                            <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main shrink-0">
+                                Görüntüle
+                            </button>`;
+                        notesContainer.appendChild(row);
+                    });
+                }
             }
 
-            myNotes.forEach(n => {
-                const row = document.createElement('div');
-                row.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
-                row.innerHTML = `
-                    <div class="space-y-0.5">
-                        <div class="font-bold text-theme-main">${n.title}</div>
-                        <div class="text-theme-sub">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
-                    </div>
-                    <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main">
-                        Görüntüle
-                    </button>`;
-                listContainer.appendChild(row);
-            });
+            // Kendi Takımlarım Listesi
+            const teamsContainer = document.getElementById('myTeamsList');
+            if (teamsContainer) {
+                teamsContainer.innerHTML = '';
+                if (myTeams.length === 0) {
+                    teamsContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Henüz bir takım ilanı oluşturmadınız veya takıma katılmadınız.</p>`;
+                } else {
+                    myTeams.forEach(t => {
+                        const item = document.createElement('div');
+                        item.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
+                        item.innerHTML = `
+                            <div class="min-w-0 pr-3 space-y-1">
+                                <div class="font-bold text-theme-main truncate">${t.title}</div>
+                                <div class="text-theme-sub text-[11px]">${t.current_members}/${t.target_members} Üye • ${t.date || ''}</div>
+                            </div>
+                            <button onclick="openTeamDetailModal(${t.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main text-xs font-semibold shrink-0">
+                                Detay
+                            </button>`;
+                        teamsContainer.appendChild(item);
+                    });
+                }
+            }
         }
 
         /* UTILS */
