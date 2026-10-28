@@ -13,15 +13,16 @@
 
     <style>
         :root {
-            --bg-base: #11111B;
-            --bg-card: #1E1E2E;
+            --bg-base: #1e1e2e;
+            --bg-card: #1e1e2e;
             --bg-input: #181825;
-            --accent: #89B4FA;
-            --accent-hover: #74C7EC;
-            --text-main: #CDD6F4;
-            --text-sub: #A6ADC8;
-            --border-color: #313244;
-            --shadow-color: rgba(0, 0, 0, 0.4);
+            --accent: #89b4fa;
+            --accent-hover: #74c7ec;
+            --text-main: #cdd6f4;
+            --text-sub: #a6adc8;
+            --border-color: rgba(255, 255, 255, 0.04);
+            --shadow-dark: #141420;
+            --shadow-light: #28283c;
         }
 
         body {
@@ -31,6 +32,59 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* NEOMORPHIC UTILITY CLASSES */
+        .neu-flat {
+            background-color: var(--bg-card);
+            box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .neu-flat-sm {
+            background-color: var(--bg-card);
+            box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .neu-pressed, .neu-inset {
+            background-color: var(--bg-input);
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .neu-btn {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 5px 5px 12px var(--shadow-dark), -5px -5px 12px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .neu-btn:hover {
+            box-shadow: 7px 7px 16px var(--shadow-dark), -7px -7px 16px var(--shadow-light);
+            transform: translateY(-2px);
+        }
+        .neu-btn:active {
+            box-shadow: inset 3px 3px 6px var(--shadow-dark), inset -3px -3px 6px var(--shadow-light);
+            transform: translateY(0);
+        }
+
+        .neu-btn-accent {
+            background-color: var(--accent);
+            color: #11111b;
+            box-shadow: 5px 5px 14px var(--shadow-dark), -5px -5px 14px var(--shadow-light);
+            transition: all 0.2s ease;
+        }
+        .neu-btn-accent:hover {
+            background-color: var(--accent-hover);
+            box-shadow: 7px 7px 18px var(--shadow-dark), -7px -7px 18px var(--shadow-light);
+            transform: translateY(-2px);
+        }
+        .neu-btn-accent:active {
+            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.4), inset -3px -3px 6px rgba(255, 255, 255, 0.2);
+            transform: translateY(0);
+        }
+
         .bg-theme-base { background-color: var(--bg-base); }
         .bg-theme-card { background-color: var(--bg-card); }
         .bg-theme-input { background-color: var(--bg-input); }
@@ -38,19 +92,20 @@
         .text-theme-main { color: var(--text-main); }
         .text-theme-sub { color: var(--text-sub); }
         .text-theme-accent { color: var(--accent); }
-        .bg-theme-accent { background-color: var(--accent); color: #11111B; }
-        .bg-theme-accent:hover { background-color: var(--accent-hover); }
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card);
+            box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+            border-radius: 4px;
+        }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        .glow-hover { transition: all 0.25s ease-in-out; }
+        .glow-hover { transition: all 0.3s ease; }
         .glow-hover:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(137, 180, 250, 0.15);
-            transform: translateY(-2px);
+            box-shadow: 10px 10px 22px var(--shadow-dark), -10px -10px 22px var(--shadow-light), 0 0 15px rgba(137, 180, 250, 0.15);
+            transform: translateY(-3px);
         }
 
         @keyframes fadeIn {
@@ -60,7 +115,7 @@
         .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white p-2 md:p-4">
 
     <!-- Toast Bildirim Alanı -->
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
@@ -69,12 +124,12 @@
     <!-- 1. GİRİŞ VE KAYIT EKRANI (AUTH VIEW) -->
     <!-- =================================================================== -->
     <div id="authView" class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-theme-base">
-        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden border border-theme shadow-2xl bg-theme-card">
+        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl neu-flat p-4 md:p-6 gap-6">
             <!-- Sol Sütun: SAÜ Branding -->
-            <div class="p-8 md:p-12 flex flex-col justify-between relative overflow-hidden bg-gradient-to-br from-blue-900/40 via-purple-900/20 to-slate-900">
+            <div class="p-8 md:p-10 flex flex-col justify-between relative overflow-hidden rounded-2xl neu-pressed">
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-xl bg-theme-accent flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg">
+                        <div class="w-12 h-12 rounded-2xl neu-btn-accent flex items-center justify-center text-slate-950 text-2xl font-black">
                             <i class="fa-solid fa-graduation-cap"></i>
                         </div>
                         <div>
@@ -90,7 +145,7 @@
                     </p>
                 </div>
 
-                <div class="relative z-10 space-y-3 border-t border-theme pt-6">
+                <div class="relative z-10 space-y-3.5 border-t border-theme/40 pt-6">
                     <div class="flex items-center gap-3 text-sm text-theme-sub">
                         <i class="fa-solid fa-users-gear text-theme-accent"></i>
                         <span>Takım & Proje İlanları ve Kontenjan Takibi</span>
@@ -107,33 +162,33 @@
             </div>
 
             <!-- Sağ Sütun: Form Alanı -->
-            <div class="p-8 md:p-12 flex flex-col justify-center bg-theme-card">
+            <div class="p-6 md:p-8 flex flex-col justify-center rounded-2xl neu-flat">
                 <!-- Giriş Formu -->
                 <div id="loginFormContainer" class="animate-fade-in">
                     <h3 class="text-2xl font-bold text-theme-main mb-2">Giriş Yap</h3>
                     <p class="text-sm text-theme-sub mb-6">Hesabınıza erişmek için bilgilerinizi giriniz.</p>
 
-                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Kullanıcı Adı</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-2">Kullanıcı Adı</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-user"></i></span>
-                                <input type="text" id="loginUsername" required class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="Kullanıcı adınız">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-theme-sub"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" id="loginUsername" required class="w-full pl-10 pr-4 py-3 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent transition-all" placeholder="Kullanıcı adınız">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Şifre</label>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-2">Şifre</label>
                             <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" id="loginPassword" required class="w-full pl-10 pr-10 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main focus:outline-none focus:border-theme-accent transition-colors" placeholder="••••••••">
-                                <button type="button" onclick="togglePassword('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-theme-sub hover:text-theme-main">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-theme-sub"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" id="loginPassword" required class="w-full pl-10 pr-10 py-3 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent transition-all" placeholder="••••••••">
+                                <button type="button" onclick="togglePassword('loginPassword', 'loginEyeIcon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-theme-sub hover:text-theme-main">
                                     <i id="loginEyeIcon" class="fa-solid fa-eye"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full py-3 rounded-lg bg-theme-accent font-semibold text-slate-950 transition-transform active:scale-[0.98] shadow-md flex items-center justify-center gap-2">
+                        <button type="submit" class="w-full py-3.5 rounded-xl neu-btn-accent font-bold transition-all flex items-center justify-center gap-2 mt-2">
                             <span>Giriş Yap</span>
                             <i class="fa-solid fa-arrow-right"></i>
                         </button>
@@ -152,16 +207,16 @@
                         <p class="text-xs text-theme-sub">Profil bilgilerinizi eksiksiz doldurarak SAÜ Connect'e katılın.</p>
                     </div>
 
-                    <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3">
+                    <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3.5">
                         <div>
                             <label class="block text-[11px] font-semibold uppercase tracking-wider text-theme-sub mb-1">Kullanıcı Adı *</label>
-                            <input type="text" id="regUsername" required class="w-full px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Kullanıcı adı">
+                            <input type="text" id="regUsername" required class="w-full px-3.5 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent" placeholder="Kullanıcı adı">
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-[11px] font-semibold uppercase tracking-wider text-theme-sub mb-1">Fakülte *</label>
-                                <input type="text" id="regFaculty" list="saüFacultiesList" required class="w-full px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Örn: Mühendislik Fakültesi">
+                                <input type="text" id="regFaculty" list="saüFacultiesList" required class="w-full px-3.5 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent" placeholder="Örn: Mühendislik Fakültesi">
                                 <datalist id="saüFacultiesList">
                                     <option value="Bilgisayar ve Bilişim Bilimleri Fakültesi"></option>
                                     <option value="Mühendislik Fakültesi"></option>
@@ -176,27 +231,27 @@
 
                             <div>
                                 <label class="block text-[11px] font-semibold uppercase tracking-wider text-theme-sub mb-1">Bölüm *</label>
-                                <input type="text" id="regDepartment" required class="w-full px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Örn: Yazılım Mühendisliği">
+                                <input type="text" id="regDepartment" required class="w-full px-3.5 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent" placeholder="Örn: Yazılım Mühendisliği">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-semibold uppercase tracking-wider text-theme-sub mb-1">Kendin Hakkında (Biyografi) <span class="text-theme-sub/60">(Opsiyonel)</span></label>
-                            <textarea id="regAbout" rows="2" class="w-full px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-xs focus:outline-none focus:border-theme-accent" placeholder="İlgi alanlarınız, projeleriniz veya hedefleriniz..."></textarea>
+                            <textarea id="regAbout" rows="2" class="w-full px-3.5 py-2.5 rounded-xl neu-pressed text-theme-main text-xs focus:outline-none focus:ring-2 focus:ring-theme-accent" placeholder="İlgi alanlarınız, projeleriniz veya hedefleriniz..."></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-[11px] font-semibold uppercase tracking-wider text-theme-sub mb-1">Şifre *</label>
-                                <input type="password" id="regPassword" required class="w-full px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="••••••••">
+                                <input type="password" id="regPassword" required class="w-full px-3.5 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent" placeholder="••••••••">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold uppercase tracking-wider text-theme-sub mb-1">Şifre Tekrarı *</label>
-                                <input type="password" id="regPasswordConfirm" required class="w-full px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="••••••••">
+                                <input type="password" id="regPasswordConfirm" required class="w-full px-3.5 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none focus:ring-2 focus:ring-theme-accent" placeholder="••••••••">
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full py-2.5 rounded-lg bg-theme-accent font-semibold text-slate-950 transition-transform active:scale-[0.98] shadow flex items-center justify-center gap-2 text-sm mt-2">
+                        <button type="submit" class="w-full py-3 rounded-xl neu-btn-accent font-bold transition-all flex items-center justify-center gap-2 text-sm mt-2">
                             <span>Kaydol ve Katıl</span>
                             <i class="fa-solid fa-user-check"></i>
                         </button>
@@ -214,14 +269,14 @@
     <!-- =================================================================== -->
     <!-- 2. ANA PANEL LAYOUT -->
     <!-- =================================================================== -->
-    <div id="mainView" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-theme-base">
+    <div id="mainView" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-theme-base gap-6 p-2 md:p-4">
 
         <!-- Sidebar -->
-        <aside class="w-full md:w-64 bg-theme-card border-b md:border-b-0 md:border-r border-theme flex flex-col justify-between shrink-0">
+        <aside class="w-full md:w-64 rounded-3xl neu-flat flex flex-col justify-between shrink-0 p-4">
             <div>
-                <div class="p-5 border-b border-theme flex items-center justify-between">
+                <div class="pb-5 mb-4 border-b border-theme/40 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-theme-accent flex items-center justify-center text-slate-950 font-bold text-xl shadow">
+                        <div class="w-10 h-10 rounded-2xl neu-btn-accent flex items-center justify-center text-slate-950 font-bold text-xl">
                             <i class="fa-solid fa-graduation-cap"></i>
                         </div>
                         <div>
@@ -231,48 +286,48 @@
                     </div>
                 </div>
 
-                <nav class="p-3 space-y-1">
-                    <button onclick="switchTab('notes')" id="nav-notes" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left transition-colors bg-theme-accent text-slate-950">
+                <nav class="space-y-2.5">
+                    <button onclick="switchTab('notes')" id="nav-notes" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm text-left transition-all neu-pressed text-theme-accent">
                         <i class="fa-solid fa-book-open w-5 text-center"></i>
                         <span>Ders Notları</span>
                     </button>
 
-                    <button onclick="switchTab('teams')" id="nav-teams" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                    <button onclick="switchTab('teams')" id="nav-teams" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
                         <i class="fa-solid fa-users-gear w-5 text-center"></i>
                         <span>Takımlar</span>
                     </button>
 
-                    <button onclick="switchTab('polls')" id="nav-polls" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                    <button onclick="switchTab('polls')" id="nav-polls" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
                         <i class="fa-solid fa-chart-pie w-5 text-center"></i>
                         <span>Anketler</span>
                     </button>
 
-                    <button onclick="switchTab('social')" id="nav-social" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                    <button onclick="switchTab('social')" id="nav-social" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
                         <i class="fa-solid fa-users w-5 text-center"></i>
                         <span>Sosyal</span>
                     </button>
 
-                    <button onclick="switchTab('profile')" id="nav-profile" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                    <button onclick="switchTab('profile')" id="nav-profile" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
                         <i class="fa-solid fa-circle-user w-5 text-center"></i>
                         <span>Profilim</span>
                     </button>
 
-                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors">
+                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
                         <i class="fa-solid fa-gear w-5 text-center"></i>
                         <span>Ayarlar</span>
                     </button>
                 </nav>
             </div>
 
-            <div class="p-4 border-t border-theme space-y-3">
-                <div id="connectionBadge" class="flex items-center justify-between text-xs px-2.5 py-1.5 rounded-md bg-theme-input border border-theme">
+            <div class="pt-4 border-t border-theme/40 space-y-3 mt-4">
+                <div id="connectionBadge" class="flex items-center justify-between text-xs px-3 py-2 rounded-xl neu-pressed">
                     <span class="text-theme-sub">Sunucu:</span>
                     <span id="apiStatusText" class="font-semibold text-emerald-400 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sunucu Bağlı
                     </span>
                 </div>
 
-                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium">
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl neu-btn text-red-400 hover:text-red-300 transition-colors text-sm font-semibold">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Çıkış Yap</span>
                 </button>
@@ -280,15 +335,15 @@
         </aside>
 
         <!-- İçerik Alanı -->
-        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <main class="flex-1 flex flex-col min-w-0 overflow-y-auto space-y-6">
 
             <!-- Header -->
-            <header class="h-16 border-b border-theme bg-theme-card px-6 flex items-center justify-between sticky top-0 z-20">
+            <header class="h-16 rounded-3xl neu-flat px-6 flex items-center justify-between sticky top-0 z-20">
                 <h2 id="currentTabTitle" class="text-lg font-bold text-theme-main">Ders Notları</h2>
 
                 <div class="flex items-center gap-4">
-                    <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-theme-input border border-theme cursor-pointer" onclick="switchTab('profile')">
-                        <div id="headerAvatarContainer" class="w-7 h-7 rounded-full overflow-hidden bg-theme-accent text-slate-950 font-bold text-xs flex items-center justify-center uppercase shrink-0">
+                    <div class="flex items-center gap-2.5 px-3.5 py-1.5 rounded-full neu-btn cursor-pointer" onclick="switchTab('profile')">
+                        <div id="headerAvatarContainer" class="w-7 h-7 rounded-full overflow-hidden neu-btn-accent text-slate-950 font-bold text-xs flex items-center justify-center uppercase shrink-0">
                             <span id="userAvatar">U</span>
                         </div>
                         <span class="text-sm font-semibold text-theme-main" id="headerUsername">Kullanıcı</span>
@@ -296,17 +351,17 @@
                 </div>
             </header>
 
-            <div class="p-4 md:p-8 flex-1">
+            <div class="flex-1 space-y-6">
 
                 <!-- TAB 1: DERS NOTLARI VE İSTEKLER -->
                 <section id="section-notes" class="space-y-6">
-                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-theme-card p-4 rounded-xl border border-theme shadow-sm">
-                        <div class="flex p-1 bg-theme-input rounded-lg border border-theme self-start">
-                            <button onclick="switchNoteTab('notes')" id="subnav-notes" class="px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow flex items-center gap-1.5">
+                    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 neu-flat p-4 rounded-2xl">
+                        <div class="flex p-1.5 neu-pressed rounded-xl self-start gap-1">
+                            <button onclick="switchNoteTab('notes')" id="subnav-notes" class="px-4 py-2 rounded-xl font-bold text-sm transition-all neu-btn-accent text-slate-950 flex items-center gap-1.5">
                                 <i class="fa-solid fa-book-open text-xs"></i>
                                 <span>Ders Notları</span>
                             </button>
-                            <button onclick="switchNoteTab('requests')" id="subnav-requests" class="px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main flex items-center gap-1.5">
+                            <button onclick="switchNoteTab('requests')" id="subnav-requests" class="px-4 py-2 rounded-xl font-semibold text-sm transition-all text-theme-sub hover:text-theme-main neu-btn flex items-center gap-1.5">
                                 <i class="fa-solid fa-comments text-xs"></i>
                                 <span>Not İstekleri</span>
                             </button>
@@ -314,32 +369,32 @@
 
                         <div class="flex flex-wrap items-center gap-3 flex-1 lg:justify-end">
                             <div class="relative flex-1 min-w-[200px] max-w-xs">
-                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                <input type="text" id="searchInput" oninput="filterAndRender()" class="w-full pl-9 pr-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Notlarda ara...">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="searchInput" oninput="filterAndRender()" class="w-full pl-10 pr-3 py-2 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Notlarda ara...">
                             </div>
 
-                            <select id="sortSelect" onchange="filterAndRender()" class="px-3 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent cursor-pointer">
+                            <select id="sortSelect" onchange="filterAndRender()" class="px-3.5 py-2 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none cursor-pointer">
                                 <option value="likes">❤️ Beğeniye Göre</option>
                                 <option value="date_desc">📅 Tarihe Göre (En Yeni)</option>
                                 <option value="alpha_asc">🔤 A'dan Z'ye</option>
                                 <option value="alpha_desc">🔤 Z'den A'ya</option>
                             </select>
 
-                            <button id="primaryActionButton" onclick="openAddModal()" class="px-4 py-2 rounded-lg bg-theme-accent font-semibold text-slate-950 hover:bg-theme-accent-hover transition-colors shadow flex items-center gap-2 text-sm shrink-0">
+                            <button id="primaryActionButton" onclick="openAddModal()" class="px-4 py-2 rounded-xl neu-btn-accent font-bold text-slate-950 transition-colors flex items-center gap-2 text-sm shrink-0">
                                 <i class="fa-solid fa-plus"></i>
                                 <span id="actionButtonText">Not Ekle</span>
                             </button>
                         </div>
                     </div>
 
-                    <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
-                    <div id="requestsList" class="hidden space-y-4"></div>
+                    <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    <div id="requestsList" class="hidden space-y-5"></div>
                 </section>
 
                 <!-- TAB 2: TAKIMLAR VE PROJE İLANLARI -->
                 <section id="section-teams" class="hidden space-y-6">
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-theme pb-4">
+                    <div class="neu-flat p-6 rounded-3xl space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-theme/40 pb-4">
                             <div>
                                 <h3 class="text-xl font-bold text-theme-main flex items-center gap-2">
                                     <i class="fa-solid fa-users-gear text-theme-accent"></i>
@@ -350,28 +405,28 @@
                                 </p>
                             </div>
 
-                            <button onclick="openModal('addTeamModal')" class="px-4 py-2.5 rounded-lg bg-theme-accent text-slate-950 font-bold text-sm hover:bg-theme-accent-hover transition-all shadow flex items-center gap-2 shrink-0">
+                            <button onclick="openModal('addTeamModal')" class="px-4 py-2.5 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm transition-all flex items-center gap-2 shrink-0">
                                 <i class="fa-solid fa-plus-circle"></i>
                                 <span>Takım İlanı Oluştur</span>
                             </button>
                         </div>
 
                         <!-- Arama Barı -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-3.5 rounded-xl bg-theme-input border border-theme">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-3.5 rounded-2xl neu-pressed">
                             <div class="relative flex-1">
-                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                <input type="text" id="teamSearchInput" oninput="filterAndRenderTeams()" class="w-full pl-9 pr-3 py-2 rounded-lg bg-theme-card border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Takım adı, yetenek veya açıklama ara...">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="teamSearchInput" oninput="filterAndRenderTeams()" class="w-full pl-10 pr-3 py-2 rounded-xl neu-flat text-theme-main text-sm focus:outline-none" placeholder="Takım adı, yetenek veya açıklama ara...">
                             </div>
                         </div>
 
                         <!-- Takım İlanları Grid -->
-                        <div id="teamsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+                        <div id="teamsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
                     </div>
                 </section>
 
                 <!-- TAB 3: ANKETLER -->
                 <section id="section-polls" class="hidden space-y-6">
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme">
+                    <div class="neu-flat p-6 rounded-3xl">
                         <h3 class="text-xl font-bold text-theme-main mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-chart-pie text-theme-accent"></i>
                             <span>Kampüs Anketleri</span>
@@ -379,15 +434,15 @@
                         <p class="text-theme-sub text-sm mb-6">Sakarya Üniversitesi öğrencileri tarafından başlatılan güncel oylamalar.</p>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-4">
-                                <span class="px-2.5 py-1 rounded-md bg-blue-500/20 text-blue-400 text-xs font-semibold">Kütüphane</span>
+                            <div class="p-5 rounded-2xl neu-pressed space-y-4">
+                                <span class="px-3 py-1 rounded-xl neu-btn text-blue-400 text-xs font-semibold">Kütüphane</span>
                                 <h4 class="font-bold text-theme-main">Merkez Kütüphane Vize Döneminde 24 Saat Açık Kalmalı mı?</h4>
-                                <div class="space-y-2">
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent flex justify-between">
+                                <div class="space-y-2.5">
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
                                         <span>Evet, 24 saat açık olmalı</span>
                                         <span class="text-theme-accent font-bold">%88</span>
                                     </button>
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent flex justify-between">
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
                                         <span>Hayır, mevcut çalışma saatleri yeterli</span>
                                         <span class="text-theme-sub">%12</span>
                                     </button>
@@ -395,15 +450,15 @@
                                 <div class="text-xs text-theme-sub text-right">Toplam 342 Oy</div>
                             </div>
 
-                            <div class="p-5 rounded-xl border border-theme bg-theme-input space-y-4">
-                                <span class="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-400 text-xs font-semibold">Yemekhane</span>
+                            <div class="p-5 rounded-2xl neu-pressed space-y-4">
+                                <span class="px-3 py-1 rounded-xl neu-btn text-purple-400 text-xs font-semibold">Yemekhane</span>
                                 <h4 class="font-bold text-theme-main">Kampüs Yemekhanesindeki Öğle Menüsü Kalitesini Nasıl Buluyorsunuz?</h4>
-                                <div class="space-y-2">
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent flex justify-between">
+                                <div class="space-y-2.5">
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
                                         <span>👍 Çok Başarılı</span>
                                         <span class="text-theme-accent font-bold">%45</span>
                                     </button>
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-lg border border-theme bg-theme-card text-left text-sm font-medium hover:border-theme-accent flex justify-between">
+                                    <button onclick="showToast('Oyunuz kaydedildi!', 'success')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
                                         <span>😐 Geliştirilebilir</span>
                                         <span class="text-theme-sub">%55</span>
                                     </button>
@@ -416,7 +471,7 @@
 
                 <!-- TAB 4: SOSYAL (SOSYAL DİZİN) -->
                 <section id="section-social" class="hidden space-y-6">
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-6">
+                    <div class="neu-flat p-6 rounded-3xl space-y-6">
                         <div>
                             <h3 class="text-xl font-bold text-theme-main flex items-center gap-2">
                                 <i class="fa-solid fa-users text-theme-accent"></i>
@@ -428,17 +483,17 @@
                         </div>
 
                         <!-- Arama ve Sıralama Barı -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-xl bg-theme-input border border-theme">
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-2xl neu-pressed">
                             <div class="relative flex-1">
-                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-theme-sub">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-theme-sub">
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </span>
-                                <input type="text" id="socialSearchInput" oninput="filterAndRenderSocial()" class="w-full pl-9 pr-3 py-2 rounded-lg bg-theme-card border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Kullanıcı adı, fakülte veya bölüm ara...">
+                                <input type="text" id="socialSearchInput" oninput="filterAndRenderSocial()" class="w-full pl-10 pr-3 py-2 rounded-xl neu-flat text-theme-main text-sm focus:outline-none" placeholder="Kullanıcı adı, fakülte veya bölüm ara...">
                             </div>
 
                             <div class="flex items-center gap-2 shrink-0">
                                 <label class="text-xs font-semibold text-theme-sub whitespace-nowrap"><i class="fa-solid fa-arrow-down-wide-short mr-1"></i>Sırala:</label>
-                                <select id="socialSortSelect" onchange="filterAndRenderSocial()" class="px-3 py-2 rounded-lg bg-theme-card border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent cursor-pointer">
+                                <select id="socialSortSelect" onchange="filterAndRenderSocial()" class="px-3.5 py-2 rounded-xl neu-flat text-theme-main text-sm focus:outline-none cursor-pointer">
                                     <option value="likes_desc">❤️ En Çok Beğeni Alanlar</option>
                                     <option value="notes_desc">📖 En Çok Not Paylaşanlar</option>
                                     <option value="reqs_desc">🙋‍♂️ En Çok İstek Açanlar</option>
@@ -448,16 +503,16 @@
                         </div>
 
                         <!-- Öğrenci Kartları -->
-                        <div id="socialUsersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+                        <div id="socialUsersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
                     </div>
                 </section>
 
                 <!-- TAB 5: KENDİ PROFİLİM -->
                 <section id="section-profile" class="hidden space-y-6">
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme relative overflow-hidden">
+                    <div class="neu-flat p-6 rounded-3xl relative overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
                             <div class="flex flex-col sm:flex-row items-center gap-6">
-                                <div id="profileLargeAvatarContainer" class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg shrink-0 overflow-hidden border-2 border-theme-accent">
+                                <div id="profileLargeAvatarContainer" class="w-24 h-24 rounded-2xl neu-btn-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shrink-0 overflow-hidden">
                                     <span id="profileLargeAvatar">U</span>
                                 </div>
                                 <div class="text-center sm:text-left space-y-1.5">
@@ -476,34 +531,34 @@
                                     </div>
 
                                     <div class="pt-1 flex flex-wrap justify-center sm:justify-start gap-2">
-                                        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+                                        <span class="px-3 py-1 rounded-full neu-pressed text-emerald-400 text-xs font-semibold">
                                             <i class="fa-solid fa-circle-check mr-1"></i> Onaylı Profil
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <button onclick="openEditProfileModal()" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-theme-main hover:border-theme-accent transition-colors text-xs font-semibold flex items-center gap-2 self-center sm:self-start">
+                            <button onclick="openEditProfileModal()" class="px-4 py-2.5 rounded-xl neu-btn text-theme-main transition-colors text-xs font-bold flex items-center gap-2 self-center sm:self-start">
                                 <i class="fa-solid fa-pen-to-square text-theme-accent"></i>
                                 <span>Profili Düzenle</span>
                             </button>
                         </div>
 
                         <!-- Biyografi Alanı -->
-                        <div id="profileAboutContainer" class="mt-6 pt-5 border-t border-theme">
+                        <div id="profileAboutContainer" class="mt-6 pt-5 border-t border-theme/40">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub mb-2 flex items-center gap-1.5">
                                 <i class="fa-solid fa-quote-left text-theme-accent"></i>
                                 <span>Kendin Hakkında (Biyografi)</span>
                             </h4>
-                            <div id="profileAboutText" class="p-3.5 rounded-xl bg-theme-input border border-theme text-xs text-theme-main leading-relaxed italic">
+                            <div id="profileAboutText" class="p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed italic">
                                 Henüz bir biyografi eklenmedi. "Profili Düzenle" butonunu kullanarak hakkınızda bilgi ekleyebilirsiniz.
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-5 rounded-2xl neu-flat flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl neu-pressed text-blue-400 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-file-lines"></i>
                             </div>
                             <div>
@@ -512,8 +567,8 @@
                             </div>
                         </div>
 
-                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl font-bold">
+                        <div class="p-5 rounded-2xl neu-flat flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl neu-pressed text-rose-400 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-heart"></i>
                             </div>
                             <div>
@@ -522,8 +577,8 @@
                             </div>
                         </div>
 
-                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold">
+                        <div class="p-5 rounded-2xl neu-flat flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl neu-pressed text-purple-400 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-users-gear"></i>
                             </div>
                             <div>
@@ -533,8 +588,8 @@
                         </div>
                     </div>
 
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-4">
-                        <h4 class="font-bold text-theme-main text-lg border-b border-theme pb-3">Paylaştığım Ders Notları</h4>
+                    <div class="neu-flat p-6 rounded-3xl space-y-4">
+                        <h4 class="font-bold text-theme-main text-lg border-b border-theme/40 pb-3">Paylaştığım Ders Notları</h4>
                         <div id="myNotesList" class="space-y-3"></div>
                     </div>
                 </section>
@@ -542,8 +597,8 @@
                 <!-- TAB 6: DİĞER KULLANICI PROFİLİ (TAM SAYFA GÖRÜNÜMÜ) -->
                 <section id="section-user-profile" class="hidden space-y-6 animate-fade-in">
                     <!-- Geri Dön Barı -->
-                    <div class="flex items-center justify-between bg-theme-card p-4 rounded-xl border border-theme shadow-sm">
-                        <button onclick="goBackFromUserProfile()" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-theme-main hover:border-theme-accent transition-colors font-semibold text-xs flex items-center gap-2">
+                    <div class="flex items-center justify-between neu-flat p-4 rounded-2xl">
+                        <button onclick="goBackFromUserProfile()" class="px-4 py-2 rounded-xl neu-btn text-theme-main transition-colors font-semibold text-xs flex items-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i>
                             <span>Geri Dön</span>
                         </button>
@@ -551,9 +606,9 @@
                     </div>
 
                     <!-- Profil Kartı Header -->
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme relative overflow-hidden space-y-5">
+                    <div class="neu-flat p-6 rounded-3xl relative overflow-hidden space-y-5">
                         <div class="flex flex-col sm:flex-row items-center gap-6 relative z-10">
-                            <div id="viewProfileLargeAvatarContainer" class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg shrink-0 overflow-hidden border-2 border-theme-accent">
+                            <div id="viewProfileLargeAvatarContainer" class="w-24 h-24 rounded-2xl neu-btn-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shrink-0 overflow-hidden">
                                 <span id="viewProfileLargeAvatar">U</span>
                             </div>
                             <div class="text-center sm:text-left space-y-1.5">
@@ -572,7 +627,7 @@
                                 </div>
 
                                 <div class="pt-1 flex flex-wrap justify-center sm:justify-start gap-2">
-                                    <span class="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-semibold border border-blue-500/30">
+                                    <span class="px-3 py-1 rounded-full neu-pressed text-blue-400 text-xs font-semibold">
                                         <i class="fa-solid fa-graduation-cap mr-1"></i> Öğrenci
                                     </span>
                                 </div>
@@ -580,21 +635,21 @@
                         </div>
 
                         <!-- Biyografi -->
-                        <div id="viewProfileAboutContainer" class="pt-4 border-t border-theme">
+                        <div id="viewProfileAboutContainer" class="pt-4 border-t border-theme/40">
                             <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub mb-2 flex items-center gap-1.5">
                                 <i class="fa-solid fa-quote-left text-theme-accent"></i>
                                 <span>Hakkında</span>
                             </h4>
-                            <div id="viewProfileAboutText" class="p-3.5 rounded-xl bg-theme-input border border-theme text-xs text-theme-main leading-relaxed italic">
+                            <div id="viewProfileAboutText" class="p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed italic">
                                 Biyografi eklenmemiş.
                             </div>
                         </div>
                     </div>
 
                     <!-- İstatistik Kartları -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-5 rounded-2xl neu-flat flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl neu-pressed text-blue-400 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-file-lines"></i>
                             </div>
                             <div>
@@ -603,8 +658,8 @@
                             </div>
                         </div>
 
-                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-xl font-bold">
+                        <div class="p-5 rounded-2xl neu-flat flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl neu-pressed text-rose-400 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-heart"></i>
                             </div>
                             <div>
@@ -613,8 +668,8 @@
                             </div>
                         </div>
 
-                        <div class="p-5 rounded-xl border border-theme bg-theme-card flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold">
+                        <div class="p-5 rounded-2xl neu-flat flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl neu-pressed text-purple-400 flex items-center justify-center text-xl font-bold">
                                 <i class="fa-solid fa-users-gear"></i>
                             </div>
                             <div>
@@ -626,16 +681,16 @@
 
                     <!-- Paylaşımlar ve İlanlar -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-4">
-                            <h4 class="font-bold text-theme-main text-base border-b border-theme pb-3 flex items-center gap-2">
+                        <div class="neu-flat p-6 rounded-3xl space-y-4">
+                            <h4 class="font-bold text-theme-main text-base border-b border-theme/40 pb-3 flex items-center gap-2">
                                 <i class="fa-solid fa-book-open text-theme-accent"></i>
                                 <span>Paylaştığı Ders Notları</span>
                             </h4>
                             <div id="viewUserNotesList" class="space-y-3"></div>
                         </div>
 
-                        <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-4">
-                            <h4 class="font-bold text-theme-main text-base border-b border-theme pb-3 flex items-center gap-2">
+                        <div class="neu-flat p-6 rounded-3xl space-y-4">
+                            <h4 class="font-bold text-theme-main text-base border-b border-theme/40 pb-3 flex items-center gap-2">
                                 <i class="fa-solid fa-users-gear text-theme-accent"></i>
                                 <span>Açtığı Takım İlanları</span>
                             </h4>
@@ -646,7 +701,7 @@
 
                 <!-- TAB 7: AYARLAR -->
                 <section id="section-settings" class="hidden space-y-6">
-                    <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-6">
+                    <div class="neu-flat p-6 rounded-3xl space-y-6">
                         <div>
                             <h3 class="text-xl font-bold text-theme-main mb-1 flex items-center gap-2">
                                 <i class="fa-solid fa-gear text-theme-accent"></i>
@@ -655,25 +710,25 @@
                             <p class="text-theme-sub text-sm">Görünüm temalarını değiştirin ve sunucu bağlantısını yapılandırın.</p>
                         </div>
 
-                        <div class="space-y-4 border-t border-theme pt-5">
+                        <div class="space-y-4 border-t border-theme/40 pt-5">
                             <label class="block text-sm font-bold text-theme-main">🎨 Görünüm Teması Seçin</label>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <button onclick="selectTheme('catppuccin')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#1E1E2E] border-[#313244]" id="theme-btn-catppuccin">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                <button onclick="selectTheme('catppuccin')" class="p-5 rounded-2xl neu-btn text-left space-y-2 transition-all hover:scale-[1.02]" id="theme-btn-catppuccin">
                                     <div class="flex items-center justify-between">
                                         <span class="font-bold text-xs text-[#CDD6F4]">Catppuccin Mocha</span>
                                         <div class="w-4 h-4 rounded-full bg-[#89B4FA]"></div>
                                     </div>
                                 </button>
 
-                                <button onclick="selectTheme('dracula')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#282A36] border-[#44475A]" id="theme-btn-dracula">
+                                <button onclick="selectTheme('dracula')" class="p-5 rounded-2xl neu-btn text-left space-y-2 transition-all hover:scale-[1.02]" id="theme-btn-dracula">
                                     <div class="flex items-center justify-between">
                                         <span class="font-bold text-xs text-[#F8F8F2]">Dracula Dark</span>
                                         <div class="w-4 h-4 rounded-full bg-[#BD93F9]"></div>
                                     </div>
                                 </button>
 
-                                <button onclick="selectTheme('emerald')" class="p-4 rounded-xl border-2 text-left space-y-2 transition-all hover:scale-[1.02] bg-[#1E293B] border-[#334155]" id="theme-btn-emerald">
+                                <button onclick="selectTheme('emerald')" class="p-5 rounded-2xl neu-btn text-left space-y-2 transition-all hover:scale-[1.02]" id="theme-btn-emerald">
                                     <div class="flex items-center justify-between">
                                         <span class="font-bold text-xs text-[#F1F5F9]">Emerald Night</span>
                                         <div class="w-4 h-4 rounded-full bg-[#34D399]"></div>
@@ -682,11 +737,11 @@
                             </div>
                         </div>
 
-                        <div class="space-y-3 border-t border-theme pt-5">
+                        <div class="space-y-3 border-t border-theme/40 pt-5">
                             <label class="block text-sm font-bold text-theme-main">🔌 Backend Sunucu Endpoint URL</label>
-                            <div class="flex gap-2 max-w-md">
-                                <input type="text" id="apiEndpointInput" class="flex-1 px-3.5 py-2 rounded-lg bg-theme-input border border-theme text-sm text-theme-main focus:outline-none focus:border-theme-accent" value="/api/command">
-                                <button onclick="saveApiEndpoint()" class="px-4 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm">Kaydet</button>
+                            <div class="flex gap-3 max-w-md">
+                                <input type="text" id="apiEndpointInput" class="flex-1 px-4 py-2.5 rounded-xl neu-pressed text-sm text-theme-main focus:outline-none" value="/api/command">
+                                <button onclick="saveApiEndpoint()" class="px-5 py-2.5 rounded-xl neu-btn-accent font-bold text-sm">Kaydet</button>
                             </div>
                         </div>
                     </div>
@@ -700,10 +755,10 @@
     <!-- MODALLAR -->
     <!-- =================================================================== -->
 
-    <!-- MODAL: PROFİLİ DÜZENLE MODALI (PROFİL RESMİ YÜKLEME DAHİL) -->
-    <div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-md bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b border-theme pb-3">
+    <!-- MODAL: PROFİLİ DÜZENLE MODALI -->
+    <div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-md neu-flat rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
                     <i class="fa-solid fa-pen-to-square text-theme-accent"></i>
                     <span>Profil Bilgilerini Güncelle</span>
@@ -713,37 +768,37 @@
 
             <form onsubmit="submitUpdateProfile(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Profil Resmi</label>
-                    <input type="file" id="editProfileImageInput" accept="image/*" class="w-full text-xs text-theme-sub file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-theme-input file:text-theme-main border border-theme rounded-lg p-1">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Profil Resmi</label>
+                    <input type="file" id="editProfileImageInput" accept="image/*" class="w-full text-xs text-theme-sub file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:neu-btn file:text-theme-main neu-pressed rounded-xl p-1.5">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Fakülte *</label>
-                    <input type="text" id="editFaculty" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Fakülteniz">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Fakülte *</label>
+                    <input type="text" id="editFaculty" required class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Fakülteniz">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Bölüm *</label>
-                    <input type="text" id="editDepartment" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Bölümünüz">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Bölüm *</label>
+                    <input type="text" id="editDepartment" required class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Bölümünüz">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Kendin Hakkında (Biyografi)</label>
-                    <textarea id="editAbout" rows="3" class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-xs focus:outline-none focus:border-theme-accent" placeholder="Kısaca kendinizden bahsedin..."></textarea>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Kendin Hakkında (Biyografi)</label>
+                    <textarea id="editAbout" rows="3" class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-xs focus:outline-none" placeholder="Kısaca kendinizden bahsedin..."></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal('editProfileModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-sm font-semibold text-theme-sub">İptal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm hover:bg-theme-accent-hover">Güncelle</button>
+                    <button type="button" onclick="closeModal('editProfileModal')" class="px-4 py-2 rounded-xl neu-btn text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm">Güncelle</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL: TAKIM İLANI OLUŞTUR MODALI -->
-    <div id="addTeamModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-lg bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b border-theme pb-3">
+    <div id="addTeamModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
                     <i class="fa-solid fa-users-gear text-theme-accent"></i>
                     <span>Yeni Takım Arama İlanı Oluştur</span>
@@ -753,46 +808,46 @@
 
             <form onsubmit="submitNewTeam(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Takım / Proje Başlığı *</label>
-                    <input type="text" id="newTeamTitle" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Örn: Teknofest Otonom Sualtı Aracı Takımı">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Takım / Proje Başlığı *</label>
+                    <input type="text" id="newTeamTitle" required class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Örn: Teknofest Otonom Sualtı Aracı Takımı">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Gerekli Yetenekler ve Deneyimler *</label>
-                    <input type="text" id="newTeamSkills" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Örn: Python, C++, ROS, OpenCV, SolidWorks">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Gerekli Yetenekler ve Deneyimler *</label>
+                    <input type="text" id="newTeamSkills" required class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Örn: Python, C++, ROS, OpenCV, SolidWorks">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Mevcut Üye Sayısı *</label>
-                        <input type="number" id="newTeamCurrentMembers" min="1" value="1" required class="w-full px-3.5 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Mevcut Üye Sayısı *</label>
+                        <input type="number" id="newTeamCurrentMembers" min="1" value="1" required class="w-full px-4 py-2 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Hedef / Maksimum Üye Sayısı *</label>
-                        <input type="number" id="newTeamTargetMembers" min="1" value="5" required class="w-full px-3.5 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Hedef / Maksimum Üye Sayısı *</label>
+                        <input type="number" id="newTeamTargetMembers" min="1" value="5" required class="w-full px-4 py-2 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Proje Detayları & Açıklama *</label>
-                    <textarea id="newTeamDescription" required rows="4" class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Takımınızın hedefi, çalışılacak konular ve aradığınız takım arkadaşının nitelikleri..."></textarea>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Proje Detayları & Açıklama *</label>
+                    <textarea id="newTeamDescription" required rows="4" class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Takımınızın hedefi, çalışılacak konular ve aradığınız takım arkadaşının nitelikleri..."></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal('addTeamModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-sm font-semibold text-theme-sub">İptal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm hover:bg-theme-accent-hover">İlanı Yayınla</button>
+                    <button type="button" onclick="closeModal('addTeamModal')" class="px-4 py-2 rounded-xl neu-btn text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm">İlanı Yayınla</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL: TAKIM İLANI DETAY MODALI (ÜYE ÇIKAR / AT BUTONLARI DAHİL) -->
-    <div id="teamDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-2xl bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
-            <div class="flex items-start justify-between border-b border-theme pb-4">
-                <div class="space-y-1">
-                    <span id="modalTeamCapacityBadge" class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-xs inline-flex items-center gap-1.5 border border-emerald-500/30">
+    <!-- MODAL: TAKIM İLANI DETAY MODALI -->
+    <div id="teamDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-2xl neu-flat rounded-3xl p-6 space-y-5 max-h-[90vh] flex flex-col">
+            <div class="flex items-start justify-between border-b border-theme/40 pb-4">
+                <div class="space-y-1.5">
+                    <span id="modalTeamCapacityBadge" class="px-3 py-1 rounded-full neu-pressed text-emerald-400 font-bold text-xs inline-flex items-center gap-1.5">
                         <i class="fa-solid fa-users"></i>
                         <span id="modalTeamCapacityText">0/0 Üye</span>
                     </span>
@@ -803,25 +858,25 @@
                         <span><i class="fa-solid fa-clock mr-1"></i><span id="modalTeamDate">Tarih</span></span>
                     </div>
                 </div>
-                <button onclick="closeModal('teamDetailModal')" class="p-1.5 text-theme-sub hover:text-theme-main rounded-lg hover:bg-theme-input">
+                <button onclick="closeModal('teamDetailModal')" class="p-2 text-theme-sub hover:text-theme-main rounded-xl neu-btn">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
             <div class="flex-1 overflow-y-auto space-y-4 pr-1">
                 <!-- Kontenjan İlerleme Çubuğu -->
-                <div class="p-3.5 rounded-xl bg-theme-input border border-theme space-y-2">
+                <div class="p-4 rounded-2xl neu-pressed space-y-2">
                     <div class="flex justify-between text-xs font-semibold">
                         <span class="text-theme-sub">Takım Kontenjan Durumu:</span>
                         <span id="modalTeamCapacityPercent" class="text-theme-accent">0% Dolu</span>
                     </div>
-                    <div class="w-full bg-theme-card h-2.5 rounded-full overflow-hidden border border-theme">
-                        <div id="modalTeamProgress" class="bg-theme-accent h-full transition-all duration-300" style="width: 0%"></div>
+                    <div class="w-full bg-theme-card h-2.5 rounded-full overflow-hidden neu-pressed p-0.5">
+                        <div id="modalTeamProgress" class="bg-theme-accent h-full rounded-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
                 <!-- Gerekli Yetenekler ve Deneyimler Kutusu -->
-                <div class="p-4 rounded-xl bg-theme-input border border-theme space-y-2">
+                <div class="p-4 rounded-2xl neu-pressed space-y-2">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-theme-accent flex items-center gap-2">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                         <span>Gerekli Yetenekler ve Deneyimler</span>
@@ -836,21 +891,21 @@
                 </div>
 
                 <!-- Üyeler -->
-                <div class="space-y-2 pt-2 border-t border-theme">
+                <div class="space-y-2 pt-2 border-t border-theme/40">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Mevcut Takım Üyeleri</h4>
-                    <div id="modalTeamMembersList" class="flex flex-wrap gap-2"></div>
+                    <div id="modalTeamMembersList" class="flex flex-wrap gap-2.5"></div>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between border-t border-theme pt-4">
-                <button id="modalTeamDeleteBtn" onclick="confirmDeleteCurrentTeam()" class="hidden px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 text-xs font-semibold transition-colors flex items-center gap-1.5">
+            <div class="flex items-center justify-between border-t border-theme/40 pt-4">
+                <button id="modalTeamDeleteBtn" onclick="confirmDeleteCurrentTeam()" class="hidden px-4 py-2.5 rounded-xl neu-btn text-red-400 text-xs font-semibold transition-colors flex items-center gap-1.5">
                     <i class="fa-solid fa-trash"></i>
                     <span>İlanı Sil</span>
                 </button>
 
                 <div class="flex items-center gap-3 ml-auto">
-                    <button onclick="closeModal('teamDetailModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-xs font-semibold">Kapat</button>
-                    <button id="modalTeamActionBtn" onclick="handleTeamAction()" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 text-xs font-bold transition-all shadow">
+                    <button onclick="closeModal('teamDetailModal')" class="px-4 py-2.5 rounded-xl neu-btn text-theme-main text-xs font-semibold">Kapat</button>
+                    <button id="modalTeamActionBtn" onclick="handleTeamAction()" class="px-5 py-2.5 rounded-xl neu-btn-accent text-slate-950 text-xs font-bold transition-all">
                         Takıma Katıl
                     </button>
                 </div>
@@ -859,9 +914,9 @@
     </div>
 
     <!-- MODAL: NOT DETAY MODALI -->
-    <div id="noteDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-2xl bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
-            <div class="flex items-start justify-between border-b border-theme pb-4">
+    <div id="noteDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-2xl neu-flat rounded-3xl p-6 space-y-5 max-h-[90vh] flex flex-col">
+            <div class="flex items-start justify-between border-b border-theme/40 pb-4">
                 <div class="space-y-1">
                     <h3 id="modalNoteTitle" class="text-xl font-bold text-theme-main leading-tight">Not Başlığı</h3>
                     <div class="flex items-center gap-3 text-xs text-theme-sub">
@@ -870,7 +925,7 @@
                         <span><i class="fa-solid fa-clock mr-1"></i><span id="modalNoteDate">Tarih</span></span>
                     </div>
                 </div>
-                <button onclick="closeModal('noteDetailModal')" class="p-1.5 text-theme-sub hover:text-theme-main rounded-lg hover:bg-theme-input">
+                <button onclick="closeModal('noteDetailModal')" class="p-2 text-theme-sub hover:text-theme-main rounded-xl neu-btn">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -879,9 +934,9 @@
                 Not İçeriği...
             </div>
 
-            <div id="modalFileContainer" class="p-3.5 rounded-xl border border-theme bg-theme-input flex items-center justify-between">
+            <div id="modalFileContainer" class="p-4 rounded-2xl neu-pressed flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                    <div class="w-10 h-10 rounded-xl neu-btn text-blue-400 flex items-center justify-center shrink-0">
                         <i class="fa-solid fa-file-pdf"></i>
                     </div>
                     <div class="min-w-0">
@@ -889,33 +944,33 @@
                         <div id="modalFileSize" class="text-[11px] text-theme-sub">0 KB</div>
                     </div>
                 </div>
-                <button onclick="downloadCurrentNoteFile()" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shrink-0">
+                <button onclick="downloadCurrentNoteFile()" class="px-4 py-2.5 rounded-xl neu-btn text-blue-400 font-semibold text-xs transition-colors flex items-center gap-1.5 shrink-0">
                     <i class="fa-solid fa-download"></i>
                     <span>İndir</span>
                 </button>
             </div>
 
-            <div class="flex items-center justify-between border-t border-theme pt-4">
-                <button id="modalLikeButton" onclick="toggleLikeCurrentNote()" class="px-4 py-2 rounded-lg border border-theme bg-theme-input hover:border-rose-500/50 text-sm font-semibold transition-colors flex items-center gap-2">
+            <div class="flex items-center justify-between border-t border-theme/40 pt-4">
+                <button id="modalLikeButton" onclick="toggleLikeCurrentNote()" class="px-4 py-2.5 rounded-xl neu-btn text-sm font-semibold transition-colors flex items-center gap-2">
                     <i class="fa-solid fa-heart text-rose-500"></i>
                     <span id="modalLikeCount">0 Beğeni</span>
                 </button>
 
                 <div class="flex items-center gap-2">
-                    <button id="modalDeleteButton" onclick="confirmDeleteCurrentNote()" class="hidden px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 text-sm font-semibold transition-colors flex items-center gap-1.5">
+                    <button id="modalDeleteButton" onclick="confirmDeleteCurrentNote()" class="hidden px-4 py-2.5 rounded-xl neu-btn text-red-400 text-sm font-semibold transition-colors flex items-center gap-1.5">
                         <i class="fa-solid fa-trash"></i>
                         <span>Sil</span>
                     </button>
-                    <button onclick="closeModal('noteDetailModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-theme-main text-sm font-semibold">Kapat</button>
+                    <button onclick="closeModal('noteDetailModal')" class="px-4 py-2.5 rounded-xl neu-btn text-theme-main text-sm font-semibold">Kapat</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- MODAL: NOT EKLE MODALI -->
-    <div id="addNoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-lg bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b border-theme pb-3">
+    <div id="addNoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
                     <i class="fa-solid fa-plus-circle text-theme-accent"></i>
                     <span>Yeni Ders Notu Paylaş</span>
@@ -925,32 +980,32 @@
 
             <form onsubmit="submitNewNote(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Ders & Not Başlığı</label>
-                    <input type="text" id="newNoteTitle" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Örn: Algoritmalar Vize Özet">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Ders & Not Başlığı</label>
+                    <input type="text" id="newNoteTitle" required class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Örn: Algoritmalar Vize Özet">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Açıklama / İçerik</label>
-                    <textarea id="newNoteContent" required rows="4" class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Not hakkında kısa bilgi..."></textarea>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Açıklama / İçerik</label>
+                    <textarea id="newNoteContent" required rows="4" class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Not hakkında kısa bilgi..."></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Dosya Ekle (İsteğe Bağlı)</label>
-                    <input type="file" id="newNoteFile" class="w-full text-xs text-theme-sub file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-theme-input file:text-theme-main border border-theme rounded-lg p-1">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Dosya Ekle (İsteğe Bağlı)</label>
+                    <input type="file" id="newNoteFile" class="w-full text-xs text-theme-sub file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:neu-btn file:text-theme-main neu-pressed rounded-xl p-1.5">
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal('addNoteModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-sm font-semibold text-theme-sub">İptal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm hover:bg-theme-accent-hover">Paylaş</button>
+                    <button type="button" onclick="closeModal('addNoteModal')" class="px-4 py-2 rounded-xl neu-btn text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm">Paylaş</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL: İSTEK EKLE MODALI -->
-    <div id="addRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-lg bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b border-theme pb-3">
+    <div id="addRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
                     <i class="fa-solid fa-comment-medical text-theme-accent"></i>
                     <span>Yeni Not İstegi Oluştur</span>
@@ -960,33 +1015,33 @@
 
             <form onsubmit="submitNewRequest(event)" class="space-y-4">
                 <div>
-                    <input type="text" id="newReqTitle" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Hangi derse ait not arıyorsunuz?">
+                    <input type="text" id="newReqTitle" required class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="Hangi derse ait not arıyorsunuz?">
                 </div>
 
                 <div>
-                    <textarea id="newReqContent" required rows="4" class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="İhtiyacınızı detaylandırın..."></textarea>
+                    <textarea id="newReqContent" required rows="4" class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none" placeholder="İhtiyacınızı detaylandırın..."></textarea>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeModal('addRequestModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-sm font-semibold text-theme-sub">İptal</button>
-                    <button type="submit" class="px-5 py-2 rounded-lg bg-theme-accent text-slate-950 font-semibold text-sm hover:bg-theme-accent-hover">İsteği Yayınla</button>
+                    <button type="button" onclick="closeModal('addRequestModal')" class="px-4 py-2 rounded-xl neu-btn text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm">İsteği Yayınla</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL: SİLME ONAY MODALI -->
-    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div class="w-full max-w-sm bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4 text-center">
-            <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xl font-bold mx-auto">
+    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+        <div class="w-full max-w-sm neu-flat rounded-3xl p-6 space-y-4 text-center">
+            <div class="w-12 h-12 rounded-2xl neu-pressed text-red-400 flex items-center justify-center text-xl font-bold mx-auto">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <h3 class="text-lg font-bold text-theme-main">Silme Onayı</h3>
             <p id="confirmDeleteText" class="text-xs text-theme-sub">Bu öğeyi silmek istediğinizden emin misiniz?</p>
 
             <div class="flex justify-center gap-3 pt-2">
-                <button onclick="closeModal('confirmDeleteModal')" class="px-4 py-2 rounded-lg bg-theme-input border border-theme text-xs font-semibold text-theme-main">İptal</button>
-                <button id="confirmDeleteSubmitBtn" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-semibold">Evet, Sil</button>
+                <button onclick="closeModal('confirmDeleteModal')" class="px-4 py-2 rounded-xl neu-btn text-xs font-semibold text-theme-main">İptal</button>
+                <button id="confirmDeleteSubmitBtn" class="px-4 py-2 rounded-xl neu-btn text-red-400 text-xs font-bold">Evet, Sil</button>
             </div>
         </div>
     </div>
@@ -996,9 +1051,45 @@
     <!-- =================================================================== -->
     <script>
         const THEMES = {
-            catppuccin: { name: 'Catppuccin Mocha', bgBase: '#11111B', bgCard: '#1E1E2E', bgInput: '#181825', accent: '#89B4FA', accentHover: '#74C7EC', textMain: '#CDD6F4', textSub: '#A6ADC8', borderColor: '#313244' },
-            dracula: { name: 'Dracula Dark', bgBase: '#21222C', bgCard: '#282A36', bgInput: '#191A21', accent: '#BD93F9', accentHover: '#FF79C6', textMain: '#F8F8F2', textSub: '#6272A4', borderColor: '#44475A' },
-            emerald: { name: 'Emerald Night', bgBase: '#0F172A', bgCard: '#1E293B', bgInput: '#090D16', accent: '#34D399', accentHover: '#10B981', textMain: '#F1F5F9', textSub: '#94A3B8', borderColor: '#334155' }
+            catppuccin: {
+                name: 'Catppuccin Mocha',
+                bgBase: '#1e1e2e',
+                bgCard: '#1e1e2e',
+                bgInput: '#181825',
+                accent: '#89B4FA',
+                accentHover: '#74C7EC',
+                textMain: '#CDD6F4',
+                textSub: '#A6ADC8',
+                borderColor: 'rgba(255, 255, 255, 0.04)',
+                shadowDark: '#141420',
+                shadowLight: '#28283c'
+            },
+            dracula: {
+                name: 'Dracula Dark',
+                bgBase: '#282A36',
+                bgCard: '#282A36',
+                bgInput: '#191A21',
+                accent: '#BD93F9',
+                accentHover: '#FF79C6',
+                textMain: '#F8F8F2',
+                textSub: '#6272A4',
+                borderColor: 'rgba(255, 255, 255, 0.04)',
+                shadowDark: '#1b1c24',
+                shadowLight: '#353848'
+            },
+            emerald: {
+                name: 'Emerald Night',
+                bgBase: '#1E293B',
+                bgCard: '#1E293B',
+                bgInput: '#090D16',
+                accent: '#34D399',
+                accentHover: '#10B981',
+                textMain: '#F1F5F9',
+                textSub: '#94A3B8',
+                borderColor: 'rgba(255, 255, 255, 0.04)',
+                shadowDark: '#131b27',
+                shadowLight: '#29374f'
+            }
         };
 
         let state = {
@@ -1427,6 +1518,8 @@
             root.style.setProperty('--text-main', t.textMain);
             root.style.setProperty('--text-sub', t.textSub);
             root.style.setProperty('--border-color', t.borderColor);
+            root.style.setProperty('--shadow-dark', t.shadowDark);
+            root.style.setProperty('--shadow-light', t.shadowLight);
 
             localStorage.setItem('sau_theme', themeKey);
             if (triggerToast) showToast(`Tema uygulandı: ${t.name}`, 'info');
@@ -1454,12 +1547,12 @@
                 if (s === tabName) {
                     if (el) el.classList.remove('hidden');
                     if (nav) {
-                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left transition-colors bg-theme-accent text-slate-950 font-bold";
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm text-left transition-all neu-pressed text-theme-accent";
                     }
                 } else {
                     if (el) el.classList.add('hidden');
                     if (nav) {
-                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors";
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn";
                     }
                 }
             });
@@ -1487,15 +1580,15 @@
             const searchInput = document.getElementById('searchInput');
 
             if (subTab === 'notes') {
-                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow flex items-center gap-1.5";
-                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main flex items-center gap-1.5";
+                btnNotes.className = "px-4 py-2 rounded-xl font-bold text-sm transition-all neu-btn-accent text-slate-950 flex items-center gap-1.5";
+                btnReqs.className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all text-theme-sub hover:text-theme-main neu-btn flex items-center gap-1.5";
                 document.getElementById('notesGrid').classList.remove('hidden');
                 document.getElementById('requestsList').classList.add('hidden');
                 actionBtnText.innerText = "Not Ekle";
                 searchInput.placeholder = "Notlarda ara...";
             } else {
-                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow flex items-center gap-1.5";
-                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main flex items-center gap-1.5";
+                btnReqs.className = "px-4 py-2 rounded-xl font-bold text-sm transition-all neu-btn-accent text-slate-950 flex items-center gap-1.5";
+                btnNotes.className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all text-theme-sub hover:text-theme-main neu-btn flex items-center gap-1.5";
                 document.getElementById('requestsList').classList.remove('hidden');
                 document.getElementById('notesGrid').classList.add('hidden');
                 actionBtnText.innerText = "İstek Ekle";
@@ -1513,10 +1606,10 @@
             const aboutText = document.getElementById('profileAboutText');
             if (state.userAbout) {
                 aboutText.innerText = state.userAbout;
-                aboutText.className = "p-3.5 rounded-xl bg-theme-input border border-theme text-xs text-theme-main leading-relaxed font-normal";
+                aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed font-normal";
             } else {
                 aboutText.innerText = 'Henüz bir biyografi eklenmedi. "Profili Düzenle" butonunu kullanarak hakkınızda bilgi ekleyebilirsiniz.';
-                aboutText.className = "p-3.5 rounded-xl bg-theme-input border border-theme text-xs text-theme-sub leading-relaxed italic";
+                aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed italic";
             }
         }
 
@@ -1598,7 +1691,7 @@
 
             if (teamsList.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-2xl bg-theme-card">
+                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
                         <i class="fa-solid fa-users-slash text-4xl mb-3 text-theme-sub"></i>
                         <p class="font-semibold text-sm">Gösterilebilecek takım ilanı bulunamadı.</p>
                     </div>`;
@@ -1609,12 +1702,12 @@
                 const isFull = t.current_members >= t.target_members;
                 const capacityRatio = `${t.current_members}/${t.target_members} Üye`;
                 const card = document.createElement('div');
-                card.className = "p-5 rounded-xl border border-theme bg-theme-card glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
 
                 card.innerHTML = `
                     <div class="space-y-3">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="px-2.5 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 ${isFull ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}">
+                            <span class="px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 neu-pressed ${isFull ? 'text-red-400' : 'text-emerald-400'}">
                                 <i class="fa-solid fa-users"></i> ${capacityRatio}
                             </span>
                             <span class="text-xs text-theme-sub">${t.date || ''}</span>
@@ -1628,7 +1721,7 @@
                         </div>
 
                         <!-- Gerekli Yetenekler Kutusu -->
-                        <div class="p-2.5 rounded-lg bg-theme-input border border-theme text-xs space-y-1">
+                        <div class="p-3 rounded-xl neu-pressed text-xs space-y-1">
                             <div class="font-bold text-theme-accent flex items-center gap-1 text-[11px]">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                                 <span>Gerekli Yetenekler & Deneyimler:</span>
@@ -1639,9 +1732,9 @@
                         <p class="text-xs text-theme-sub line-clamp-2 leading-relaxed">${t.description}</p>
                     </div>
 
-                    <div class="pt-3 border-t border-theme flex items-center justify-between">
+                    <div class="pt-3 border-t border-theme/40 flex items-center justify-between">
                         <span class="text-[11px] text-theme-sub">${isFull ? '⚠️ Kontenjan Dolu' : '✅ Başvuruya Açık'}</span>
-                        <button onclick="openTeamDetailModal(${t.id})" class="px-3.5 py-1.5 rounded-lg bg-theme-accent text-slate-950 font-bold text-xs hover:bg-theme-accent-hover transition-colors">
+                        <button onclick="openTeamDetailModal(${t.id})" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">
                             Detay ve Katılım
                         </button>
                     </div>`;
@@ -1708,7 +1801,7 @@
             if (team.members && team.members.length > 0) {
                 team.members.forEach(m => {
                     const badge = document.createElement('div');
-                    badge.className = "px-2.5 py-1 rounded-md bg-theme-input border border-theme text-xs font-semibold text-theme-main flex items-center gap-2";
+                    badge.className = "px-3 py-1.5 rounded-xl neu-pressed text-xs font-semibold text-theme-main flex items-center gap-2";
 
                     let kickBtnHtml = '';
                     if (isAuthor && m !== team.author) {
@@ -1739,21 +1832,21 @@
                 if (isAuthor) {
                     actionBtn.innerText = "Siz Kurucusunuz";
                     actionBtn.disabled = true;
-                    actionBtn.className = "px-5 py-2 rounded-lg bg-theme-input text-theme-sub text-xs font-bold cursor-not-allowed";
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
                 } else {
                     actionBtn.innerText = "Takımdan Ayrıl";
                     actionBtn.disabled = false;
-                    actionBtn.className = "px-5 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all shadow";
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-red-400 text-xs font-bold transition-all";
                 }
             } else {
                 if (current >= target) {
                     actionBtn.innerText = "Kontenjan Dolu";
                     actionBtn.disabled = true;
-                    actionBtn.className = "px-5 py-2 rounded-lg bg-theme-input text-theme-sub text-xs font-bold cursor-not-allowed";
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
                 } else {
                     actionBtn.innerText = "Takıma Katıl";
                     actionBtn.disabled = false;
-                    actionBtn.className = "px-5 py-2 rounded-lg bg-theme-accent text-slate-950 hover:bg-theme-accent-hover text-xs font-bold transition-all shadow";
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn-accent text-slate-950 text-xs font-bold transition-all";
                 }
             }
 
@@ -1873,7 +1966,7 @@
 
             if (notesList.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-2xl bg-theme-card">
+                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
                         <i class="fa-solid fa-folder-open text-4xl mb-3 text-theme-sub"></i>
                         <p class="font-semibold text-sm">Gösterilebilecek ders notu bulunamadı.</p>
                     </div>`;
@@ -1883,7 +1976,7 @@
             notesList.forEach(n => {
                 const hasFile = !!n.file_name;
                 const card = document.createElement('div');
-                card.className = "p-5 rounded-xl border border-theme bg-theme-card glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
 
                 card.innerHTML = `
                     <div class="space-y-2">
@@ -1897,16 +1990,16 @@
                         <p class="text-xs text-theme-sub line-clamp-3 leading-relaxed">${n.content}</p>
                     </div>
 
-                    <div class="pt-3 border-t border-theme flex items-center justify-between">
+                    <div class="pt-3 border-t border-theme/40 flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <button onclick="quickLikeNote(${n.id})" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/10 text-rose-400 text-xs font-semibold hover:bg-rose-500/20 transition-colors">
+                            <button onclick="quickLikeNote(${n.id})" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-btn text-rose-400 text-xs font-semibold">
                                 <i class="fa-solid fa-heart"></i>
                                 <span>${n.likes || 0}</span>
                             </button>
-                            ${hasFile ? `<span class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-[11px] font-semibold"><i class="fa-solid fa-paperclip mr-1"></i>Ekli Dosya</span>` : ''}
+                            ${hasFile ? `<span class="px-2.5 py-1.5 rounded-xl neu-pressed text-blue-400 text-[11px] font-semibold"><i class="fa-solid fa-paperclip mr-1"></i>Ekli Dosya</span>` : ''}
                         </div>
 
-                        <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-lg bg-theme-input text-theme-main text-xs font-semibold border border-theme transition-colors">
+                        <button onclick="openNoteDetailModal(${n.id})" class="px-3.5 py-1.5 rounded-xl neu-btn text-theme-main text-xs font-semibold">
                             Detay
                         </button>
                     </div>`;
@@ -1920,7 +2013,7 @@
 
             if (requestsList.length === 0) {
                 list.innerHTML = `
-                    <div class="py-12 text-center text-theme-sub border border-dashed border-theme rounded-2xl bg-theme-card">
+                    <div class="py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
                         <i class="fa-solid fa-comments text-4xl mb-3 text-theme-sub"></i>
                         <p class="font-semibold text-sm">Henüz bir not isteği açılmamış.</p>
                     </div>`;
@@ -1930,13 +2023,13 @@
             requestsList.forEach(r => {
                 const isAuthor = r.author === state.currentUser;
                 const card = document.createElement('div');
-                card.className = "p-5 rounded-xl border border-theme bg-theme-card space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat space-y-4 animate-fade-in";
 
                 let commentsHtml = '';
                 if (r.comments && r.comments.length > 0) {
                     r.comments.forEach(c => {
                         commentsHtml += `
-                            <div class="p-2.5 rounded-lg bg-theme-input border border-theme text-xs space-y-1">
+                            <div class="p-3 rounded-xl neu-pressed text-xs space-y-1">
                                 <div class="flex justify-between font-semibold text-theme-sub">
                                     <span class="text-theme-accent cursor-pointer hover:underline" onclick="openUserProfilePage('${c.author}')">@${c.author}</span>
                                     <span class="text-[10px]">${c.date || ''}</span>
@@ -1951,7 +2044,7 @@
                 card.innerHTML = `
                     <div class="flex items-start justify-between">
                         <div class="space-y-1">
-                            <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[11px] font-semibold">Not İstegi</span>
+                            <span class="px-3 py-1 rounded-full neu-pressed text-amber-400 text-[11px] font-semibold">Not İstegi</span>
                             <h4 class="font-bold text-theme-main text-base">${r.title}</h4>
                             <div class="flex items-center gap-3 text-xs text-theme-sub">
                                 <span class="cursor-pointer hover:underline" onclick="openUserProfilePage('${r.author}')"><i class="fa-solid fa-user text-theme-accent mr-1"></i>${r.author}</span>
@@ -1961,26 +2054,26 @@
                         </div>
 
                         ${isAuthor ? `
-                            <button onclick="confirmDeleteRequest(${r.id})" class="px-2.5 py-1 rounded bg-red-500/20 text-red-400 text-xs font-semibold hover:bg-red-500/30">
+                            <button onclick="confirmDeleteRequest(${r.id})" class="px-3 py-1.5 rounded-xl neu-btn text-red-400 text-xs font-semibold">
                                 <i class="fa-solid fa-trash mr-1"></i>Sonlandır
                             </button>` : ''}
                     </div>
 
                     <p class="text-xs text-theme-sub leading-relaxed">${r.content}</p>
 
-                    <div class="pt-3 border-t border-theme space-y-3">
+                    <div class="pt-3 border-t border-theme/40 space-y-3">
                         <h5 class="text-xs font-bold text-theme-main flex items-center gap-1.5">
                             <i class="fa-solid fa-comments text-theme-accent"></i>
                             <span>Yorumlar ve Yanıtlar (${r.comments ? r.comments.length : 0})</span>
                         </h5>
 
-                        <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <div class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
                             ${commentsHtml}
                         </div>
 
-                        <div class="flex gap-2 pt-2">
-                            <input type="text" id="commentInput-${r.id}" class="flex-1 px-3 py-1.5 rounded-lg bg-theme-input border border-theme text-xs text-theme-main focus:outline-none focus:border-theme-accent" placeholder="Yanıt yazın...">
-                            <button onclick="submitComment(${r.id})" class="px-3 py-1.5 rounded-lg bg-theme-accent text-slate-950 font-semibold text-xs hover:bg-theme-accent-hover">Gönder</button>
+                        <div class="flex gap-2.5 pt-2">
+                            <input type="text" id="commentInput-${r.id}" class="flex-1 px-3.5 py-2 rounded-xl neu-pressed text-xs text-theme-main focus:outline-none" placeholder="Yanıt yazın...">
+                            <button onclick="submitComment(${r.id})" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">Gönder</button>
                         </div>
                     </div>`;
 
@@ -2022,7 +2115,7 @@
 
             if (userList.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-2xl bg-theme-card">
+                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
                         <i class="fa-solid fa-user-slash text-4xl mb-3 text-theme-sub"></i>
                         <p class="font-semibold text-sm">Aramanızla eşleşen öğrenci profili bulunamadı.</p>
                     </div>`;
@@ -2037,24 +2130,24 @@
                     `<span>${initial}</span>`;
 
                 const card = document.createElement('div');
-                card.className = "p-5 rounded-xl border border-theme bg-theme-card glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
 
                 card.innerHTML = `
                     <div class="flex items-start gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-theme-accent text-slate-950 font-black text-xl flex items-center justify-center uppercase shadow shrink-0 overflow-hidden border border-theme-accent">
+                        <div class="w-12 h-12 rounded-2xl neu-btn-accent text-slate-950 font-black text-xl flex items-center justify-center uppercase shrink-0 overflow-hidden">
                             ${avatarHtml}
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2">
                                 <h4 class="font-bold text-theme-main text-base truncate cursor-pointer hover:underline" onclick="openUserProfilePage('${u.username}')">${u.username}</h4>
-                                ${isMe ? `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">Sen</span>` : ''}
+                                ${isMe ? `<span class="px-2 py-0.5 rounded-full neu-pressed text-emerald-400 text-[10px] font-bold">Sen</span>` : ''}
                             </div>
                             <p class="text-xs text-theme-accent font-medium truncate">${u.faculty || 'Fakülte Belirtilmemiş'}</p>
                             <p class="text-[11px] text-theme-sub truncate">${u.department || 'Bölüm Belirtilmemiş'}</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2 py-2 border-y border-theme text-center bg-theme-input rounded-lg">
+                    <div class="grid grid-cols-3 gap-2 py-2.5 neu-pressed rounded-xl text-center">
                         <div>
                             <div class="text-sm font-bold text-theme-main">${u.total_notes || 0}</div>
                             <div class="text-[10px] text-theme-sub">Notlar</div>
@@ -2069,7 +2162,7 @@
                         </div>
                     </div>
 
-                    <button onclick="openUserProfilePage('${u.username}')" class="w-full py-2 rounded-lg bg-theme-input hover:bg-theme-border text-theme-main text-xs font-semibold border border-theme transition-colors flex items-center justify-center gap-1.5">
+                    <button onclick="openUserProfilePage('${u.username}')" class="w-full py-2.5 rounded-xl neu-btn text-theme-main text-xs font-semibold flex items-center justify-center gap-2">
                         <i class="fa-solid fa-address-card text-theme-accent"></i>
                         <span>Profili İncele</span>
                     </button>`;
@@ -2101,10 +2194,10 @@
                 const aboutText = document.getElementById('viewProfileAboutText');
                 if (p.about) {
                     aboutText.innerText = p.about;
-                    aboutText.className = "p-3.5 rounded-xl bg-theme-input border border-theme text-xs text-theme-main leading-relaxed font-normal";
+                    aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed font-normal";
                 } else {
                     aboutText.innerText = 'Henüz bir biyografi eklenmemiş.';
-                    aboutText.className = "p-3.5 rounded-xl bg-theme-input border border-theme text-xs text-theme-sub leading-relaxed italic";
+                    aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed italic";
                 }
 
                 document.getElementById('viewStatNotesCount').innerText = p.total_notes || 0;
@@ -2119,13 +2212,13 @@
                 } else {
                     p.notes.forEach(n => {
                         const item = document.createElement('div');
-                        item.className = "p-3 rounded-xl border border-theme bg-theme-input flex items-center justify-between text-xs";
+                        item.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
                         item.innerHTML = `
                             <div class="min-w-0 pr-3 space-y-1">
                                 <div class="font-bold text-theme-main truncate">${n.title}</div>
                                 <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
                             </div>
-                            <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-lg bg-theme-card border border-theme text-theme-main text-xs font-semibold hover:border-theme-accent shrink-0">
+                            <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main text-xs font-semibold shrink-0">
                                 Detay
                             </button>`;
                         notesContainer.appendChild(item);
@@ -2140,11 +2233,11 @@
                 } else {
                     p.teams.forEach(t => {
                         const item = document.createElement('div');
-                        item.className = "p-3.5 rounded-xl border border-theme bg-theme-input space-y-2 text-xs";
+                        item.className = "p-4 rounded-xl neu-pressed space-y-2 text-xs";
                         item.innerHTML = `
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-theme-main text-sm">${t.title}</span>
-                                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">${t.current_members}/${t.target_members} Üye</span>
+                                <span class="px-2.5 py-1 rounded-full neu-btn text-emerald-400 text-[10px] font-bold">${t.current_members}/${t.target_members} Üye</span>
                             </div>
                             <p class="text-theme-sub text-xs line-clamp-2 leading-relaxed">${t.description}</p>
                             <div class="text-[11px] text-theme-accent font-semibold pt-1">Gerekli: ${t.skills}</div>`;
@@ -2167,12 +2260,12 @@
                 if (s === sectionName) {
                     if (el) el.classList.remove('hidden');
                     if (nav) {
-                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left transition-colors bg-theme-accent text-slate-950 font-bold";
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm text-left transition-all neu-pressed text-theme-accent";
                     }
                 } else {
                     if (el) el.classList.add('hidden');
                     if (nav) {
-                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-medium text-sm text-left text-theme-sub hover:bg-theme-input hover:text-theme-main transition-colors";
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn";
                     }
                 }
             });
@@ -2414,13 +2507,13 @@
 
             myNotes.forEach(n => {
                 const row = document.createElement('div');
-                row.className = "p-3 rounded-lg border border-theme bg-theme-input flex items-center justify-between text-xs";
+                row.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
                 row.innerHTML = `
                     <div class="space-y-0.5">
                         <div class="font-bold text-theme-main">${n.title}</div>
                         <div class="text-theme-sub">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
                     </div>
-                    <button onclick="openNoteDetailModal(${n.id})" class="px-2.5 py-1 rounded bg-theme-card border border-theme text-theme-main hover:border-theme-accent">
+                    <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main">
                         Görüntüle
                     </button>`;
                 listContainer.appendChild(row);
@@ -2462,7 +2555,7 @@
                 info: 'fa-info-circle'
             };
 
-            toast.className = `px-4 py-3 rounded-xl shadow-xl border border-white/10 font-semibold text-xs flex items-center gap-2.5 animate-fade-in pointer-events-auto ${bgMap[type] || bgMap.info}`;
+            toast.className = `px-4 py-3 rounded-2xl neu-flat font-semibold text-xs flex items-center gap-2.5 animate-fade-in pointer-events-auto ${bgMap[type] || bgMap.info}`;
             toast.innerHTML = `<i class="fa-solid ${iconMap[type]} text-sm"></i><span>${message}</span>`;
 
             container.appendChild(toast);
