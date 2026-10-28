@@ -10,10 +10,11 @@ from flask_cors import CORS
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'notes'))
+sys.path.append(os.path.join(BASE_DIR, 'user'))
 
 from notes.note import Note
-from user import User
-from user_profile import Profile
+from user_files.user import User
+from user_files.user_profile import Profile
 
 app = Flask(__name__, static_folder=BASE_DIR, static_url_path='')
 CORS(app)

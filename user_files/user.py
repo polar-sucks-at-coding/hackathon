@@ -1,4 +1,4 @@
-from user_profile import Profile
+from .user_profile import Profile
 
 class User:
     def __init__(self, username, password, profile=None):
