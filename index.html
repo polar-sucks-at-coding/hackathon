@@ -138,18 +138,18 @@
                         Sakarya Üniversitesi Dijital Kampüs Ağı
                     </h2>
                     <p class="text-theme-sub text-sm leading-relaxed mb-6">
-                        Ders notlarınızı paylaşın, soru sorun, takım ilanları açın ve katılma isteklerini yöneterek kampüsteki öğrencilerle etkileşime geçin.
+                        Ders notlarınızı paylaşın, soru sorun, takım ilanları açın ve katılma isteklerini yöneterek kampüsteki öğrencilerle anlık etkileşime geçin.
                     </p>
                 </div>
 
                 <div class="relative z-10 space-y-3.5 border-t border-theme/40 pt-6">
                     <div class="flex items-center gap-3 text-sm text-theme-sub">
-                        <i class="fa-solid fa-user-check text-theme-accent"></i>
-                        <span>Takım Katılma İstekleri ve Kurucu Onay Sistemi</span>
+                        <i class="fa-solid fa-bolt text-theme-accent"></i>
+                        <span>Anlık Canlı Senkronizasyon (Sayfa Yenilemeye Gerek Yok)</span>
                     </div>
                     <div class="flex items-center gap-3 text-sm text-theme-sub">
-                        <i class="fa-solid fa-id-card text-theme-accent"></i>
-                        <span>Fakülte ve Bölüm Bilgili Öğrenci Profilleri</span>
+                        <i class="fa-solid fa-user-check text-theme-accent"></i>
+                        <span>Takım Katılma İstekleri ve Onay Sistemi</span>
                     </div>
                     <div class="flex items-center gap-3 text-sm text-theme-sub">
                         <i class="fa-solid fa-book-bookmark text-theme-accent"></i>
@@ -310,7 +310,7 @@
                 <div id="connectionBadge" class="flex items-center justify-between text-xs px-3 py-2 rounded-xl neu-pressed">
                     <span class="text-theme-sub">Sunucu:</span>
                     <span id="apiStatusText" class="font-semibold text-emerald-400 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sunucu Bağlı
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Anlık Canlı
                     </span>
                 </div>
 
@@ -1194,48 +1194,10 @@
             socialUsers: [],
             currentSelectedNote: null,
             currentSelectedTeam: null,
-            isOnlineMode: true
+            lastLocalUpdate: 0
         };
 
-        let autoPollTimer = null;
-
-        const INITIAL_DEMO_NOTES = [
-            { id: 1, title: 'Yazılım Müh. - Algoritmalar Vize Özet', content: 'Ağaçlar, Grafik Teorisi, Sıralama Algoritmaları (QuickSort, MergeSort) detaylı anlatımı ve C++ örnekleri.', author: 'ahmet_sau', likes: 14, views: 42, date: '28.10.2026 10:30', file_name: 'algoritmalar_vize_ozet.pdf', file_size: '1.2 MB' },
-            { id: 2, title: 'İşletim Sistemleri - Süreç Yönetimi', content: 'Process Sync, Deadlocks, Semaphore kullanımı ve CPU Scheduling algoritmalarının soru çözümleri.', author: 'zeynep_cs', likes: 21, views: 89, date: '28.10.2026 11:15', file_name: 'isletim_sistemleri_ch1_5.pdf', file_size: '850 KB' }
-        ];
-
-        const INITIAL_DEMO_TEAMS = [
-            {
-                id: 1,
-                title: 'SAÜ ROV Otonom Sualtı Takımı',
-                author: 'ahmet_sau',
-                description: 'Teknofest İnsansız Sualtı Sistemleri kategorisinde yarışacak otonom AUV aracı geliştiriyoruz. Görüntü işleme ve kontrol sistemleri alanında takım arkadaşları arıyoruz.',
-                skills: 'Python, C++, ROS2, OpenCV, SolidWorks',
-                current_members: 3,
-                target_members: 5,
-                date: '28.10.2026 10:00',
-                members: ['ahmet_sau', 'zeynep_cs', 'mehmet_ee'],
-                join_requests: [
-                    { username: 'can_mkn', message: 'Merhaba, Makine mühendisliği 3. sınıf öğrencisiyim. SolidWorks ve mekanik tasarım tecrübem var.', date: '28.10.2026 10:15' }
-                ],
-                messages: [
-                    { id: 1, author: 'ahmet_sau', content: 'Arkadaşlar selamlar, haftalık toplantımızı Cuma günü saat 15:00\'te yapacağız.', date: '28.10.2026 10:05' }
-                ]
-            },
-            {
-                id: 2,
-                title: 'SAÜ Formula Student Elektrikli Araç',
-                author: 'mehmet_ee',
-                description: 'Formula Student yarışması için batarya yönetim sistemi (BMS) ve motor sürücü devre tasarımı yapabilecek ekip arkadaşı arıyoruz.',
-                skills: 'Gömülü Sistemler, Altium Designer, C/C++, CAN-Bus',
-                current_members: 4,
-                target_members: 6,
-                date: '28.10.2026 11:30',
-                members: ['mehmet_ee', 'can_mkn', 'ali_sau', 'zeynep_cs'],
-                join_requests: [],
-                messages: []
-            }
-        ];
+        let autoSyncTimer = null;
 
         /* API CORE */
         async function apiCall(commandData) {
@@ -1246,305 +1208,76 @@
             }
 
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2500);
-
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(commandData),
-                    signal: controller.signal
+                    body: JSON.stringify(commandData)
                 });
-                clearTimeout(timeoutId);
 
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 const data = await response.json();
-
                 updateApiStatus(true);
                 return data;
             } catch (err) {
                 updateApiStatus(false);
-                return fallbackLocalApi(commandData);
+                return { status: 'error', message: 'Sunucuya bağlanılamadı' };
+            }
+        }
+
+        /* AKILLI GERÇEK ZAMANLI SENKRONİZASYON (1 SANİYE DÖNGÜSÜ) */
+        function startRealtimeSync() {
+            if (autoSyncTimer) clearInterval(autoSyncTimer);
+            autoSyncTimer = setInterval(async () => {
+                const res = await apiCall({ command: 'CHECK_UPDATES' });
+                if (res.status === 'success' && res.last_update) {
+                    if (res.last_update > state.lastLocalUpdate) {
+                        state.lastLocalUpdate = res.last_update;
+                        await reloadAllDataSilently();
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopRealtimeSync() {
+            if (autoSyncTimer) {
+                clearInterval(autoSyncTimer);
+                autoSyncTimer = null;
+            }
+        }
+
+        async function reloadAllDataSilently() {
+            await Promise.all([
+                silentReloadNotes(),
+                silentReloadRequests(),
+                silentReloadTeams(),
+                silentReloadSocial()
+            ]);
+
+            const detailModal = document.getElementById('teamDetailModal');
+            if (detailModal && !detailModal.classList.contains('hidden') && state.currentSelectedTeam) {
+                const updatedTeam = state.teams.find(t => t.id === state.currentSelectedTeam.id);
+                if (updatedTeam) {
+                    state.currentSelectedTeam = updatedTeam;
+                    if (state.activeTeamModalTab === 'chat') {
+                        renderTeamChatMessages(updatedTeam.messages || []);
+                    } else if (state.activeTeamModalTab === 'requests') {
+                        renderTeamModalRequestsList(updatedTeam);
+                    }
+                }
             }
         }
 
         function updateApiStatus(isOnline) {
-            state.isOnlineMode = isOnline;
             const badgeText = document.getElementById('apiStatusText');
             if (badgeText) {
                 if (isOnline) {
                     badgeText.className = "font-semibold text-emerald-400 flex items-center gap-1.5";
-                    badgeText.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sunucu Bağlı`;
+                    badgeText.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Anlık Canlı`;
                 } else {
                     badgeText.className = "font-semibold text-amber-400 flex items-center gap-1.5";
-                    badgeText.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Çevrimdışı (Local)`;
+                    badgeText.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Bağlantı Kesildi`;
                 }
             }
-        }
-
-        function fallbackLocalApi(req) {
-            const cmd = req.command;
-            let localUsers = JSON.parse(localStorage.getItem('sau_users_local') || '{}');
-            let localNotes = JSON.parse(localStorage.getItem('sau_notes_local') || JSON.stringify(INITIAL_DEMO_NOTES));
-            let localRequests = JSON.parse(localStorage.getItem('sau_requests_local') || '[]');
-            let localTeams = JSON.parse(localStorage.getItem('sau_teams_local') || JSON.stringify(INITIAL_DEMO_TEAMS));
-
-            localTeams.forEach(t => {
-                if (!t.join_requests) t.join_requests = [];
-                if (!t.messages) t.messages = [];
-            });
-
-            if (cmd === 'REGISTER') {
-                if (localUsers[req.username]) {
-                    return { status: 'error', message: 'Bu kullanıcı adı zaten alınmış' };
-                }
-                localUsers[req.username] = {
-                    username: req.username,
-                    password: req.password,
-                    faculty: req.faculty || '',
-                    department: req.department || '',
-                    about: req.about || '',
-                    profile_image: req.profile_image || ''
-                };
-                localStorage.setItem('sau_users_local', JSON.stringify(localUsers));
-                return { status: 'success', message: 'Hesap oluşturuldu (Local)' };
-            }
-
-            if (cmd === 'LOGIN') {
-                if (!localUsers[req.username] || localUsers[req.username].password !== req.password) {
-                    return { status: 'error', message: 'Kullanıcı adı veya şifre hatalı' };
-                }
-                const u = localUsers[req.username];
-                return {
-                    status: 'success',
-                    message: 'Giriş başarılı',
-                    user: {
-                        username: u.username,
-                        faculty: u.faculty,
-                        department: u.department,
-                        about: u.about,
-                        profile_image: u.profile_image || ''
-                    }
-                };
-            }
-
-            if (cmd === 'UPDATE_PROFILE') {
-                if (localUsers[req.username]) {
-                    localUsers[req.username].faculty = req.faculty;
-                    localUsers[req.username].department = req.department;
-                    localUsers[req.username].about = req.about;
-                    if (req.profile_image) {
-                        localUsers[req.username].profile_image = req.profile_image;
-                    }
-                    localStorage.setItem('sau_users_local', JSON.stringify(localUsers));
-                }
-                return {
-                    status: 'success',
-                    message: 'Profil güncellendi',
-                    profile_image: localUsers[req.username]?.profile_image || ''
-                };
-            }
-
-            if (cmd === 'GET_ALL_NOTES') return { status: 'success', notes: localNotes };
-            if (cmd === 'GET_ALL_REQUESTS') return { status: 'success', requests: localRequests };
-            if (cmd === 'GET_ALL_TEAMS') return { status: 'success', teams: localTeams };
-
-            if (cmd === 'GET_NOTE') {
-                const note = localNotes.find(n => n.id === parseInt(req.note_id));
-                if (note) {
-                    note.views = (note.views || 0) + 1;
-                    localStorage.setItem('sau_notes_local', JSON.stringify(localNotes));
-                    return { status: 'success', note: note };
-                }
-                return { status: 'error', message: 'Not bulunamadı' };
-            }
-
-            if (cmd === 'DOWNLOAD_FILE') {
-                const note = localNotes.find(n => n.id === parseInt(req.note_id));
-                if (note) {
-                    return {
-                        status: 'success',
-                        file_name: note.file_name || 'ders_notu.pdf',
-                        file_data: 'JVBERi0xLjQKJQ=='
-                    };
-                }
-                return { status: 'error', message: 'Dosya bulunamadı' };
-            }
-
-            if (cmd === 'CREATE_TEAM') {
-                const nextId = localTeams.length > 0 ? Math.max(...localTeams.map(t => t.id)) + 1 : 1;
-                const newTeam = {
-                    id: nextId,
-                    title: req.title,
-                    description: req.description,
-                    skills: req.skills,
-                    author: req.username,
-                    current_members: parseInt(req.current_members) || 1,
-                    target_members: parseInt(req.target_members) || 5,
-                    date: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}),
-                    members: [req.username],
-                    join_requests: [],
-                    messages: []
-                };
-                localTeams.unshift(newTeam);
-                localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                return { status: 'success', message: 'Takım ilanı oluşturuldu', team_id: nextId };
-            }
-
-            if (cmd === 'JOIN_TEAM') {
-                const target = localTeams.find(t => t.id === parseInt(req.team_id));
-                if (target) {
-                    if (!target.join_requests) target.join_requests = [];
-                    const reqUsernames = target.join_requests.map(r => typeof r === 'string' ? r : r.username);
-
-                    if (target.members.includes(req.username)) return { status: 'error', message: 'Zaten takım üyesiniz' };
-                    if (reqUsernames.includes(req.username)) return { status: 'error', message: 'Zaten katılma isteği gönderdiniz' };
-                    if (target.current_members >= target.target_members) return { status: 'error', message: 'Kontenjan dolu!' };
-                    if (!req.message || !req.message.trim()) return { status: 'error', message: 'Lütfen kendinizden ve yeteneklerinizden bahsedin!' };
-
-                    const nowStr = new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
-                    target.join_requests.push({
-                        username: req.username,
-                        message: req.message.trim(),
-                        date: nowStr
-                    });
-                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                    return { status: 'success', message: 'Katılma isteği gönderildi.' };
-                }
-            }
-
-            if (cmd === 'ACCEPT_JOIN_REQUEST') {
-                const target = localTeams.find(t => t.id === parseInt(req.team_id));
-                if (target) {
-                    if (target.author !== req.username) return { status: 'error', message: 'Sadece kurucu onaylayabilir!' };
-                    if (target.current_members >= target.target_members) return { status: 'error', message: 'Kontenjan dolu!' };
-                    if (!target.join_requests) target.join_requests = [];
-
-                    target.join_requests = target.join_requests.filter(r => (typeof r === 'string' ? r : r.username) !== req.target_username);
-                    if (!target.members.includes(req.target_username)) {
-                        target.members.push(req.target_username);
-                    }
-                    target.current_members = target.members.length;
-                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                    return { status: 'success', message: 'İstek kabul edildi', current_members: target.current_members };
-                }
-            }
-
-            if (cmd === 'REJECT_JOIN_REQUEST') {
-                const target = localTeams.find(t => t.id === parseInt(req.team_id));
-                if (target) {
-                    if (!target.join_requests) target.join_requests = [];
-                    target.join_requests = target.join_requests.filter(r => (typeof r === 'string' ? r : r.username) !== req.target_username);
-                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                    return { status: 'success', message: 'İstek kaldırıldı' };
-                }
-            }
-
-            if (cmd === 'LEAVE_TEAM') {
-                const target = localTeams.find(t => t.id === parseInt(req.team_id));
-                if (target) {
-                    target.members = target.members.filter(m => m !== req.username);
-                    target.current_members = target.members.length;
-                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                    return { status: 'success', message: 'Takımdan ayrıldınız', current_members: target.current_members };
-                }
-            }
-
-            if (cmd === 'KICK_MEMBER') {
-                const target = localTeams.find(t => t.id === parseInt(req.team_id));
-                if (target) {
-                    if (target.author !== req.username) return { status: 'error', message: 'Sadece kurucu üye çıkarabilir!' };
-                    target.members = target.members.filter(m => m !== req.target_username);
-                    target.current_members = target.members.length;
-                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                    return { status: 'success', message: 'Üye takımdan çıkarıldı', current_members: target.current_members, members: target.members };
-                }
-            }
-
-            if (cmd === 'DELETE_TEAM') {
-                localTeams = localTeams.filter(t => t.id !== parseInt(req.team_id));
-                localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                return { status: 'success', message: 'İlan silindi' };
-            }
-
-            if (cmd === 'ADD_TEAM_MESSAGE') {
-                const target = localTeams.find(t => t.id === parseInt(req.team_id));
-                if (target) {
-                    if (!target.members.includes(req.username)) {
-                        return { status: 'error', message: 'Sadece takım üyeleri takıma mesaj gönderebilir!' };
-                    }
-                    if (!target.messages) target.messages = [];
-                    const nowStr = new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
-                    const msgObj = {
-                        id: target.messages.length + 1,
-                        author: req.username,
-                        content: req.content,
-                        date: nowStr
-                    };
-                    target.messages.push(msgObj);
-                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
-                    return { status: 'success', message: 'Mesaj gönderildi', messages: target.messages };
-                }
-                return { status: 'error', message: 'Takım bulunamadı.' };
-            }
-
-            if (cmd === 'GET_ALL_USERS') {
-                const userMap = {};
-                Object.keys(localUsers).forEach(u => {
-                    userMap[u] = {
-                        username: u,
-                        faculty: localUsers[u].faculty || '',
-                        department: localUsers[u].department || '',
-                        about: localUsers[u].about || '',
-                        profile_image: localUsers[u].profile_image || '',
-                        total_notes: 0,
-                        total_likes: 0,
-                        total_requests: 0,
-                        total_teams: 0
-                    };
-                });
-                localNotes.forEach(n => {
-                    if (n.author && userMap[n.author]) {
-                        userMap[n.author].total_notes += 1;
-                        userMap[n.author].total_likes += (n.likes || 0);
-                    }
-                });
-                localTeams.forEach(t => {
-                    if (t.author && userMap[t.author]) {
-                        userMap[t.author].total_teams += 1;
-                    }
-                });
-                return { status: 'success', users: Object.values(userMap) };
-            }
-
-            if (cmd === 'GET_USER_PROFILE') {
-                const target = req.target_username;
-                const uData = localUsers[target] || {};
-                const uNotes = localNotes.filter(n => n.author === target);
-                const uLikes = uNotes.reduce((acc, curr) => acc + (curr.likes || 0), 0);
-                const uReqs = localRequests.filter(r => r.author === target);
-                const uTeams = localTeams.filter(t => t.author === target);
-
-                return {
-                    status: 'success',
-                    profile: {
-                        username: target,
-                        faculty: uData.faculty || '',
-                        department: uData.department || '',
-                        about: uData.about || '',
-                        profile_image: uData.profile_image || '',
-                        total_notes: uNotes.length,
-                        total_likes: uLikes,
-                        total_requests: uReqs.length,
-                        total_teams: uTeams.length,
-                        notes: uNotes,
-                        requests: uReqs,
-                        teams: uTeams
-                    }
-                };
-            }
-
-            return { status: 'error', message: 'Bilinmeyen işlem' };
         }
 
         /* INIT & AUTH */
@@ -1566,7 +1299,7 @@
         });
 
         function showAuthUI() {
-            stopAutoPolling();
+            stopRealtimeSync();
             document.getElementById('authView').classList.remove('hidden');
             document.getElementById('mainView').classList.add('hidden');
         }
@@ -1583,39 +1316,8 @@
 
             renderUserProfileDetails();
 
-            loadAllNotes();
-            loadAllRequests();
-            loadAllTeams();
-            loadAllSocialUsers();
-
-            startAutoPolling();
-        }
-
-        /* POLLING SİSTEMİ */
-        function startAutoPolling() {
-            stopAutoPolling();
-            autoPollTimer = setInterval(async () => {
-                if (state.activeTab === 'notes') {
-                    if (state.activeNoteSubTab === 'notes') await silentReloadNotes();
-                    else await silentReloadRequests();
-                } else if (state.activeTab === 'teams') {
-                    await silentReloadTeams();
-                } else if (state.activeTab === 'social') {
-                    await silentReloadSocial();
-                }
-
-                const detailModal = document.getElementById('teamDetailModal');
-                if (detailModal && !detailModal.classList.contains('hidden')) {
-                    await silentUpdateCurrentTeamModal();
-                }
-            }, 2500);
-        }
-
-        function stopAutoPolling() {
-            if (autoPollTimer) {
-                clearInterval(autoPollTimer);
-                autoPollTimer = null;
-            }
+            reloadAllDataSilently();
+            startRealtimeSync();
         }
 
         async function silentReloadTeams() {
@@ -1647,46 +1349,6 @@
             if (res.status === 'success') {
                 state.socialUsers = res.users || [];
                 filterAndRenderSocial();
-            }
-        }
-
-        async function silentUpdateCurrentTeamModal() {
-            if (!state.currentSelectedTeam) return;
-            const res = await apiCall({ command: 'GET_ALL_TEAMS' });
-            if (res.status === 'success') {
-                state.teams = res.teams || [];
-                const updatedTeam = state.teams.find(t => t.id === state.currentSelectedTeam.id);
-                if (updatedTeam) {
-                    state.currentSelectedTeam = updatedTeam;
-
-                    const current = updatedTeam.current_members || (updatedTeam.members ? updatedTeam.members.length : 1);
-                    const target = updatedTeam.target_members || 5;
-                    const percent = Math.min(100, Math.round((current / target) * 100));
-
-                    document.getElementById('modalTeamCapacityText').innerText = `${current}/${target} Üye (${percent}%)`;
-                    document.getElementById('modalTeamCapacityPercent').innerText = `%${percent} Dolu`;
-
-                    const progressBar = document.getElementById('modalTeamProgress');
-                    if (progressBar) progressBar.style.width = `${percent}%`;
-
-                    const isAuthor = updatedTeam.author === state.currentUser;
-                    const reqBadge = document.getElementById('teamModalReqBadge');
-                    if (isAuthor && updatedTeam.join_requests) {
-                        const reqCount = updatedTeam.join_requests.length;
-                        if (reqCount > 0) {
-                            reqBadge.innerText = reqCount;
-                            reqBadge.classList.remove('hidden');
-                        } else {
-                            reqBadge.classList.add('hidden');
-                        }
-                    }
-
-                    if (state.activeTeamModalTab === 'chat') {
-                        renderTeamChatMessages(updatedTeam.messages || []);
-                    } else if (state.activeTeamModalTab === 'requests' && isAuthor) {
-                        renderTeamModalRequestsList(updatedTeam);
-                    }
-                }
             }
         }
 
@@ -1875,45 +1537,6 @@
             filterAndRender();
         }
 
-        function isWithinLast7Days(dateStr) {
-            if (!dateStr || dateStr === 'Bilinmiyor') return false;
-            try {
-                const parts = dateStr.trim().split(' ');
-                const dateParts = parts[0].split('.');
-                if (dateParts.length !== 3) return true;
-
-                const day = parseInt(dateParts[0], 10);
-                const month = parseInt(dateParts[1], 10) - 1;
-                const year = parseInt(dateParts[2], 10);
-
-                let hours = 0, minutes = 0;
-                if (parts[1]) {
-                    const timeParts = parts[1].split(':');
-                    if (timeParts.length === 2) {
-                        hours = parseInt(timeParts[0], 10);
-                        minutes = parseInt(timeParts[1], 10);
-                    }
-                }
-
-                const noteDate = new Date(year, month, day, hours, minutes);
-                const now = new Date();
-                const diffMs = Math.abs(now.getTime() - noteDate.getTime());
-                const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-                return diffDays <= 7;
-            } catch (e) {
-                return true;
-            }
-        }
-
-        async function loadAllNotes() {
-            await silentReloadNotes();
-        }
-
-        async function loadAllRequests() {
-            await silentReloadRequests();
-        }
-
         function filterAndRender() {
             const query = (document.getElementById('searchInput').value || '').toLowerCase();
             const sortMode = document.getElementById('sortSelect').value;
@@ -1945,13 +1568,10 @@
         }
 
         function renderTopWeeklyNotes() {
-            let weeklyNotes = state.notes.filter(n => isWithinLast7Days(n.date));
-            if (weeklyNotes.length === 0) weeklyNotes = [...state.notes];
-
-            const topLiked = [...weeklyNotes].sort((a,b) => (b.likes || 0) - (a.likes || 0)).slice(0, 3);
+            const topLiked = [...state.notes].sort((a,b) => (b.likes || 0) - (a.likes || 0)).slice(0, 3);
             renderNoteHighlightGrid('topLikedGrid', topLiked);
 
-            const topViewed = [...weeklyNotes].sort((a,b) => (b.views || 0) - (a.views || 0)).slice(0, 3);
+            const topViewed = [...state.notes].sort((a,b) => (b.views || 0) - (a.views || 0)).slice(0, 3);
             renderNoteHighlightGrid('topViewedGrid', topViewed);
         }
 
@@ -2034,7 +1654,7 @@
                                 <i class="fa-solid fa-heart"></i>
                                 <span>${n.likes || 0}</span>
                             </button>
-                            <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-pressed text-blue-400 text-xs font-semibold" title="Görüntülenme Sayısı">
+                            <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-pressed text-blue-400 text-xs font-semibold">
                                 <i class="fa-solid fa-eye"></i>
                                 <span>${n.views || 0}</span>
                             </span>
@@ -2060,7 +1680,6 @@
                 document.getElementById('modalNoteDate').innerText = n.date || 'Bilinmiyor';
                 document.getElementById('modalNoteViews').innerText = `${n.views || 0} Görüntülenme`;
                 document.getElementById('modalNoteContent').innerText = n.content;
-
                 document.getElementById('modalLikeCount').innerText = `${n.likes || 0} Beğeni`;
 
                 const fileContainer = document.getElementById('modalFileContainer');
@@ -2080,7 +1699,6 @@
                 }
 
                 openModal('noteDetailModal');
-                await silentReloadNotes();
             } else {
                 showToast(res.message || 'Not detayları alınamadı', 'error');
             }
@@ -2092,18 +1710,16 @@
             if (res.status === 'success') {
                 state.currentSelectedNote.likes = res.likes;
                 document.getElementById('modalLikeCount').innerText = `${res.likes} Beğeni`;
-                await silentReloadNotes();
-                await silentReloadSocial();
+                await reloadAllDataSilently();
             } else {
-                showToast(res.message || 'Beğeni güncelleme hatası', 'error');
+                showToast(res.message || 'Beğeni hatası', 'error');
             }
         }
 
         async function quickLikeNote(noteId) {
             const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: noteId });
             if (res.status === 'success') {
-                await silentReloadNotes();
-                await silentReloadSocial();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Beğeni hatası', 'error');
             }
@@ -2111,9 +1727,7 @@
 
         async function downloadCurrentNoteFile() {
             if (!state.currentSelectedNote) return;
-            const noteId = state.currentSelectedNote.id;
-
-            const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: noteId });
+            const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: state.currentSelectedNote.id });
 
             if (res.status === 'success' && res.file_data) {
                 const link = document.createElement('a');
@@ -2129,9 +1743,7 @@
 
         async function viewCurrentNoteFile() {
             if (!state.currentSelectedNote) return;
-            const noteId = state.currentSelectedNote.id;
-
-            const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: noteId });
+            const res = await apiCall({ command: 'DOWNLOAD_FILE', note_id: state.currentSelectedNote.id });
 
             if (res.status === 'success' && res.file_data) {
                 try {
@@ -2142,8 +1754,6 @@
                     if (ext === 'pdf') mimeType = 'application/pdf';
                     else if (['jpg', 'jpeg'].includes(ext)) mimeType = 'image/jpeg';
                     else if (ext === 'png') mimeType = 'image/png';
-                    else if (ext === 'gif') mimeType = 'image/gif';
-                    else if (ext === 'txt') mimeType = 'text/plain';
 
                     const byteCharacters = atob(res.file_data);
                     const byteNumbers = new Array(byteCharacters.length);
@@ -2156,11 +1766,10 @@
                     const blobUrl = URL.createObjectURL(blob);
                     window.open(blobUrl, '_blank');
                 } catch (e) {
-                    console.error(e);
-                    showToast('Dosya açılırken bir hata oluştu', 'error');
+                    showToast('Dosya açılırken hata oluştu', 'error');
                 }
             } else {
-                showToast(res.message || 'Görüntülenecek dosya yüklenemedi', 'error');
+                showToast(res.message || 'Dosya yüklenemedi', 'error');
             }
         }
 
@@ -2201,8 +1810,7 @@
                 document.getElementById('newNoteTitle').value = '';
                 document.getElementById('newNoteContent').value = '';
                 document.getElementById('newNoteFile').value = '';
-                await silentReloadNotes();
-                await silentReloadSocial();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Not yükleme hatası', 'error');
             }
@@ -2224,7 +1832,7 @@
                 closeModal('addRequestModal');
                 document.getElementById('newReqTitle').value = '';
                 document.getElementById('newReqContent').value = '';
-                await silentReloadRequests();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'İstek açma hatası', 'error');
             }
@@ -2245,7 +1853,7 @@
 
             if (res.status === 'success') {
                 input.value = '';
-                await silentReloadRequests();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Yorum hatası', 'error');
             }
@@ -2261,8 +1869,7 @@
                 if (res.status === 'success') {
                     closeModal('confirmDeleteModal');
                     closeModal('noteDetailModal');
-                    await silentReloadNotes();
-                    await silentReloadSocial();
+                    await reloadAllDataSilently();
                 } else {
                     showToast(res.message || 'Silme hatası', 'error');
                 }
@@ -2359,7 +1966,7 @@
                 const res = await apiCall({ command: 'DELETE_REQUEST', username: state.currentUser, request_id: reqId });
                 if (res.status === 'success') {
                     closeModal('confirmDeleteModal');
-                    await silentReloadRequests();
+                    await reloadAllDataSilently();
                 } else {
                     showToast(res.message || 'Silme hatası', 'error');
                 }
@@ -2470,7 +2077,7 @@
                 document.getElementById('newTeamTitle').value = '';
                 document.getElementById('newTeamSkills').value = '';
                 document.getElementById('newTeamDescription').value = '';
-                await silentReloadTeams();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'İlan oluşturma hatası', 'error');
             }
@@ -2736,8 +2343,7 @@
             });
 
             if (res.status === 'success') {
-                await silentUpdateCurrentTeamModal();
-                await silentReloadTeams();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Onay hatası', 'error');
             }
@@ -2752,8 +2358,7 @@
             });
 
             if (res.status === 'success') {
-                await silentUpdateCurrentTeamModal();
-                await silentReloadTeams();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Reddetme hatası', 'error');
             }
@@ -2768,8 +2373,7 @@
             });
 
             if (res.status === 'success') {
-                await silentUpdateCurrentTeamModal();
-                await silentReloadTeams();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Çıkarma işlemi başarısız', 'error');
             }
@@ -2786,7 +2390,7 @@
                 const res = await apiCall({ command: 'LEAVE_TEAM', username: state.currentUser, team_id: team.id });
                 if (res.status === 'success') {
                     closeModal('teamDetailModal');
-                    await silentReloadTeams();
+                    await reloadAllDataSilently();
                 } else {
                     showToast(res.message || 'İşlem hatası', 'error');
                 }
@@ -2794,7 +2398,7 @@
                 const res = await apiCall({ command: 'REJECT_JOIN_REQUEST', username: state.currentUser, team_id: team.id, target_username: state.currentUser });
                 if (res.status === 'success') {
                     closeModal('teamDetailModal');
-                    await silentReloadTeams();
+                    await reloadAllDataSilently();
                 } else {
                     showToast(res.message || 'İptal hatası', 'error');
                 }
@@ -2825,7 +2429,7 @@
 
             if (res.status === 'success') {
                 closeModal('joinTeamRequestModal');
-                await silentReloadTeams();
+                await reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Katılma isteği gönderilemedi', 'error');
             }
@@ -2841,7 +2445,7 @@
                 if (res.status === 'success') {
                     closeModal('confirmDeleteModal');
                     closeModal('teamDetailModal');
-                    await silentReloadTeams();
+                    await reloadAllDataSilently();
                 } else {
                     showToast(res.message || 'Silme hatası', 'error');
                 }
@@ -3132,7 +2736,7 @@
 
                 renderUserProfileDetails();
                 closeModal('editProfileModal');
-                silentReloadSocial();
+                reloadAllDataSilently();
             } else {
                 showToast(res.message || 'Güncelleme hatası', 'error');
             }

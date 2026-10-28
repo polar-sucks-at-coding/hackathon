@@ -1,26 +1,4 @@
 {
-  "requests": {
-    "1": {
-      "id": 1,
-      "title": "as",
-      "content": "as",
-      "author": "Mehmet Yusuf Yöndem",
-      "date": "28.10.2026 08:03",
-      "comments": [
-        {
-          "id": 1,
-          "author": "Melih Ekinci",
-          "content": "sa",
-          "date": "28.10.2026 08:03"
-        },
-        {
-          "id": 2,
-          "author": "Mehmet Yusuf Yöndem",
-          "content": "as",
-          "date": "28.10.2026 08:03"
-        }
-      ]
-    }
-  },
-  "next_id": 2
+  "requests": {},
+  "next_id": 7
 }

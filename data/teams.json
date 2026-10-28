@@ -14,28 +14,7 @@
       ],
       "join_requests": [],
       "messages": []
-    },
-    "2": {
-      "id": 2,
-      "title": "sdf",
-      "description": "sdf",
-      "skills": "sdf",
-      "author": "Mehmet Yusuf Yöndem",
-      "current_members": 1,
-      "target_members": 5,
-      "date": "28.10.2026 08:02",
-      "members": [
-        "Mehmet Yusuf Yöndem"
-      ],
-      "join_requests": [
-        {
-          "username": "Melih Ekinci",
-          "message": "Merhaba, şöyle böyle deneyimim var, katılabilir miyim?",
-          "date": "28.10.2026 08:02"
-        }
-      ],
-      "messages": []
     }
   },
-  "next_id": 3
+  "next_id": 5
 }

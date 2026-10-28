@@ -28,7 +28,6 @@ os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 ACCOUNTS_FILE = os.path.join(DATA_DIR, 'accounts.txt')
 NOTES_FILE = os.path.join(DATA_DIR, 'notes.txt')
-NOTE_VIEWS_FILE = os.path.join(DATA_DIR, 'note_views.json')
 NEXT_ID_FILE = os.path.join(DATA_DIR, 'next_id.txt')
 LIKES_FILE = os.path.join(DATA_DIR, 'likes.txt')
 PROFILES_FILE = os.path.join(DATA_DIR, 'user_profiles.txt')
@@ -38,7 +37,6 @@ REPORTS_FILE = os.path.join(DATA_DIR, 'reports.json')
 
 users = {}
 notes = {}
-note_views = {}
 user_likes = {}
 requests_data = {}
 teams_data = {}
@@ -49,6 +47,13 @@ next_team_id = 1
 next_report_id = 1
 lock = threading.Lock()
 
+# GERÇEK ZAMANLI SENKRONİZASYON ZAMAN DAMGASI
+LAST_UPDATE_TIME = datetime.datetime.now().timestamp()
+
+def trigger_global_update():
+    """Veri değiştiğinde zaman damgasını günceller"""
+    global LAST_UPDATE_TIME
+    LAST_UPDATE_TIME = datetime.datetime.now().timestamp()
 
 def get_formatted_file_size(file_path):
     if not os.path.exists(file_path):
@@ -61,9 +66,8 @@ def get_formatted_file_size(file_path):
     else:
         return f"{size_bytes / (1024 * 1024):.1f} MB"
 
-
 def load_data():
-    global next_note_id, next_request_id, next_team_id, next_report_id, users, notes, note_views, user_likes, requests_data, teams_data, reports_data
+    global next_note_id, next_request_id, next_team_id, next_report_id, users, notes, user_likes, requests_data, teams_data, reports_data
 
     if os.path.exists(ACCOUNTS_FILE):
         with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
@@ -86,19 +90,11 @@ def load_data():
             except ValueError:
                 next_note_id = 1
 
-    if os.path.exists(NOTE_VIEWS_FILE):
-        try:
-            with open(NOTE_VIEWS_FILE, 'r', encoding='utf-8') as f:
-                note_views = {int(k): int(v) for k, v in json.load(f).items()}
-        except Exception as e:
-            print(f"[LOAD NOTE VIEWS ERROR] {e}")
-
     if os.path.exists(NOTES_FILE):
         with open(NOTES_FILE, 'r', encoding='utf-8') as f:
             for line in f:
                 note = Note.from_string(line)
                 if note:
-                    note.views = note_views.get(note.id, getattr(note, 'views', 0))
                     notes[note.id] = note
 
     if os.path.exists(LIKES_FILE):
@@ -138,12 +134,10 @@ def load_data():
         except Exception as e:
             print(f"[LOAD REPORTS ERROR] {e}")
 
-
 def save_accounts():
     with open(ACCOUNTS_FILE, 'w', encoding='utf-8') as f:
         for user in users.values():
             f.write(user.to_string() + '\n')
-
 
 def save_profiles():
     with open(PROFILES_FILE, 'w', encoding='utf-8') as f:
@@ -151,31 +145,19 @@ def save_profiles():
             if user.profile:
                 f.write(user.profile.to_string() + '\n')
 
-
 def save_notes():
     with open(NOTES_FILE, 'w', encoding='utf-8') as f:
         for note in notes.values():
             f.write(note.to_string() + '\n')
 
-
-def save_note_views():
-    try:
-        with open(NOTE_VIEWS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(note_views, f, ensure_ascii=False, indent=2)
-    except Exception as e:
-        print(f"[SAVE NOTE VIEWS ERROR] {e}")
-
-
 def save_next_id():
     with open(NEXT_ID_FILE, 'w', encoding='utf-8') as f:
         f.write(str(next_note_id))
-
 
 def save_likes():
     with open(LIKES_FILE, 'w', encoding='utf-8') as f:
         for (username, note_id) in user_likes.keys():
             f.write(f"{username}|{note_id}\n")
-
 
 def save_requests():
     try:
@@ -184,14 +166,12 @@ def save_requests():
     except Exception as e:
         print(f"[SAVE REQUESTS ERROR] {e}")
 
-
 def save_teams():
     try:
         with open(TEAMS_FILE, 'w', encoding='utf-8') as f:
             json.dump({"teams": teams_data, "next_id": next_team_id}, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"[SAVE TEAMS ERROR] {e}")
-
 
 def save_reports():
     try:
@@ -200,7 +180,6 @@ def save_reports():
     except Exception as e:
         print(f"[SAVE REPORTS ERROR] {e}")
 
-
 @app.route('/')
 def index():
     index_path = os.path.join(BASE_DIR, 'index.html')
@@ -208,11 +187,13 @@ def index():
         return send_file(index_path)
     return "index.html bulunamadı", 404
 
-
 @app.route('/api/command', methods=['POST'])
 def handle_command():
     request_data = request.get_json(force=True, silent=True) or {}
     command = request_data.get('command')
+
+    if command == 'CHECK_UPDATES':
+        return jsonify({"status": "success", "last_update": LAST_UPDATE_TIME})
 
     if command == 'REGISTER':
         return jsonify(handle_register(request_data))
@@ -269,7 +250,6 @@ def handle_command():
     else:
         return jsonify({"status": "error", "message": "Bilinmeyen komut"})
 
-
 def handle_register(data):
     username = data.get('username')
     password = data.get('password')
@@ -290,8 +270,8 @@ def handle_register(data):
         users[username] = user
         save_accounts()
         save_profiles()
+        trigger_global_update()
         return {"status": "success", "message": "Hesap başarıyla oluşturuldu"}
-
 
 def handle_login(data):
     username = data.get('username')
@@ -325,10 +305,8 @@ def handle_login(data):
             }
         }
 
-
 def handle_logout(data):
     return {"status": "success", "message": "Çıkış yapıldı"}
-
 
 def handle_update_profile(data):
     username = data.get('username')
@@ -355,12 +333,12 @@ def handle_update_profile(data):
             user.profile.profile_image = profile_image
 
         save_profiles()
+        trigger_global_update()
         return {
             "status": "success",
             "message": "Profil başarıyla güncellendi",
             "profile_image": user.profile.profile_image
         }
-
 
 def handle_create_note(data):
     username = data.get('username')
@@ -395,20 +373,15 @@ def handle_create_note(data):
                 print(f"[FILE SAVE ERROR] {e}")
 
         note = Note(next_note_id, title, content, username, date=now_str, file_name=saved_file_name)
-        note.views = 0
         notes[next_note_id] = note
-        note_views[next_note_id] = 0
-
         users[username].profile.add_note(next_note_id)
         next_note_id += 1
 
         save_notes()
         save_next_id()
-        save_note_views()
         save_profiles()
-
+        trigger_global_update()
         return {"status": "success", "message": "Not paylaşıldı", "note_id": note.id}
-
 
 def handle_get_note(data):
     note_id = data.get('note_id')
@@ -424,11 +397,6 @@ def handle_get_note(data):
             return {"status": "error", "message": "Not bulunamadı"}
 
         note = notes[note_id]
-        current_views = note_views.get(note_id, getattr(note, 'views', 0)) + 1
-        note_views[note_id] = current_views
-        note.views = current_views
-        save_note_views()
-
         is_liked = (username, note_id) in user_likes if username else False
 
         file_name = getattr(note, 'file_name', '')
@@ -445,14 +413,12 @@ def handle_get_note(data):
                 "content": note.content,
                 "author": note.author,
                 "likes": note.likes,
-                "views": current_views,
                 "date": getattr(note, 'date', 'Bilinmiyor'),
                 "file_name": file_name,
                 "file_size": file_size,
                 "is_liked": is_liked
             }
         }
-
 
 def handle_delete_note(data):
     username = data.get('username')
@@ -479,18 +445,15 @@ def handle_delete_note(data):
                     print(f"[FILE REMOVE ERROR] {e}")
 
         del notes[note_id]
-        if note_id in note_views:
-            del note_views[note_id]
 
         to_del = [k for k in user_likes.keys() if k[1] == note_id]
         for k in to_del:
             del user_likes[k]
 
         save_notes()
-        save_note_views()
         save_likes()
+        trigger_global_update()
         return {"status": "success", "message": "Not silindi"}
-
 
 def handle_download_file(data):
     note_id = data.get('note_id')
@@ -523,7 +486,6 @@ def handle_download_file(data):
         except Exception as e:
             return {"status": "error", "message": f"Dosya okuma hatası: {str(e)}"}
 
-
 def handle_like_note(data):
     username = data.get('username')
     note_id = data.get('note_id')
@@ -545,6 +507,7 @@ def handle_like_note(data):
             notes[note_id].likes = max(0, notes[note_id].likes - 1)
             save_notes()
             save_likes()
+            trigger_global_update()
             return {
                 "status": "success",
                 "action": "unliked",
@@ -556,13 +519,13 @@ def handle_like_note(data):
             notes[note_id].likes += 1
             save_notes()
             save_likes()
+            trigger_global_update()
             return {
                 "status": "success",
                 "action": "liked",
                 "message": "Not beğenildi",
                 "likes": notes[note_id].likes
             }
-
 
 def handle_get_all_notes(data):
     with lock:
@@ -574,21 +537,17 @@ def handle_get_all_notes(data):
                 file_path = os.path.join(UPLOADS_DIR, f"{note.id}_{file_name}")
                 file_size = get_formatted_file_size(file_path)
 
-            v_count = note_views.get(note.id, getattr(note, 'views', 0))
-
             notes_list.append({
                 "id": note.id,
                 "title": note.title,
                 "content": note.content,
                 "author": note.author,
                 "likes": note.likes,
-                "views": v_count,
                 "date": getattr(note, 'date', 'Bilinmiyor'),
                 "file_name": file_name,
                 "file_size": file_size
             })
         return {"status": "success", "notes": notes_list}
-
 
 def handle_create_request(data):
     username = data.get('username')
@@ -612,8 +571,8 @@ def handle_create_request(data):
         requests_data[next_request_id] = req
         next_request_id += 1
         save_requests()
+        trigger_global_update()
         return {"status": "success", "message": "İstek oluşturuldu", "request_id": req["id"]}
-
 
 def handle_delete_request(data):
     username = data.get('username')
@@ -632,15 +591,14 @@ def handle_delete_request(data):
 
         del requests_data[request_id]
         save_requests()
+        trigger_global_update()
         return {"status": "success", "message": "İstek sonlandırıldı"}
-
 
 def handle_get_all_requests(data):
     with lock:
         req_list = list(requests_data.values())
         req_list.sort(key=lambda r: r["id"], reverse=True)
         return {"status": "success", "requests": req_list}
-
 
 def handle_add_comment(data):
     username = data.get('username')
@@ -665,8 +623,8 @@ def handle_add_comment(data):
         }
         requests_data[request_id]["comments"].append(comment_obj)
         save_requests()
+        trigger_global_update()
         return {"status": "success", "message": "Yorum eklendi", "comments": requests_data[request_id]["comments"]}
-
 
 def handle_create_team(data):
     username = data.get('username')
@@ -708,8 +666,8 @@ def handle_create_team(data):
         teams_data[next_team_id] = team
         next_team_id += 1
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Takım ilanı başarıyla yayınlandı", "team_id": team["id"]}
-
 
 def handle_get_all_teams(data):
     with lock:
@@ -719,7 +677,6 @@ def handle_get_all_teams(data):
             t.setdefault("messages", [])
         t_list.sort(key=lambda x: x["id"], reverse=True)
         return {"status": "success", "teams": t_list}
-
 
 def handle_join_team(data):
     username = data.get('username')
@@ -758,8 +715,8 @@ def handle_join_team(data):
         }
         team["join_requests"].append(req_obj)
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Katılma isteği takım sahibine iletildi."}
-
 
 def handle_accept_join_request(data):
     username = data.get('username')
@@ -778,7 +735,7 @@ def handle_accept_join_request(data):
         team.setdefault("join_requests", [])
 
         if str(team["author"]).strip() != str(username).strip():
-            return {"status": "error", "message": "Sadece takım sahibi katılma isteklerini kabul edabilir!"}
+            return {"status": "error", "message": "Sadece takım sahibi katılma isteklerini kabul edebilir!"}
 
         req_usernames = [r if isinstance(r, str) else r.get("username") for r in team["join_requests"]]
         if target_username not in req_usernames:
@@ -792,8 +749,8 @@ def handle_accept_join_request(data):
             team["members"].append(target_username)
         team["current_members"] = len(team["members"])
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Katılma isteği kabul edildi.", "current_members": team["current_members"]}
-
 
 def handle_reject_join_request(data):
     username = data.get('username')
@@ -817,8 +774,8 @@ def handle_reject_join_request(data):
         team["join_requests"] = [r for r in team["join_requests"] if (r if isinstance(r, str) else r.get("username")) != target_username]
 
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Katılma isteği kaldırıldı."}
-
 
 def handle_leave_team(data):
     username = data.get('username')
@@ -842,8 +799,8 @@ def handle_leave_team(data):
         team["members"].remove(username)
         team["current_members"] = len(team["members"])
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Takımdan ayrıldınız.", "current_members": team["current_members"]}
-
 
 def handle_kick_member(data):
     username = data.get('username')
@@ -871,13 +828,13 @@ def handle_kick_member(data):
         team["members"].remove(target_username)
         team["current_members"] = len(team["members"])
         save_teams()
+        trigger_global_update()
         return {
             "status": "success",
             "message": f"@{target_username} takımdan çıkarıldı.",
             "current_members": team["current_members"],
             "members": team["members"]
         }
-
 
 def handle_delete_team(data):
     username = data.get('username')
@@ -896,8 +853,8 @@ def handle_delete_team(data):
 
         del teams_data[team_id]
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Takım ilanı silindi"}
-
 
 def handle_add_team_message(data):
     username = data.get('username')
@@ -927,8 +884,8 @@ def handle_add_team_message(data):
         }
         team["messages"].append(msg_obj)
         save_teams()
+        trigger_global_update()
         return {"status": "success", "message": "Mesaj gönderildi", "messages": team["messages"]}
-
 
 def handle_create_report(data):
     username = data.get('username')
@@ -953,8 +910,8 @@ def handle_create_report(data):
         reports_data.append(report)
         next_report_id += 1
         save_reports()
+        trigger_global_update()
         return {"status": "success", "message": "Rapor başarıyla iletildi."}
-
 
 def handle_get_all_users(data):
     with lock:
@@ -1000,7 +957,6 @@ def handle_get_all_users(data):
             })
         return {"status": "success", "users": user_list}
 
-
 def handle_get_user_profile(data):
     target_username = data.get('target_username')
     if not target_username:
@@ -1031,15 +987,12 @@ def handle_get_user_profile(data):
                 file_path = os.path.join(UPLOADS_DIR, f"{note.id}_{file_name}")
                 file_size = get_formatted_file_size(file_path)
 
-            v_count = note_views.get(note.id, getattr(note, 'views', 0))
-
             formatted_notes.append({
                 "id": note.id,
                 "title": note.title,
                 "content": note.content,
                 "author": note.author,
                 "likes": note.likes,
-                "views": v_count,
                 "date": getattr(note, 'date', 'Bilinmiyor'),
                 "file_name": file_name,
                 "file_size": file_size
@@ -1064,7 +1017,6 @@ def handle_get_user_profile(data):
                 "teams": user_teams
             }
         }
-
 
 if __name__ == '__main__':
     load_data()
