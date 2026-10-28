@@ -1,5 +1,7 @@
 # SAÜ Connect
 
+**English** | [Türkçe](README.tr.md)
+
 A campus platform for Sakarya University (SAÜ) students. Share course notes, ask for help, find teammates for projects, and browse other students' profiles, all in one place.
 
 The interface is in Turkish. It is a single-page web app served by a small Flask backend that stores everything in plain files, so there is no database to set up.
