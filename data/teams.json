@@ -1,4 +1,18 @@
 {
-  "teams": {},
-  "next_id": 2
+  "teams": {
+    "2": {
+      "id": 2,
+      "title": "Teknofest Hackathon",
+      "description": "Python",
+      "skills": "Python",
+      "author": "melih",
+      "current_members": 1,
+      "target_members": 5,
+      "date": "28.10.2026 03:18",
+      "members": [
+        "melih"
+      ]
+    }
+  },
+  "next_id": 3
 }

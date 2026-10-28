@@ -168,14 +168,6 @@ def index():
     return "index.html bulunamadı", 404
 
 
-@app.route('/logo.jpeg')
-def logo():
-    logo_path = os.path.join(BASE_DIR, 'logo.jpeg')
-    if os.path.exists(logo_path):
-        return send_file(logo_path)
-    return "", 404
-
-
 @app.route('/api/command', methods=['POST'])
 def handle_command():
     request_data = request.get_json(force=True, silent=True) or {}
@@ -217,6 +209,8 @@ def handle_command():
         return jsonify(handle_join_team(request_data))
     elif command == 'LEAVE_TEAM':
         return jsonify(handle_leave_team(request_data))
+    elif command == 'KICK_MEMBER':
+        return jsonify(handle_kick_member(request_data))
     elif command == 'DELETE_TEAM':
         return jsonify(handle_delete_team(request_data))
     elif command == 'GET_ALL_USERS':
@@ -233,6 +227,7 @@ def handle_register(data):
     faculty = data.get('faculty', '').strip()
     department = data.get('department', '').strip()
     about = data.get('about', '').strip()
+    profile_image = data.get('profile_image', '').strip()
 
     if not username or not password or not faculty or not department:
         return {"status": "error", "message": "Kullanıcı adı, şifre, fakülte ve bölüm alanları zorunludur!"}
@@ -241,7 +236,7 @@ def handle_register(data):
         if username in users:
             return {"status": "error", "message": "Bu kullanıcı adı zaten alınmış"}
 
-        user_profile = Profile(username, faculty, department, about)
+        user_profile = Profile(username, faculty, department, about, profile_image=profile_image)
         user = User(username, password, user_profile)
         users[username] = user
         save_accounts()
@@ -267,6 +262,7 @@ def handle_login(data):
         f = user.profile.faculty if user.profile else ""
         d = user.profile.department if user.profile else ""
         a = user.profile.about if user.profile else ""
+        img = user.profile.profile_image if user.profile else ""
 
         return {
             "status": "success",
@@ -275,7 +271,8 @@ def handle_login(data):
                 "username": username,
                 "faculty": f,
                 "department": d,
-                "about": a
+                "about": a,
+                "profile_image": img
             }
         }
 
@@ -289,6 +286,7 @@ def handle_update_profile(data):
     faculty = data.get('faculty', '').strip()
     department = data.get('department', '').strip()
     about = data.get('about', '').strip()
+    profile_image = data.get('profile_image', '').strip()
 
     if not username or not faculty or not department:
         return {"status": "error", "message": "Fakülte ve bölüm alanları zorunludur!"}
@@ -304,9 +302,15 @@ def handle_update_profile(data):
         user.profile.faculty = faculty
         user.profile.department = department
         user.profile.about = about
+        if profile_image:
+            user.profile.profile_image = profile_image
 
         save_profiles()
-        return {"status": "success", "message": "Profil başarıyla güncellendi"}
+        return {
+            "status": "success",
+            "message": "Profil başarıyla güncellendi",
+            "profile_image": user.profile.profile_image
+        }
 
 
 def handle_create_note(data):
@@ -692,6 +696,40 @@ def handle_leave_team(data):
         return {"status": "success", "message": "Takımdan ayrıldınız.", "current_members": team["current_members"]}
 
 
+def handle_kick_member(data):
+    username = data.get('username')
+    team_id = data.get('team_id')
+    target_username = data.get('target_username')
+
+    if not username or team_id is None or not target_username:
+        return {"status": "error", "message": "Parametreler eksik"}
+
+    team_id = int(team_id)
+    with lock:
+        if team_id not in teams_data:
+            return {"status": "error", "message": "Takım ilanı bulunamadı"}
+
+        team = teams_data[team_id]
+        if str(team["author"]).strip() != str(username).strip():
+            return {"status": "error", "message": "Sadece takım kurucusu üye çıkarabilir!"}
+
+        if target_username == team["author"]:
+            return {"status": "error", "message": "Takım kurucusu çıkarılamaz!"}
+
+        if target_username not in team["members"]:
+            return {"status": "error", "message": "Bu kullanıcı takım üyesi değil"}
+
+        team["members"].remove(target_username)
+        team["current_members"] = len(team["members"])
+        save_teams()
+        return {
+            "status": "success",
+            "message": f"@{target_username} takımdan çıkarıldı.",
+            "current_members": team["current_members"],
+            "members": team["members"]
+        }
+
+
 def handle_delete_team(data):
     username = data.get('username')
     team_id = data.get('team_id')
@@ -735,17 +773,20 @@ def handle_get_all_users(data):
             faculty = ""
             department = ""
             about = ""
+            profile_image = ""
             if username in users and users[username].profile:
                 p = users[username].profile
                 faculty = p.faculty
                 department = p.department
                 about = p.about
+                profile_image = getattr(p, 'profile_image', '')
 
             user_list.append({
                 "username": username,
                 "faculty": faculty,
                 "department": department,
                 "about": about,
+                "profile_image": profile_image,
                 "total_notes": len(user_notes),
                 "total_likes": total_likes,
                 "total_requests": len(user_reqs),
@@ -763,12 +804,14 @@ def handle_get_user_profile(data):
         faculty = ""
         department = ""
         about = ""
+        profile_image = ""
 
         if target_username in users and users[target_username].profile:
             p = users[target_username].profile
             faculty = p.faculty
             department = p.department
             about = p.about
+            profile_image = getattr(p, 'profile_image', '')
 
         user_notes = [n for n in notes.values() if str(n.author).strip() == str(target_username).strip()]
         user_reqs = [r for r in requests_data.values() if str(r.get("author")).strip() == str(target_username).strip()]
@@ -802,6 +845,7 @@ def handle_get_user_profile(data):
                 "faculty": faculty,
                 "department": department,
                 "about": about,
+                "profile_image": profile_image,
                 "total_notes": len(formatted_notes),
                 "total_likes": total_likes,
                 "total_requests": len(user_reqs),

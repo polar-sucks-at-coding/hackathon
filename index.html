@@ -288,7 +288,9 @@
 
                 <div class="flex items-center gap-4">
                     <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-theme-input border border-theme cursor-pointer" onclick="switchTab('profile')">
-                        <div class="w-7 h-7 rounded-full bg-theme-accent text-slate-950 font-bold text-xs flex items-center justify-center uppercase" id="userAvatar">U</div>
+                        <div id="headerAvatarContainer" class="w-7 h-7 rounded-full overflow-hidden bg-theme-accent text-slate-950 font-bold text-xs flex items-center justify-center uppercase shrink-0">
+                            <span id="userAvatar">U</span>
+                        </div>
                         <span class="text-sm font-semibold text-theme-main" id="headerUsername">Kullanıcı</span>
                     </div>
                 </div>
@@ -300,11 +302,13 @@
                 <section id="section-notes" class="space-y-6">
                     <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-theme-card p-4 rounded-xl border border-theme shadow-sm">
                         <div class="flex p-1 bg-theme-input rounded-lg border border-theme self-start">
-                            <button onclick="switchNoteTab('notes')" id="subnav-notes" class="px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow">
-                                📖 Ders Notları
+                            <button onclick="switchNoteTab('notes')" id="subnav-notes" class="px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-book-open text-xs"></i>
+                                <span>Ders Notları</span>
                             </button>
-                            <button onclick="switchNoteTab('requests')" id="subnav-requests" class="px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main">
-                                🙋‍♂️ Not İstekleri
+                            <button onclick="switchNoteTab('requests')" id="subnav-requests" class="px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main flex items-center gap-1.5">
+                                <i class="fa-solid fa-comments text-xs"></i>
+                                <span>Not İstekleri</span>
                             </button>
                         </div>
 
@@ -339,7 +343,7 @@
                             <div>
                                 <h3 class="text-xl font-bold text-theme-main flex items-center gap-2">
                                     <i class="fa-solid fa-users-gear text-theme-accent"></i>
-                                    <span>❖ Takım ve Proje İlanları</span>
+                                    <span>Takım ve Proje İlanları</span>
                                 </h3>
                                 <p class="text-theme-sub text-sm mt-1">
                                     Teknofest, yarışmalar veya ders projeleri için ekip arkadaşları arayın, kontenjan durumunu ve üye sayılarını görün.
@@ -368,7 +372,10 @@
                 <!-- TAB 3: ANKETLER -->
                 <section id="section-polls" class="hidden space-y-6">
                     <div class="bg-theme-card p-6 rounded-xl border border-theme">
-                        <h3 class="text-xl font-bold text-theme-main mb-2">📊 Kampüs Anketleri</h3>
+                        <h3 class="text-xl font-bold text-theme-main mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-theme-accent"></i>
+                            <span>Kampüs Anketleri</span>
+                        </h3>
                         <p class="text-theme-sub text-sm mb-6">Sakarya Üniversitesi öğrencileri tarafından başlatılan güncel oylamalar.</p>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -413,7 +420,7 @@
                         <div>
                             <h3 class="text-xl font-bold text-theme-main flex items-center gap-2">
                                 <i class="fa-solid fa-users text-theme-accent"></i>
-                                <span>👥 Kampüs Sosyal & Öğrenci Dizini</span>
+                                <span>Kampüs Sosyal & Öğrenci Dizini</span>
                             </h3>
                             <p class="text-theme-sub text-sm mt-1">
                                 Sakarya Üniversitesi öğrencilerinin profillerini inceleyin, fakülte ve bölüm bilgilerini görün.
@@ -450,7 +457,9 @@
                     <div class="bg-theme-card p-6 rounded-xl border border-theme relative overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
                             <div class="flex flex-col sm:flex-row items-center gap-6">
-                                <div class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg shrink-0" id="profileLargeAvatar">U</div>
+                                <div id="profileLargeAvatarContainer" class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg shrink-0 overflow-hidden border-2 border-theme-accent">
+                                    <span id="profileLargeAvatar">U</span>
+                                </div>
                                 <div class="text-center sm:text-left space-y-1.5">
                                     <h3 class="text-2xl font-bold text-theme-main" id="profileUsername">Kullanıcı Adı</h3>
 
@@ -544,8 +553,8 @@
                     <!-- Profil Kartı Header -->
                     <div class="bg-theme-card p-6 rounded-xl border border-theme relative overflow-hidden space-y-5">
                         <div class="flex flex-col sm:flex-row items-center gap-6 relative z-10">
-                            <div class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg" id="viewProfileLargeAvatar">
-                                U
+                            <div id="viewProfileLargeAvatarContainer" class="w-24 h-24 rounded-2xl bg-theme-accent text-slate-950 font-black text-4xl flex items-center justify-center uppercase shadow-lg shrink-0 overflow-hidden border-2 border-theme-accent">
+                                <span id="viewProfileLargeAvatar">U</span>
                             </div>
                             <div class="text-center sm:text-left space-y-1.5">
                                 <h3 class="text-2xl font-bold text-theme-main" id="viewProfileUsername">Kullanıcı Adı</h3>
@@ -639,7 +648,10 @@
                 <section id="section-settings" class="hidden space-y-6">
                     <div class="bg-theme-card p-6 rounded-xl border border-theme space-y-6">
                         <div>
-                            <h3 class="text-xl font-bold text-theme-main mb-1">⚙️ Uygulama Ayarları</h3>
+                            <h3 class="text-xl font-bold text-theme-main mb-1 flex items-center gap-2">
+                                <i class="fa-solid fa-gear text-theme-accent"></i>
+                                <span>Uygulama Ayarları</span>
+                            </h3>
                             <p class="text-theme-sub text-sm">Görünüm temalarını değiştirin ve sunucu bağlantısını yapılandırın.</p>
                         </div>
 
@@ -688,7 +700,7 @@
     <!-- MODALLAR -->
     <!-- =================================================================== -->
 
-    <!-- MODAL: PROFİLİ DÜZENLE MODALI -->
+    <!-- MODAL: PROFİLİ DÜZENLE MODALI (PROFİL RESMİ YÜKLEME DAHİL) -->
     <div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
         <div class="w-full max-w-md bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-theme pb-3">
@@ -700,6 +712,11 @@
             </div>
 
             <form onsubmit="submitUpdateProfile(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Profil Resmi</label>
+                    <input type="file" id="editProfileImageInput" accept="image/*" class="w-full text-xs text-theme-sub file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-theme-input file:text-theme-main border border-theme rounded-lg p-1">
+                </div>
+
                 <div>
                     <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1">Fakülte *</label>
                     <input type="text" id="editFaculty" required class="w-full px-3.5 py-2.5 rounded-lg bg-theme-input border border-theme text-theme-main text-sm focus:outline-none focus:border-theme-accent" placeholder="Fakülteniz">
@@ -723,7 +740,7 @@
         </div>
     </div>
 
-    <!-- MODAL: TAKIM İLANI OLUŞTUR MODALI (ETİKETLER İYİLEŞTİRİLDİ) -->
+    <!-- MODAL: TAKIM İLANI OLUŞTUR MODALI -->
     <div id="addTeamModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
         <div class="w-full max-w-lg bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-theme pb-3">
@@ -770,7 +787,7 @@
         </div>
     </div>
 
-    <!-- MODAL: TAKIM İLANI DETAY MODALI -->
+    <!-- MODAL: TAKIM İLANI DETAY MODALI (ÜYE ÇIKAR / AT BUTONLARI DAHİL) -->
     <div id="teamDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
         <div class="w-full max-w-2xl bg-theme-card border border-theme rounded-2xl p-6 shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
             <div class="flex items-start justify-between border-b border-theme pb-4">
@@ -989,6 +1006,7 @@
             userFaculty: '',
             userDepartment: '',
             userAbout: '',
+            userProfileImage: '',
             activeTab: 'notes',
             previousTab: 'teams',
             activeNoteSubTab: 'notes',
@@ -1083,7 +1101,6 @@
             let localNotes = JSON.parse(localStorage.getItem('sau_notes_local') || JSON.stringify(INITIAL_DEMO_NOTES));
             let localRequests = JSON.parse(localStorage.getItem('sau_requests_local') || '[]');
             let localTeams = JSON.parse(localStorage.getItem('sau_teams_local') || JSON.stringify(INITIAL_DEMO_TEAMS));
-            let localLikes = JSON.parse(localStorage.getItem('sau_likes_local') || '{}');
 
             if (cmd === 'REGISTER') {
                 if (localUsers[req.username]) {
@@ -1094,7 +1111,8 @@
                     password: req.password,
                     faculty: req.faculty || '',
                     department: req.department || '',
-                    about: req.about || ''
+                    about: req.about || '',
+                    profile_image: req.profile_image || ''
                 };
                 localStorage.setItem('sau_users_local', JSON.stringify(localUsers));
                 return { status: 'success', message: 'Hesap oluşturuldu (Local)' };
@@ -1108,7 +1126,13 @@
                 return {
                     status: 'success',
                     message: 'Giriş başarılı',
-                    user: { username: u.username, faculty: u.faculty, department: u.department, about: u.about }
+                    user: {
+                        username: u.username,
+                        faculty: u.faculty,
+                        department: u.department,
+                        about: u.about,
+                        profile_image: u.profile_image || ''
+                    }
                 };
             }
 
@@ -1117,9 +1141,16 @@
                     localUsers[req.username].faculty = req.faculty;
                     localUsers[req.username].department = req.department;
                     localUsers[req.username].about = req.about;
+                    if (req.profile_image) {
+                        localUsers[req.username].profile_image = req.profile_image;
+                    }
                     localStorage.setItem('sau_users_local', JSON.stringify(localUsers));
                 }
-                return { status: 'success', message: 'Profil güncellendi' };
+                return {
+                    status: 'success',
+                    message: 'Profil güncellendi',
+                    profile_image: localUsers[req.username]?.profile_image || ''
+                };
             }
 
             if (cmd === 'GET_ALL_NOTES') return { status: 'success', notes: localNotes };
@@ -1166,6 +1197,17 @@
                 }
             }
 
+            if (cmd === 'KICK_MEMBER') {
+                const target = localTeams.find(t => t.id === parseInt(req.team_id));
+                if (target) {
+                    if (target.author !== req.username) return { status: 'error', message: 'Sadece kurucu üye çıkarabilir!' };
+                    target.members = target.members.filter(m => m !== req.target_username);
+                    target.current_members = target.members.length;
+                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
+                    return { status: 'success', message: 'Üye takımdan çıkarıldı', current_members: target.current_members, members: target.members };
+                }
+            }
+
             if (cmd === 'DELETE_TEAM') {
                 localTeams = localTeams.filter(t => t.id !== parseInt(req.team_id));
                 localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
@@ -1180,6 +1222,7 @@
                         faculty: localUsers[u].faculty || '',
                         department: localUsers[u].department || '',
                         about: localUsers[u].about || '',
+                        profile_image: localUsers[u].profile_image || '',
                         total_notes: 0,
                         total_likes: 0,
                         total_requests: 0,
@@ -1215,6 +1258,7 @@
                         faculty: uData.faculty || '',
                         department: uData.department || '',
                         about: uData.about || '',
+                        profile_image: uData.profile_image || '',
                         total_notes: uNotes.length,
                         total_likes: uLikes,
                         total_requests: uReqs.length,
@@ -1240,6 +1284,7 @@
                 state.userFaculty = localStorage.getItem('sau_user_faculty') || '';
                 state.userDepartment = localStorage.getItem('sau_user_dept') || '';
                 state.userAbout = localStorage.getItem('sau_user_about') || '';
+                state.userProfileImage = localStorage.getItem('sau_user_image') || '';
                 showAppUI();
             } else {
                 showAuthUI();
@@ -1257,9 +1302,9 @@
 
             document.getElementById('headerUsername').innerText = state.currentUser;
             document.getElementById('profileUsername').innerText = state.currentUser;
-            const initialLetter = state.currentUser.charAt(0).toUpperCase();
-            document.getElementById('userAvatar').innerText = initialLetter;
-            document.getElementById('profileLargeAvatar').innerText = initialLetter;
+
+            updateAvatarDisplay('headerAvatarContainer', 'userAvatar', state.currentUser, state.userProfileImage, 'w-7 h-7');
+            updateAvatarDisplay('profileLargeAvatarContainer', 'profileLargeAvatar', state.currentUser, state.userProfileImage, 'w-24 h-24 text-4xl');
 
             renderUserProfileDetails();
 
@@ -1267,6 +1312,18 @@
             loadAllRequests();
             loadAllTeams();
             loadAllSocialUsers();
+        }
+
+        function updateAvatarDisplay(containerId, textSpanId, username, imageUrl, sizeClasses) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (imageUrl && imageUrl.trim()) {
+                container.innerHTML = `<img src="${imageUrl}" class="w-full h-full object-cover" alt="${username}">`;
+            } else {
+                const initial = (username || 'U').charAt(0).toUpperCase();
+                container.innerHTML = `<span id="${textSpanId}">${initial}</span>`;
+            }
         }
 
         function switchAuthTab(tab) {
@@ -1303,9 +1360,12 @@
                     state.userFaculty = res.user.faculty || '';
                     state.userDepartment = res.user.department || '';
                     state.userAbout = res.user.about || '';
+                    state.userProfileImage = res.user.profile_image || '';
+
                     localStorage.setItem('sau_user_faculty', state.userFaculty);
                     localStorage.setItem('sau_user_dept', state.userDepartment);
                     localStorage.setItem('sau_user_about', state.userAbout);
+                    localStorage.setItem('sau_user_image', state.userProfileImage);
                 }
                 localStorage.setItem('sau_active_user', u);
                 showToast('Giriş başarılı! Hoş geldiniz.', 'success');
@@ -1405,12 +1465,12 @@
             });
 
             const titles = {
-                notes: '📖 Ders Notları ve İstekler',
-                teams: '❖ Takım ve Proje İlanları',
-                polls: '📊 Kampüs Anketleri',
-                social: '👥 Kampüs Sosyal & Öğrenci Dizini',
-                profile: '👤 Profilim',
-                settings: '⚙️ Ayarlar'
+                notes: 'Ders Notları ve İstekler',
+                teams: 'Takım ve Proje İlanları',
+                polls: 'Kampüs Anketleri',
+                social: 'Kampüs Sosyal & Öğrenci Dizini',
+                profile: 'Profilim',
+                settings: 'Ayarlar'
             };
             document.getElementById('currentTabTitle').innerText = titles[tabName] || 'Arayüz';
 
@@ -1427,15 +1487,15 @@
             const searchInput = document.getElementById('searchInput');
 
             if (subTab === 'notes') {
-                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow";
-                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main";
+                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow flex items-center gap-1.5";
+                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main flex items-center gap-1.5";
                 document.getElementById('notesGrid').classList.remove('hidden');
                 document.getElementById('requestsList').classList.add('hidden');
                 actionBtnText.innerText = "Not Ekle";
                 searchInput.placeholder = "Notlarda ara...";
             } else {
-                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow";
-                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main";
+                btnReqs.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all bg-theme-accent text-slate-950 shadow flex items-center gap-1.5";
+                btnNotes.className = "px-4 py-2 rounded-md font-semibold text-sm transition-all text-theme-sub hover:text-theme-main flex items-center gap-1.5";
                 document.getElementById('requestsList').classList.remove('hidden');
                 document.getElementById('notesGrid').classList.add('hidden');
                 actionBtnText.innerText = "İstek Ekle";
@@ -1472,22 +1532,35 @@
             const f = document.getElementById('editFaculty').value.trim();
             const d = document.getElementById('editDepartment').value.trim();
             const a = document.getElementById('editAbout').value.trim();
+            const imgInput = document.getElementById('editProfileImageInput');
+
+            let imgData = state.userProfileImage;
+            if (imgInput.files && imgInput.files.length > 0) {
+                imgData = await convertFileToBase64(imgInput.files[0]);
+            }
 
             const res = await apiCall({
                 command: 'UPDATE_PROFILE',
                 username: state.currentUser,
                 faculty: f,
                 department: d,
-                about: a
+                about: a,
+                profile_image: imgData
             });
 
             if (res.status === 'success') {
                 state.userFaculty = f;
                 state.userDepartment = d;
                 state.userAbout = a;
+                if (imgData) state.userProfileImage = imgData;
+
                 localStorage.setItem('sau_user_faculty', f);
                 localStorage.setItem('sau_user_dept', d);
                 localStorage.setItem('sau_user_about', a);
+                localStorage.setItem('sau_user_image', state.userProfileImage);
+
+                updateAvatarDisplay('headerAvatarContainer', 'userAvatar', state.currentUser, state.userProfileImage, 'w-7 h-7');
+                updateAvatarDisplay('profileLargeAvatarContainer', 'profileLargeAvatar', state.currentUser, state.userProfileImage, 'w-24 h-24 text-4xl');
 
                 renderUserProfileDetails();
                 closeModal('editProfileModal');
@@ -1554,7 +1627,7 @@
                             </p>
                         </div>
 
-                        <!-- Gerekli Yetenekler KutusU -->
+                        <!-- Gerekli Yetenekler Kutusu -->
                         <div class="p-2.5 rounded-lg bg-theme-input border border-theme text-xs space-y-1">
                             <div class="font-bold text-theme-accent flex items-center gap-1 text-[11px]">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -1627,15 +1700,26 @@
             document.getElementById('modalTeamCapacityPercent').innerText = `%${percent} Dolu`;
             document.getElementById('modalTeamProgress').style.width = `${percent}%`;
 
-            // Üye rozetleri
+            // Üye rozetleri ve Takım Yöneticisi için Üye Çıkarma Yetkisi
             const membersList = document.getElementById('modalTeamMembersList');
             membersList.innerHTML = '';
+            const isAuthor = team.author === state.currentUser;
+
             if (team.members && team.members.length > 0) {
                 team.members.forEach(m => {
-                    const badge = document.createElement('span');
-                    badge.className = "px-2.5 py-1 rounded-md bg-theme-input border border-theme text-xs font-semibold text-theme-main flex items-center gap-1.5 cursor-pointer hover:border-theme-accent";
-                    badge.onclick = () => { closeModal('teamDetailModal'); openUserProfilePage(m); };
-                    badge.innerHTML = `<i class="fa-solid fa-user-circle text-theme-accent"></i> @${m} ${m === team.author ? '<span class="text-[10px] text-amber-400 font-bold">(Kurucu)</span>' : ''}`;
+                    const badge = document.createElement('div');
+                    badge.className = "px-2.5 py-1 rounded-md bg-theme-input border border-theme text-xs font-semibold text-theme-main flex items-center gap-2";
+
+                    let kickBtnHtml = '';
+                    if (isAuthor && m !== team.author) {
+                        kickBtnHtml = `<button onclick="kickTeamMember(${team.id}, '${m}')" title="Takımdan Çıkar" class="text-red-400 hover:text-red-300 ml-1 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>`;
+                    }
+
+                    badge.innerHTML = `
+                        <span class="cursor-pointer hover:underline flex items-center gap-1.5" onclick="closeModal('teamDetailModal'); openUserProfilePage('${m}');">
+                            <i class="fa-solid fa-user-circle text-theme-accent"></i> @${m} ${m === team.author ? '<span class="text-[10px] text-amber-400 font-bold">(Kurucu)</span>' : ''}
+                        </span>
+                        ${kickBtnHtml}`;
                     membersList.appendChild(badge);
                 });
             }
@@ -1643,8 +1727,6 @@
             // Buton kontrolleri
             const actionBtn = document.getElementById('modalTeamActionBtn');
             const deleteBtn = document.getElementById('modalTeamDeleteBtn');
-
-            const isAuthor = team.author === state.currentUser;
             const isMember = team.members && team.members.includes(state.currentUser);
 
             if (isAuthor) {
@@ -1676,6 +1758,23 @@
             }
 
             openModal('teamDetailModal');
+        }
+
+        async function kickTeamMember(teamId, targetUsername) {
+            const res = await apiCall({
+                command: 'KICK_MEMBER',
+                username: state.currentUser,
+                team_id: teamId,
+                target_username: targetUsername
+            });
+
+            if (res.status === 'success') {
+                showToast(`@${targetUsername} takımdan çıkarıldı.`, 'info');
+                closeModal('teamDetailModal');
+                loadAllTeams();
+            } else {
+                showToast(res.message || 'Çıkarma işlemi başarısız', 'error');
+            }
         }
 
         async function handleTeamAction() {
@@ -1933,13 +2032,17 @@
             userList.forEach(u => {
                 const isMe = u.username === state.currentUser;
                 const initial = u.username.charAt(0).toUpperCase();
+                const avatarHtml = u.profile_image ?
+                    `<img src="${u.profile_image}" class="w-full h-full object-cover" alt="${u.username}">` :
+                    `<span>${initial}</span>`;
+
                 const card = document.createElement('div');
                 card.className = "p-5 rounded-xl border border-theme bg-theme-card glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
 
                 card.innerHTML = `
                     <div class="flex items-start gap-3.5">
-                        <div class="w-12 h-12 rounded-xl bg-theme-accent text-slate-950 font-black text-xl flex items-center justify-center uppercase shadow shrink-0">
-                            ${initial}
+                        <div class="w-12 h-12 rounded-xl bg-theme-accent text-slate-950 font-black text-xl flex items-center justify-center uppercase shadow shrink-0 overflow-hidden border border-theme-accent">
+                            ${avatarHtml}
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2">
@@ -1990,7 +2093,7 @@
                 const p = res.profile;
 
                 document.getElementById('viewProfileUsername').innerText = p.username;
-                document.getElementById('viewProfileLargeAvatar').innerText = p.username.charAt(0).toUpperCase();
+                updateAvatarDisplay('viewProfileLargeAvatarContainer', 'viewProfileLargeAvatar', p.username, p.profile_image, 'w-24 h-24 text-4xl');
 
                 document.getElementById('viewProfileFacultyText').innerText = p.faculty || 'Fakülte Belirtilmemiş';
                 document.getElementById('viewProfileDepartmentText').innerText = p.department || 'Bölüm Belirtilmemiş';
@@ -2049,7 +2152,7 @@
                     });
                 }
 
-                switchTabToSection('user-profile', `👤 Öğrenci Profili: ${p.username}`);
+                switchTabToSection('user-profile', `Öğrenci Profili: ${p.username}`);
             } else {
                 showToast(res.message || 'Kullanıcı profili yüklenemedi', 'error');
             }
@@ -2337,7 +2440,7 @@
                     if ((encoded.length % 4) !== 0) {
                         encoded += '='.repeat((4 - encoded.length % 4) % 4);
                     }
-                    resolve(encoded);
+                    resolve(reader.result.toString());
                 };
                 reader.onerror = error => reject(error);
             });
