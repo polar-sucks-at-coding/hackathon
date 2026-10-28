@@ -32,7 +32,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* NEOMORPHIC UTILITY CLASSES */
         .neu-flat {
             background-color: var(--bg-card);
             box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
@@ -121,12 +120,9 @@
     <!-- Toast Bildirim Alanı -->
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- =================================================================== -->
     <!-- 1. GİRİŞ VE KAYIT EKRANI (AUTH VIEW) -->
-    <!-- =================================================================== -->
     <div id="authView" class="min-h-screen flex items-center justify-center p-4 md:p-8 bg-theme-base">
         <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 rounded-3xl neu-flat p-4 md:p-6 gap-6">
-            <!-- Sol Sütun: SAÜ Branding -->
             <div class="p-8 md:p-10 flex flex-col justify-between relative overflow-hidden rounded-2xl neu-pressed">
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-6">
@@ -162,9 +158,7 @@
                 </div>
             </div>
 
-            <!-- Sağ Sütun: Form Alanı -->
             <div class="p-6 md:p-8 flex flex-col justify-center rounded-2xl neu-flat">
-                <!-- Giriş Formu -->
                 <div id="loginFormContainer" class="animate-fade-in">
                     <h3 class="text-2xl font-bold text-theme-main mb-2">Giriş Yap</h3>
                     <p class="text-sm text-theme-sub mb-6">Hesabınıza erişmek için bilgilerinizi giriniz.</p>
@@ -201,7 +195,6 @@
                     </div>
                 </div>
 
-                <!-- Kayıt Ol Formu -->
                 <div id="registerFormContainer" class="hidden animate-fade-in space-y-4">
                     <div>
                         <h3 class="text-2xl font-bold text-theme-main mb-1">Hesap Oluştur</h3>
@@ -267,9 +260,7 @@
         </div>
     </div>
 
-    <!-- =================================================================== -->
     <!-- 2. ANA PANEL LAYOUT -->
-    <!-- =================================================================== -->
     <div id="mainView" class="hidden flex-1 flex flex-col md:flex-row min-h-screen bg-theme-base gap-6 p-2 md:p-4">
 
         <!-- Sidebar -->
@@ -371,6 +362,7 @@
 
                             <select id="sortSelect" onchange="filterAndRender()" class="px-3.5 py-2 rounded-xl neu-pressed text-theme-main text-sm focus:outline-none cursor-pointer">
                                 <option value="likes">❤️ Beğeniye Göre</option>
+                                <option value="views">👁️ Görüntülenmeye Göre</option>
                                 <option value="date_desc">📅 Tarihe Göre (En Yeni)</option>
                                 <option value="alpha_asc">🔤 A'dan Z'ye</option>
                                 <option value="alpha_desc">🔤 Z'den A'ya</option>
@@ -383,7 +375,36 @@
                         </div>
                     </div>
 
-                    <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    <!-- DERS NOTLARI KAPSAYICI ALANI -->
+                    <div id="notesSectionContainer" class="space-y-6">
+                        <!-- 1. SIRA: SON 1 HAFTADA EN ÇOK BEĞENİLENLER -->
+                        <div id="topLikedSection" class="neu-flat p-5 rounded-3xl space-y-3">
+                            <h3 class="text-sm font-bold text-theme-main flex items-center gap-2">
+                                <i class="fa-solid fa-fire text-rose-500"></i>
+                                <span>Son 1 Haftada En Çok Beğenilenler</span>
+                            </h3>
+                            <div id="topLikedGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                        </div>
+
+                        <!-- 2. SIRA: SON 1 HAFTADA EN ÇOK GÖRÜNTÜLENENLER -->
+                        <div id="topViewedSection" class="neu-flat p-5 rounded-3xl space-y-3">
+                            <h3 class="text-sm font-bold text-theme-main flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-blue-400"></i>
+                                <span>Son 1 Haftada En Çok Görüntülenenler</span>
+                            </h3>
+                            <div id="topViewedGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                        </div>
+
+                        <!-- SEÇİLEN SIRALAMAYA GÖRE LİSTE -->
+                        <div class="space-y-3 pt-2">
+                            <h3 class="text-xs font-bold text-theme-sub uppercase tracking-wider flex items-center gap-2 pl-1">
+                                <i class="fa-solid fa-list-ul text-theme-accent"></i>
+                                <span>Tüm Ders Notları (Seçilen Sıralamaya Göre)</span>
+                            </h3>
+                            <div id="notesGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                        </div>
+                    </div>
+
                     <div id="requestsList" class="hidden space-y-5"></div>
                 </section>
 
@@ -407,7 +428,6 @@
                             </button>
                         </div>
 
-                        <!-- Arama Barı -->
                         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-3.5 rounded-2xl neu-pressed">
                             <div class="relative flex-1">
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-theme-sub"><i class="fa-solid fa-magnifying-glass"></i></span>
@@ -415,12 +435,11 @@
                             </div>
                         </div>
 
-                        <!-- Takım İlanları Grid -->
                         <div id="teamsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
                     </div>
                 </section>
 
-                <!-- TAB 3: SOSYAL (SOSYAL DİZİN) -->
+                <!-- TAB 3: SOSYAL -->
                 <section id="section-social" class="hidden space-y-6">
                     <div class="neu-flat p-6 rounded-3xl space-y-6">
                         <div>
@@ -708,10 +727,7 @@
         </main>
     </div>
 
-    <!-- =================================================================== -->
     <!-- MODALLAR -->
-    <!-- =================================================================== -->
-
     <!-- MODAL: RAPOR ET MODALI -->
     <div id="reportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-md neu-flat rounded-3xl p-6 space-y-5">
@@ -862,7 +878,7 @@
         </div>
     </div>
 
-    <!-- MODAL: TAKIM İLANI DETAY MODALI (SEKMELİ YAPI: ANA BİLGİLER | SOHBET | İSTEKLER) -->
+    <!-- MODAL: TAKIM İLANI DETAY MODALI -->
     <div id="teamDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-2xl neu-flat rounded-3xl p-6 space-y-5 max-h-[90vh] flex flex-col">
             <div class="flex items-start justify-between border-b border-theme/40 pb-4">
@@ -889,7 +905,6 @@
                 </div>
             </div>
 
-            <!-- SEKMELİ GEZİNTİ BUTONLARI -->
             <div class="flex p-1.5 neu-pressed rounded-xl gap-1 border-b border-theme/40">
                 <button id="btnTeamTabMain" onclick="switchTeamModalTab('main')" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all neu-btn-accent text-slate-950 flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-circle-info"></i>
@@ -905,12 +920,8 @@
                 </button>
             </div>
 
-            <!-- MODAL İÇERİK ALANI -->
             <div class="flex-1 overflow-y-auto pr-1">
-
-                <!-- SEKME 1: ANA BİLGİLER -->
                 <div id="teamTabContent-main" class="space-y-4">
-                    <!-- Kontenjan İlerleme Çubuğu -->
                     <div class="p-4 rounded-2xl neu-pressed space-y-2">
                         <div class="flex justify-between text-xs font-semibold">
                             <span class="text-theme-sub">Takım Kontenjan Durumu:</span>
@@ -921,7 +932,6 @@
                         </div>
                     </div>
 
-                    <!-- Gerekli Yetenekler -->
                     <div class="p-4 rounded-2xl neu-pressed space-y-2">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-theme-accent flex items-center gap-2">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -930,20 +940,17 @@
                         <p id="modalTeamSkills" class="text-sm font-semibold text-theme-main leading-relaxed">Yetenekler yükleniyor...</p>
                     </div>
 
-                    <!-- Proje Açıklaması -->
                     <div class="space-y-2">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Proje ve Takım Açıklaması</h4>
                         <p id="modalTeamDescription" class="text-xs text-theme-main leading-relaxed whitespace-pre-wrap">Açıklama...</p>
                     </div>
 
-                    <!-- Mevcut Üyeler -->
                     <div class="space-y-2 pt-2 border-t border-theme/40">
                         <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Mevcut Takım Üyeleri</h4>
                         <div id="modalTeamMembersList" class="flex flex-wrap gap-2.5"></div>
                     </div>
                 </div>
 
-                <!-- SEKME 2: SOHBET (SADECE TAKIM ÜYELERİ) -->
                 <div id="teamTabContent-chat" class="hidden space-y-3">
                     <div id="modalTeamChatSection" class="space-y-3">
                         <div id="modalTeamChatMessages" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
@@ -959,11 +966,9 @@
                     </div>
                 </div>
 
-                <!-- SEKME 3: KATILMA İSTEKLERİ VE BAŞVURU METİNLERİ (SADECE KURUCU) -->
                 <div id="teamTabContent-requests" class="hidden space-y-3">
                     <div id="modalTeamRequestsList" class="space-y-3 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
-
             </div>
 
             <div class="flex items-center justify-between border-t border-theme/40 pt-4">
@@ -992,6 +997,8 @@
                         <span><i class="fa-solid fa-user mr-1 text-theme-accent"></i><strong id="modalNoteAuthor">Yazar</strong></span>
                         <span>•</span>
                         <span><i class="fa-solid fa-clock mr-1"></i><span id="modalNoteDate">Tarih</span></span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-eye mr-1 text-blue-400"></i><span id="modalNoteViews">0 Görüntülenme</span></span>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -1009,7 +1016,6 @@
                 Not İçeriği...
             </div>
 
-            <!-- Dosya Ekleri -->
             <div id="modalFileContainer" class="p-4 rounded-2xl neu-pressed flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-xl neu-btn text-blue-400 flex items-center justify-center shrink-0">
@@ -1128,9 +1134,7 @@
         </div>
     </div>
 
-    <!-- =================================================================== -->
     <!-- UYGULAMA JAVASCRIPT LOGIC -->
-    <!-- =================================================================== -->
     <script>
         const THEMES = {
             catppuccin: {
@@ -1196,8 +1200,8 @@
         let autoPollTimer = null;
 
         const INITIAL_DEMO_NOTES = [
-            { id: 1, title: 'Yazılım Müh. - Algoritmalar Vize Özet', content: 'Ağaçlar, Grafik Teorisi, Sıralama Algoritmaları (QuickSort, MergeSort) detaylı anlatımı ve C++ örnekleri.', author: 'ahmet_sau', likes: 14, date: '28.10.2026 10:30', file_name: 'algoritmalar_vize_ozet.pdf', file_size: '1.2 MB' },
-            { id: 2, title: 'İşletim Sistemleri - Süreç Yönetimi', content: 'Process Sync, Deadlocks, Semaphore kullanımı ve CPU Scheduling algoritmalarının soru çözümleri.', author: 'zeynep_cs', likes: 21, date: '28.10.2026 11:15', file_name: 'isletim_sistemleri_ch1_5.pdf', file_size: '850 KB' }
+            { id: 1, title: 'Yazılım Müh. - Algoritmalar Vize Özet', content: 'Ağaçlar, Grafik Teorisi, Sıralama Algoritmaları (QuickSort, MergeSort) detaylı anlatımı ve C++ örnekleri.', author: 'ahmet_sau', likes: 14, views: 42, date: '28.10.2026 10:30', file_name: 'algoritmalar_vize_ozet.pdf', file_size: '1.2 MB' },
+            { id: 2, title: 'İşletim Sistemleri - Süreç Yönetimi', content: 'Process Sync, Deadlocks, Semaphore kullanımı ve CPU Scheduling algoritmalarının soru çözümleri.', author: 'zeynep_cs', likes: 21, views: 89, date: '28.10.2026 11:15', file_name: 'isletim_sistemleri_ch1_5.pdf', file_size: '850 KB' }
         ];
 
         const INITIAL_DEMO_TEAMS = [
@@ -1347,7 +1351,11 @@
 
             if (cmd === 'GET_NOTE') {
                 const note = localNotes.find(n => n.id === parseInt(req.note_id));
-                if (note) return { status: 'success', note: note };
+                if (note) {
+                    note.views = (note.views || 0) + 1;
+                    localStorage.setItem('sau_notes_local', JSON.stringify(localNotes));
+                    return { status: 'success', note: note };
+                }
                 return { status: 'error', message: 'Not bulunamadı' };
             }
 
@@ -1583,7 +1591,7 @@
             startAutoPolling();
         }
 
-        /* AKILLI ARKA PLAN POLLING SİSTEMİ (ÇAKIŞMAYI VE KIRPIŞMAYI ÖNLER) */
+        /* POLLING SİSTEMİ */
         function startAutoPolling() {
             stopAutoPolling();
             autoPollTimer = setInterval(async () => {
@@ -1596,7 +1604,6 @@
                     await silentReloadSocial();
                 }
 
-                // Eğer Takım Detay Modalı açıksa chat/istek verisini arka planda canlı güncelle
                 const detailModal = document.getElementById('teamDetailModal');
                 if (detailModal && !detailModal.classList.contains('hidden')) {
                     await silentUpdateCurrentTeamModal();
@@ -1780,7 +1787,6 @@
             showAuthUI();
         }
 
-        /* TEMA DÜZENLEYİCİ */
         function selectTheme(themeKey, triggerToast = true) {
             const t = THEMES[themeKey] || THEMES.catppuccin;
             const root = document.documentElement;
@@ -1806,7 +1812,6 @@
             }
         }
 
-        /* NAVİGASYON & TAB YÖNETİMİ */
         function switchTab(tabName) {
             if (state.activeTab !== 'user-profile') {
                 state.previousTab = state.activeTab;
@@ -1854,7 +1859,7 @@
             if (subTab === 'notes') {
                 btnNotes.className = "px-4 py-2 rounded-xl font-bold text-sm transition-all neu-btn-accent text-slate-950 flex items-center gap-1.5";
                 btnReqs.className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all text-theme-sub hover:text-theme-main neu-btn flex items-center gap-1.5";
-                document.getElementById('notesGrid').classList.remove('hidden');
+                document.getElementById('notesSectionContainer').classList.remove('hidden');
                 document.getElementById('requestsList').classList.add('hidden');
                 actionBtnText.innerText = "Not Ekle";
                 searchInput.placeholder = "Notlarda ara...";
@@ -1862,7 +1867,7 @@
                 btnReqs.className = "px-4 py-2 rounded-xl font-bold text-sm transition-all neu-btn-accent text-slate-950 flex items-center gap-1.5";
                 btnNotes.className = "px-4 py-2 rounded-xl font-semibold text-sm transition-all text-theme-sub hover:text-theme-main neu-btn flex items-center gap-1.5";
                 document.getElementById('requestsList').classList.remove('hidden');
-                document.getElementById('notesGrid').classList.add('hidden');
+                document.getElementById('notesSectionContainer').classList.add('hidden');
                 actionBtnText.innerText = "İstek Ekle";
                 searchInput.placeholder = "İsteklerde ara...";
             }
@@ -1870,610 +1875,37 @@
             filterAndRender();
         }
 
-        /* RAPORLAMA FONKSİYONLARI */
-        function openReportModal(type, targetName) {
-            const titleEl = document.getElementById('reportModalTitle');
-            const targetEl = document.getElementById('reportModalTargetText');
-            const inputEl = document.getElementById('reportReasonInput');
+        function isWithinLast7Days(dateStr) {
+            if (!dateStr || dateStr === 'Bilinmiyor') return false;
+            try {
+                const parts = dateStr.trim().split(' ');
+                const dateParts = parts[0].split('.');
+                if (dateParts.length !== 3) return true;
 
-            if (inputEl) inputEl.value = '';
+                const day = parseInt(dateParts[0], 10);
+                const month = parseInt(dateParts[1], 10) - 1;
+                const year = parseInt(dateParts[2], 10);
 
-            if (type === 'kullanici') {
-                titleEl.innerText = 'Kullanıcıyı Rapor Et';
-                targetEl.innerHTML = `<strong>@${targetName}</strong> isimli kullanıcı hakkında şikayet ve ihlal bildiriminde bulunuyorsunuz.`;
-            } else {
-                titleEl.innerText = 'Gönderiyi / İçeriği Rapor Et';
-                targetEl.innerHTML = `<strong>"${targetName}"</strong> başlıklı gönderi / içerik hakkında bildirimde bulunuyorsunuz.`;
-            }
-
-            openModal('reportModal');
-        }
-
-        function submitReportDummy(e) {
-            e.preventDefault();
-            const reason = document.getElementById('reportReasonInput').value.trim();
-            if (!reason) return;
-
-            closeModal('reportModal');
-            document.getElementById('reportReasonInput').value = '';
-
-            showToastSuccess('Raporunuz başarıyla alındı ve moderatör ekibine iletildi. Teşekkürler!');
-        }
-
-        /* PROFİL DÜZENLEME */
-        function renderUserProfileDetails() {
-            document.getElementById('profileFacultyText').innerText = state.userFaculty || 'Fakülte Belirtilmemiş';
-            document.getElementById('profileDepartmentText').innerText = state.userDepartment || 'Bölüm Belirtilmemiş';
-
-            const aboutText = document.getElementById('profileAboutText');
-            if (state.userAbout) {
-                aboutText.innerText = state.userAbout;
-                aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed font-normal";
-            } else {
-                aboutText.innerText = 'Henüz bir biyografi eklenmedi. "Profili Düzenle" butonunu kullanarak hakkınızda bilgi ekleyebilirsiniz.';
-                aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed italic";
-            }
-        }
-
-        function openEditProfileModal() {
-            document.getElementById('editFaculty').value = state.userFaculty;
-            document.getElementById('editDepartment').value = state.userDepartment;
-            document.getElementById('editAbout').value = state.userAbout;
-            openModal('editProfileModal');
-        }
-
-        async function submitUpdateProfile(e) {
-            e.preventDefault();
-            const f = document.getElementById('editFaculty').value.trim();
-            const d = document.getElementById('editDepartment').value.trim();
-            const a = document.getElementById('editAbout').value.trim();
-            const imgInput = document.getElementById('editProfileImageInput');
-
-            let imgData = state.userProfileImage;
-            if (imgInput.files && imgInput.files.length > 0) {
-                const file = imgInput.files[0];
-                const b64 = await convertFileToBase64(file);
-                imgData = `data:${file.type || 'image/png'};base64,${b64}`;
-            }
-
-            const res = await apiCall({
-                command: 'UPDATE_PROFILE',
-                username: state.currentUser,
-                faculty: f,
-                department: d,
-                about: a,
-                profile_image: imgData
-            });
-
-            if (res.status === 'success') {
-                state.userFaculty = f;
-                state.userDepartment = d;
-                state.userAbout = a;
-                if (imgData) state.userProfileImage = imgData;
-
-                localStorage.setItem('sau_user_faculty', f);
-                localStorage.setItem('sau_user_dept', d);
-                localStorage.setItem('sau_user_about', a);
-                localStorage.setItem('sau_user_image', state.userProfileImage);
-
-                updateAvatarDisplay('headerAvatarContainer', 'userAvatar', state.currentUser, state.userProfileImage, 'w-7 h-7');
-                updateAvatarDisplay('profileLargeAvatarContainer', 'profileLargeAvatar', state.currentUser, state.userProfileImage, 'w-24 h-24 text-4xl');
-
-                renderUserProfileDetails();
-                closeModal('editProfileModal');
-                silentReloadSocial();
-            } else {
-                showToast(res.message || 'Güncelleme hatası', 'error');
-            }
-        }
-
-        /* TAKIM İLANLARI İŞLEMLERİ VE KATILMA İSTEĞİ ONAY SİSTEMİ */
-        async function loadAllTeams() {
-            await silentReloadTeams();
-        }
-
-        function filterAndRenderTeams() {
-            const query = (document.getElementById('teamSearchInput')?.value || '').toLowerCase();
-            let filtered = state.teams.filter(t =>
-                (t.title && t.title.toLowerCase().includes(query)) ||
-                (t.description && t.description.toLowerCase().includes(query)) ||
-                (t.skills && t.skills.toLowerCase().includes(query)) ||
-                (t.author && t.author.toLowerCase().includes(query))
-            );
-            renderTeamsGrid(filtered);
-        }
-
-        function renderTeamsGrid(teamsList) {
-            const grid = document.getElementById('teamsGrid');
-            if (!grid) return;
-
-            const jsonStr = JSON.stringify(teamsList);
-            if (grid.dataset.lastState === jsonStr) return;
-            grid.dataset.lastState = jsonStr;
-
-            if (teamsList.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
-                        <i class="fa-solid fa-users-slash text-4xl mb-3 text-theme-sub"></i>
-                        <p class="font-semibold text-sm">Gösterilebilecek takım ilanı bulunamadı.</p>
-                    </div>`;
-                return;
-            }
-
-            grid.innerHTML = '';
-            teamsList.forEach(t => {
-                const isFull = t.current_members >= t.target_members;
-                const capacityRatio = `${t.current_members}/${t.target_members} Üye`;
-                const isOwner = t.author === state.currentUser;
-                const reqCount = (t.join_requests && isOwner) ? t.join_requests.length : 0;
-
-                const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
-
-                card.innerHTML = `
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 neu-pressed ${isFull ? 'text-red-400' : 'text-emerald-400'}">
-                                <i class="fa-solid fa-users"></i> ${capacityRatio}
-                            </span>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-theme-sub">${t.date || ''}</span>
-                                <button onclick="openReportModal('gonderi', '${t.title.replace(/'/g, "\\'")}')" class="text-theme-sub hover:text-amber-400 transition-colors text-xs" title="İlanı Rapor Et">
-                                    <i class="fa-solid fa-flag"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 class="font-bold text-theme-main text-base line-clamp-1">${t.title}</h4>
-                            <p class="text-xs text-theme-sub cursor-pointer hover:underline pt-0.5" onclick="openUserProfilePage('${t.author}')">
-                                <i class="fa-solid fa-user-pen text-theme-accent mr-1"></i>${t.author}
-                            </p>
-                        </div>
-
-                        <div class="p-3 rounded-xl neu-pressed text-xs space-y-1">
-                            <div class="font-bold text-theme-accent flex items-center gap-1 text-[11px]">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                                <span>Gerekli Yetenekler & Deneyimler:</span>
-                            </div>
-                            <p class="text-theme-main font-semibold line-clamp-2">${t.skills}</p>
-                        </div>
-
-                        <p class="text-xs text-theme-sub line-clamp-2 leading-relaxed">${t.description}</p>
-                    </div>
-
-                    <div class="pt-3 border-t border-theme/40 flex items-center justify-between">
-                        <div>
-                            ${reqCount > 0 ? `<span class="px-2.5 py-1 rounded-full neu-pressed text-amber-400 text-[11px] font-bold animate-pulse"><i class="fa-solid fa-bell mr-1"></i>${reqCount} İstek Var</span>` : `<span class="text-[11px] text-theme-sub">${isFull ? '⚠️ Kontenjan Dolu' : '✅ Başvuruya Açık'}</span>`}
-                        </div>
-                        <button onclick="openTeamDetailModal(${t.id})" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">
-                            Detay & İstek Yönetimi
-                        </button>
-                    </div>`;
-
-                grid.appendChild(card);
-            });
-        }
-
-        async function submitNewTeam(e) {
-            e.preventDefault();
-            const title = document.getElementById('newTeamTitle').value.trim();
-            const skills = document.getElementById('newTeamSkills').value.trim();
-            const currentMembers = parseInt(document.getElementById('newTeamCurrentMembers').value) || 1;
-            const targetMembers = parseInt(document.getElementById('newTeamTargetMembers').value) || 5;
-            const description = document.getElementById('newTeamDescription').value.trim();
-
-            const res = await apiCall({
-                command: 'CREATE_TEAM',
-                username: state.currentUser,
-                title: title,
-                skills: skills,
-                current_members: currentMembers,
-                target_members: targetMembers,
-                description: description
-            });
-
-            if (res.status === 'success') {
-                closeModal('addTeamModal');
-                document.getElementById('newTeamTitle').value = '';
-                document.getElementById('newTeamSkills').value = '';
-                document.getElementById('newTeamDescription').value = '';
-                await silentReloadTeams();
-            } else {
-                showToast(res.message || 'İlan oluşturma hatası', 'error');
-            }
-        }
-
-        /* TAKIM DETAY MODALINDA SEKMELER ARASI GEÇİŞ */
-        function switchTeamModalTab(tabName) {
-            state.activeTeamModalTab = tabName;
-            const btnMain = document.getElementById('btnTeamTabMain');
-            const btnChat = document.getElementById('btnTeamTabChat');
-            const btnRequests = document.getElementById('btnTeamTabRequests');
-
-            const contentMain = document.getElementById('teamTabContent-main');
-            const contentChat = document.getElementById('teamTabContent-chat');
-            const contentRequests = document.getElementById('teamTabContent-requests');
-
-            const activeClass = "flex-1 py-2 rounded-xl font-bold text-xs transition-all neu-btn-accent text-slate-950 flex items-center justify-center gap-1.5";
-            const inactiveClass = "flex-1 py-2 rounded-xl font-semibold text-xs transition-all text-theme-sub neu-btn flex items-center justify-center gap-1.5";
-
-            if (tabName === 'main') {
-                btnMain.className = activeClass;
-                btnChat.className = inactiveClass;
-                btnRequests.className = btnRequests.classList.contains('hidden') ? inactiveClass + ' hidden' : inactiveClass;
-
-                contentMain.classList.remove('hidden');
-                contentChat.classList.add('hidden');
-                contentRequests.classList.add('hidden');
-            } else if (tabName === 'chat') {
-                btnChat.className = activeClass;
-                btnMain.className = inactiveClass;
-                btnRequests.className = btnRequests.classList.contains('hidden') ? inactiveClass + ' hidden' : inactiveClass;
-
-                contentChat.classList.remove('hidden');
-                contentMain.classList.add('hidden');
-                contentRequests.classList.add('hidden');
-            } else if (tabName === 'requests') {
-                btnRequests.className = activeClass;
-                btnMain.className = inactiveClass;
-                btnChat.className = inactiveClass;
-
-                contentRequests.classList.remove('hidden');
-                contentMain.classList.add('hidden');
-                contentChat.classList.add('hidden');
-            }
-        }
-
-        function openTeamDetailModal(teamId) {
-            const team = state.teams.find(t => t.id === teamId);
-            if (!team) return;
-            if (!team.join_requests) team.join_requests = [];
-            if (!team.messages) team.messages = [];
-            state.currentSelectedTeam = team;
-
-            document.getElementById('modalTeamTitle').innerText = team.title;
-            document.getElementById('modalTeamAuthor').innerText = team.author;
-            document.getElementById('modalTeamAuthor').onclick = () => { closeModal('teamDetailModal'); openUserProfilePage(team.author); };
-            document.getElementById('modalTeamDate').innerText = team.date || '';
-            document.getElementById('modalTeamSkills').innerText = team.skills;
-            document.getElementById('modalTeamDescription').innerText = team.description;
-
-            const current = team.current_members || (team.members ? team.members.length : 1);
-            const target = team.target_members || 5;
-            const percent = Math.min(100, Math.round((current / target) * 100));
-
-            document.getElementById('modalTeamCapacityText').innerText = `${current}/${target} Üye (${percent}%)`;
-            document.getElementById('modalTeamCapacityPercent').innerText = `%${percent} Dolu`;
-
-            const progressBar = document.getElementById('modalTeamProgress');
-            if (progressBar) progressBar.style.width = `${percent}%`;
-
-            const isAuthor = team.author === state.currentUser;
-            const isMember = team.members && team.members.includes(state.currentUser);
-
-            const btnRequests = document.getElementById('btnTeamTabRequests');
-            if (isAuthor) {
-                btnRequests.classList.remove('hidden');
-                renderTeamModalRequestsList(team);
-            } else {
-                btnRequests.classList.add('hidden');
-            }
-
-            renderTeamMembersList(team);
-
-            const chatSection = document.getElementById('modalTeamChatSection');
-            const nonMemberNotice = document.getElementById('modalTeamChatNonMemberNotice');
-
-            if (isMember) {
-                if (chatSection) chatSection.classList.remove('hidden');
-                if (nonMemberNotice) nonMemberNotice.classList.add('hidden');
-                renderTeamChatMessages(team.messages || []);
-            } else {
-                if (chatSection) chatSection.classList.add('hidden');
-                if (nonMemberNotice) nonMemberNotice.classList.remove('hidden');
-            }
-
-            const actionBtn = document.getElementById('modalTeamActionBtn');
-            const deleteBtn = document.getElementById('modalTeamDeleteBtn');
-            const reqUsernames = team.join_requests.map(r => typeof r === 'string' ? r : r.username);
-            const hasRequested = reqUsernames.includes(state.currentUser);
-
-            if (isAuthor) {
-                deleteBtn.classList.remove('hidden');
-                actionBtn.innerText = "Siz Kurucusunuz";
-                actionBtn.disabled = true;
-                actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
-            } else {
-                deleteBtn.classList.add('hidden');
-                if (isMember) {
-                    actionBtn.innerText = "Takımdan Ayrıl";
-                    actionBtn.disabled = false;
-                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-red-400 text-xs font-bold transition-all";
-                } else if (hasRequested) {
-                    actionBtn.innerText = "İsteği İptal Et";
-                    actionBtn.disabled = false;
-                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-amber-400 text-xs font-bold transition-all";
-                } else {
-                    if (current >= target) {
-                        actionBtn.innerText = "Kontenjan Dolu";
-                        actionBtn.disabled = true;
-                        actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
-                    } else {
-                        actionBtn.innerText = "Katılma İsteği Gönder";
-                        actionBtn.disabled = false;
-                        actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn-accent text-slate-950 text-xs font-bold transition-all";
+                let hours = 0, minutes = 0;
+                if (parts[1]) {
+                    const timeParts = parts[1].split(':');
+                    if (timeParts.length === 2) {
+                        hours = parseInt(timeParts[0], 10);
+                        minutes = parseInt(timeParts[1], 10);
                     }
                 }
-            }
 
-            switchTeamModalTab('main');
-            openModal('teamDetailModal');
-        }
+                const noteDate = new Date(year, month, day, hours, minutes);
+                const now = new Date();
+                const diffMs = Math.abs(now.getTime() - noteDate.getTime());
+                const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-        function renderTeamMembersList(team) {
-            const membersList = document.getElementById('modalTeamMembersList');
-            if (!membersList) return;
-            membersList.innerHTML = '';
-            const isAuthor = team.author === state.currentUser;
-
-            if (team.members && team.members.length > 0) {
-                team.members.forEach(m => {
-                    const badge = document.createElement('div');
-                    badge.className = "px-3 py-1.5 rounded-xl neu-pressed text-xs font-semibold text-theme-main flex items-center gap-2";
-
-                    let kickBtnHtml = '';
-                    if (isAuthor && m !== team.author) {
-                        kickBtnHtml = `<button onclick="kickTeamMember(${team.id}, '${m}')" title="Takımdan Çıkar" class="text-red-400 hover:text-red-300 ml-1 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>`;
-                    }
-
-                    badge.innerHTML = `
-                        <span class="cursor-pointer hover:underline flex items-center gap-1.5" onclick="closeModal('teamDetailModal'); openUserProfilePage('${m}');">
-                            <i class="fa-solid fa-user-circle text-theme-accent"></i> @${m} ${m === team.author ? '<span class="text-[10px] text-amber-400 font-bold">(Kurucu)</span>' : ''}
-                        </span>
-                        ${kickBtnHtml}`;
-                    membersList.appendChild(badge);
-                });
+                return diffDays <= 7;
+            } catch (e) {
+                return true;
             }
         }
 
-        function renderTeamModalRequestsList(team) {
-            const reqBadge = document.getElementById('teamModalReqBadge');
-            const requestsList = document.getElementById('modalTeamRequestsList');
-            if (!requestsList) return;
-
-            const jsonStr = JSON.stringify(team.join_requests || []);
-            if (requestsList.dataset.lastState === jsonStr) return;
-            requestsList.dataset.lastState = jsonStr;
-
-            requestsList.innerHTML = '';
-
-            const reqCount = team.join_requests.length;
-            if (reqCount > 0) {
-                reqBadge.innerText = reqCount;
-                reqBadge.classList.remove('hidden');
-            } else {
-                reqBadge.classList.add('hidden');
-            }
-
-            if (reqCount === 0) {
-                requestsList.innerHTML = `<p class="text-xs text-theme-sub italic p-4 text-center">Bekleyen katılım isteği bulunmuyor.</p>`;
-            } else {
-                team.join_requests.forEach(candidate => {
-                    const candidateUser = typeof candidate === 'string' ? candidate : candidate.username;
-                    const candidateMsg = (typeof candidate === 'object' && candidate.message) ? candidate.message : 'Açıklama belirtilmemiş.';
-                    const candidateDate = (typeof candidate === 'object' && candidate.date) ? candidate.date : '';
-
-                    const item = document.createElement('div');
-                    item.className = "p-4 rounded-2xl neu-pressed space-y-2.5 text-xs";
-                    item.innerHTML = `
-                        <div class="flex items-center justify-between border-b border-theme/40 pb-2">
-                            <div class="flex items-center gap-2 cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${candidateUser}');">
-                                <i class="fa-solid fa-user-circle text-amber-400 text-base"></i>
-                                <span class="font-bold text-theme-main text-sm">@${candidateUser}</span>
-                            </div>
-                            <span class="text-[10px] text-theme-sub">${candidateDate}</span>
-                        </div>
-                        <div class="space-y-1">
-                            <div class="text-[11px] font-bold text-theme-accent">Kendinden Bahsetme / Başvuru Notu:</div>
-                            <p class="text-theme-main leading-relaxed italic bg-theme-base/50 p-2.5 rounded-xl border border-theme/30">${candidateMsg}</p>
-                        </div>
-                        <div class="flex items-center justify-end gap-2 pt-1">
-                            <button onclick="acceptJoinRequest(${team.id}, '${candidateUser}')" class="px-3.5 py-1.5 rounded-xl neu-btn text-emerald-400 font-bold text-xs flex items-center gap-1.5">
-                                <i class="fa-solid fa-check"></i> Kabul Et
-                            </button>
-                            <button onclick="rejectJoinRequest(${team.id}, '${candidateUser}')" class="px-3.5 py-1.5 rounded-xl neu-btn text-red-400 font-bold text-xs flex items-center gap-1.5">
-                                <i class="fa-solid fa-xmark"></i> Reddet
-                            </button>
-                        </div>`;
-                    requestsList.appendChild(item);
-                });
-            }
-        }
-
-        /* TAKIM SOHBETİ RENDER & AKILLI CANLI SOHBET AKIŞI */
-        function renderTeamChatMessages(messages) {
-            const container = document.getElementById('modalTeamChatMessages');
-            if (!container) return;
-
-            const jsonStr = JSON.stringify(messages || []);
-            if (container.dataset.lastState === jsonStr) return;
-            container.dataset.lastState = jsonStr;
-
-            container.innerHTML = '';
-
-            if (!messages || messages.length === 0) {
-                container.innerHTML = `<p class="text-xs text-theme-sub italic p-4 text-center">Henüz takıma mesaj atılmamış. İlk mesajı siz gönderin!</p>`;
-                return;
-            }
-
-            messages.forEach(msg => {
-                const isMe = msg.author === state.currentUser;
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `p-3 rounded-xl neu-pressed text-xs space-y-1 ${isMe ? 'border-l-2 border-theme-accent' : ''}`;
-                msgDiv.innerHTML = `
-                    <div class="flex justify-between font-semibold text-theme-sub">
-                        <span class="text-theme-accent cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${msg.author}')">@${msg.author} ${isMe ? '(Sen)' : ''}</span>
-                        <span class="text-[10px]">${msg.date || ''}</span>
-                    </div>
-                    <p class="text-theme-main">${msg.content}</p>
-                `;
-                container.appendChild(msgDiv);
-            });
-            container.scrollTop = container.scrollHeight;
-        }
-
-        async function submitTeamMessage(e) {
-            e.preventDefault();
-            if (!state.currentSelectedTeam) return;
-            const input = document.getElementById('modalTeamChatInput');
-            const content = input.value.trim();
-            if (!content) return;
-
-            const res = await apiCall({
-                command: 'ADD_TEAM_MESSAGE',
-                username: state.currentUser,
-                team_id: state.currentSelectedTeam.id,
-                content: content
-            });
-
-            if (res.status === 'success') {
-                input.value = '';
-                state.currentSelectedTeam.messages = res.messages || [];
-                const teamInState = state.teams.find(t => t.id === state.currentSelectedTeam.id);
-                if (teamInState) {
-                    teamInState.messages = res.messages || [];
-                }
-                renderTeamChatMessages(state.currentSelectedTeam.messages);
-            } else {
-                showToast(res.message || 'Mesaj gönderilemedi', 'error');
-            }
-        }
-
-        async function acceptJoinRequest(teamId, candidateUsername) {
-            const res = await apiCall({
-                command: 'ACCEPT_JOIN_REQUEST',
-                username: state.currentUser,
-                team_id: teamId,
-                target_username: candidateUsername
-            });
-
-            if (res.status === 'success') {
-                await silentUpdateCurrentTeamModal();
-                await silentReloadTeams();
-            } else {
-                showToast(res.message || 'Onay hatası', 'error');
-            }
-        }
-
-        async function rejectJoinRequest(teamId, candidateUsername) {
-            const res = await apiCall({
-                command: 'REJECT_JOIN_REQUEST',
-                username: state.currentUser,
-                team_id: teamId,
-                target_username: candidateUsername
-            });
-
-            if (res.status === 'success') {
-                await silentUpdateCurrentTeamModal();
-                await silentReloadTeams();
-            } else {
-                showToast(res.message || 'Reddetme hatası', 'error');
-            }
-        }
-
-        async function kickTeamMember(teamId, targetUsername) {
-            const res = await apiCall({
-                command: 'KICK_MEMBER',
-                username: state.currentUser,
-                team_id: teamId,
-                target_username: targetUsername
-            });
-
-            if (res.status === 'success') {
-                await silentUpdateCurrentTeamModal();
-                await silentReloadTeams();
-            } else {
-                showToast(res.message || 'Çıkarma işlemi başarısız', 'error');
-            }
-        }
-
-        async function handleTeamAction() {
-            if (!state.currentSelectedTeam) return;
-            const team = state.currentSelectedTeam;
-            const isMember = team.members && team.members.includes(state.currentUser);
-            const reqUsernames = (team.join_requests || []).map(r => typeof r === 'string' ? r : r.username);
-            const hasRequested = reqUsernames.includes(state.currentUser);
-
-            if (isMember) {
-                const res = await apiCall({ command: 'LEAVE_TEAM', username: state.currentUser, team_id: team.id });
-                if (res.status === 'success') {
-                    closeModal('teamDetailModal');
-                    await silentReloadTeams();
-                } else {
-                    showToast(res.message || 'İşlem hatası', 'error');
-                }
-            } else if (hasRequested) {
-                const res = await apiCall({ command: 'REJECT_JOIN_REQUEST', username: state.currentUser, team_id: team.id, target_username: state.currentUser });
-                if (res.status === 'success') {
-                    closeModal('teamDetailModal');
-                    await silentReloadTeams();
-                } else {
-                    showToast(res.message || 'İptal hatası', 'error');
-                }
-            } else {
-                closeModal('teamDetailModal');
-                document.getElementById('joinTeamMessageInput').value = '';
-                openModal('joinTeamRequestModal');
-            }
-        }
-
-        async function submitJoinTeamRequest(e) {
-            e.preventDefault();
-            if (!state.currentSelectedTeam) return;
-            const msgInput = document.getElementById('joinTeamMessageInput');
-            const message = msgInput.value.trim();
-
-            if (!message) {
-                showToast('Lütfen kendinizden ve yeteneklerinizden bahsedin!', 'error');
-                return;
-            }
-
-            const res = await apiCall({
-                command: 'JOIN_TEAM',
-                username: state.currentUser,
-                team_id: state.currentSelectedTeam.id,
-                message: message
-            });
-
-            if (res.status === 'success') {
-                closeModal('joinTeamRequestModal');
-                await silentReloadTeams();
-            } else {
-                showToast(res.message || 'Katılma isteği gönderilemedi', 'error');
-            }
-        }
-
-        function confirmDeleteCurrentTeam() {
-            if (!state.currentSelectedTeam) return;
-            document.getElementById('confirmDeleteText').innerText = `"${state.currentSelectedTeam.title}" ilanını silmek istediğinizden emin misiniz?`;
-
-            const submitBtn = document.getElementById('confirmDeleteSubmitBtn');
-            submitBtn.onclick = async () => {
-                const res = await apiCall({ command: 'DELETE_TEAM', username: state.currentUser, team_id: state.currentSelectedTeam.id });
-                if (res.status === 'success') {
-                    closeModal('confirmDeleteModal');
-                    closeModal('teamDetailModal');
-                    await silentReloadTeams();
-                } else {
-                    showToast(res.message || 'Silme hatası', 'error');
-                }
-            };
-
-            openModal('confirmDeleteModal');
-        }
-
-        /* VERİ YÜKLEME VE FİLTRELEME */
         async function loadAllNotes() {
             await silentReloadNotes();
         }
@@ -2493,7 +1925,10 @@
                     (n.author && n.author.toLowerCase().includes(query))
                 );
 
+                renderTopWeeklyNotes();
+
                 if (sortMode === 'likes') filtered.sort((a,b) => (b.likes || 0) - (a.likes || 0));
+                else if (sortMode === 'views') filtered.sort((a,b) => (b.views || 0) - (a.views || 0));
                 else if (sortMode === 'date_desc') filtered.sort((a,b) => (b.id || 0) - (a.id || 0));
                 else if (sortMode === 'alpha_asc') filtered.sort((a,b) => (a.title || '').localeCompare(b.title || ''));
                 else if (sortMode === 'alpha_desc') filtered.sort((a,b) => (b.title || '').localeCompare(a.title || ''));
@@ -2509,13 +1944,57 @@
             }
         }
 
+        function renderTopWeeklyNotes() {
+            let weeklyNotes = state.notes.filter(n => isWithinLast7Days(n.date));
+            if (weeklyNotes.length === 0) weeklyNotes = [...state.notes];
+
+            const topLiked = [...weeklyNotes].sort((a,b) => (b.likes || 0) - (a.likes || 0)).slice(0, 3);
+            renderNoteHighlightGrid('topLikedGrid', topLiked);
+
+            const topViewed = [...weeklyNotes].sort((a,b) => (b.views || 0) - (a.views || 0)).slice(0, 3);
+            renderNoteHighlightGrid('topViewedGrid', topViewed);
+        }
+
+        function renderNoteHighlightGrid(containerId, notesList) {
+            const grid = document.getElementById(containerId);
+            if (!grid) return;
+
+            if (notesList.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-xs text-theme-sub italic p-2">Henüz öne çıkan not bulunmuyor.</p>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            notesList.forEach(n => {
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-2xl neu-pressed flex flex-col justify-between space-y-2.5";
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-[11px] text-theme-sub">
+                            <span class="font-semibold text-theme-accent cursor-pointer hover:underline" onclick="openUserProfilePage('${n.author}')">
+                                <i class="fa-solid fa-user-pen"></i> ${n.author}
+                            </span>
+                            <span>${n.date || ''}</span>
+                        </div>
+                        <h4 class="font-bold text-theme-main text-xs line-clamp-1">${n.title}</h4>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-theme/30 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="text-rose-400 font-bold"><i class="fa-solid fa-heart mr-1"></i>${n.likes || 0}</span>
+                            <span class="text-blue-400 font-bold"><i class="fa-solid fa-eye mr-1"></i>${n.views || 0}</span>
+                        </div>
+                        <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1 rounded-xl neu-btn text-theme-main text-[11px] font-semibold">
+                            İncele
+                        </button>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
         function renderNotesGrid(notesList) {
             const grid = document.getElementById('notesGrid');
             if (!grid) return;
-
-            const jsonStr = JSON.stringify(notesList);
-            if (grid.dataset.lastState === jsonStr) return;
-            grid.dataset.lastState = jsonStr;
 
             if (notesList.length === 0) {
                 grid.innerHTML = `
@@ -2555,6 +2034,10 @@
                                 <i class="fa-solid fa-heart"></i>
                                 <span>${n.likes || 0}</span>
                             </button>
+                            <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-pressed text-blue-400 text-xs font-semibold" title="Görüntülenme Sayısı">
+                                <i class="fa-solid fa-eye"></i>
+                                <span>${n.views || 0}</span>
+                            </span>
                             ${hasFile ? `<span class="px-2.5 py-1.5 rounded-xl neu-pressed text-blue-400 text-[11px] font-semibold"><i class="fa-solid fa-paperclip mr-1"></i>Ekli Dosya</span>` : ''}
                         </div>
 
@@ -2566,294 +2049,6 @@
             });
         }
 
-        function renderRequestsList(requestsList) {
-            const list = document.getElementById('requestsList');
-            if (!list) return;
-
-            const jsonStr = JSON.stringify(requestsList);
-            if (list.dataset.lastState === jsonStr) return;
-            list.dataset.lastState = jsonStr;
-
-            if (requestsList.length === 0) {
-                list.innerHTML = `
-                    <div class="py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
-                        <i class="fa-solid fa-comments text-4xl mb-3 text-theme-sub"></i>
-                        <p class="font-semibold text-sm">Henüz bir not isteği açılmamış.</p>
-                    </div>`;
-                return;
-            }
-
-            list.innerHTML = '';
-            requestsList.forEach(r => {
-                const isAuthor = r.author === state.currentUser;
-                const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat space-y-4";
-
-                let commentsHtml = '';
-                if (r.comments && r.comments.length > 0) {
-                    r.comments.forEach(c => {
-                        commentsHtml += `
-                            <div class="p-3 rounded-xl neu-pressed text-xs space-y-1">
-                                <div class="flex justify-between font-semibold text-theme-sub">
-                                    <span class="text-theme-accent cursor-pointer hover:underline" onclick="openUserProfilePage('${c.author}')">@${c.author}</span>
-                                    <span class="text-[10px]">${c.date || ''}</span>
-                                </div>
-                                <p class="text-theme-main">${c.content}</p>
-                            </div>`;
-                    });
-                } else {
-                    commentsHtml = `<p class="text-xs text-theme-sub italic">Henüz yorum yapılmamış.</p>`;
-                }
-
-                card.innerHTML = `
-                    <div class="flex items-start justify-between">
-                        <div class="space-y-1">
-                            <span class="px-3 py-1 rounded-full neu-pressed text-amber-400 text-[11px] font-semibold">Not İstegi</span>
-                            <h4 class="font-bold text-theme-main text-base">${r.title}</h4>
-                            <div class="flex items-center gap-3 text-xs text-theme-sub">
-                                <span class="cursor-pointer hover:underline" onclick="openUserProfilePage('${r.author}')"><i class="fa-solid fa-user text-theme-accent mr-1"></i>${r.author}</span>
-                                <span>•</span>
-                                <span>${r.date || ''}</span>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <button onclick="openReportModal('gonderi', '${r.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl neu-btn text-amber-400 text-xs font-semibold" title="İsteği Rapor Et">
-                                <i class="fa-solid fa-flag mr-1"></i> Rapor Et
-                            </button>
-                            ${isAuthor ? `
-                                <button onclick="confirmDeleteRequest(${r.id})" class="px-3 py-1.5 rounded-xl neu-btn text-red-400 text-xs font-semibold">
-                                    <i class="fa-solid fa-trash mr-1"></i>Sonlandır
-                                </button>` : ''}
-                        </div>
-                    </div>
-
-                    <p class="text-xs text-theme-sub leading-relaxed">${r.content}</p>
-
-                    <div class="pt-3 border-t border-theme/40 space-y-3">
-                        <h5 class="text-xs font-bold text-theme-main flex items-center gap-1.5">
-                            <i class="fa-solid fa-comments text-theme-accent"></i>
-                            <span>Yorumlar ve Yanıtlar (${r.comments ? r.comments.length : 0})</span>
-                        </h5>
-
-                        <div class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                            ${commentsHtml}
-                        </div>
-
-                        <div class="flex gap-2.5 pt-2">
-                            <input type="text" id="commentInput-${r.id}" class="flex-1 px-3.5 py-2 rounded-xl neu-pressed text-xs text-theme-main focus:outline-none" placeholder="Yanıt yazın...">
-                            <button onclick="submitComment(${r.id})" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">Gönder</button>
-                        </div>
-                    </div>`;
-
-                list.appendChild(card);
-            });
-        }
-
-        /* SOSYAL DİZİN */
-        async function loadAllSocialUsers() {
-            await silentReloadSocial();
-        }
-
-        function filterAndRenderSocial() {
-            const query = (document.getElementById('socialSearchInput')?.value || '').toLowerCase();
-            const sortMode = document.getElementById('socialSortSelect')?.value || 'likes_desc';
-
-            let filtered = state.socialUsers.filter(u =>
-                (u.username && u.username.toLowerCase().includes(query)) ||
-                (u.faculty && u.faculty.toLowerCase().includes(query)) ||
-                (u.department && u.department.toLowerCase().includes(query))
-            );
-
-            if (sortMode === 'likes_desc') filtered.sort((a,b) => (b.total_likes || 0) - (a.total_likes || 0));
-            else if (sortMode === 'notes_desc') filtered.sort((a,b) => (b.total_notes || 0) - (a.total_notes || 0));
-            else if (sortMode === 'reqs_desc') filtered.sort((a,b) => (b.total_requests || 0) - (a.total_requests || 0));
-            else if (sortMode === 'alpha_asc') filtered.sort((a,b) => (a.username || '').localeCompare(b.username || ''));
-
-            renderSocialUsersGrid(filtered);
-        }
-
-        function renderSocialUsersGrid(userList) {
-            const grid = document.getElementById('socialUsersGrid');
-            if (!grid) return;
-
-            const jsonStr = JSON.stringify(userList);
-            if (grid.dataset.lastState === jsonStr) return;
-            grid.dataset.lastState = jsonStr;
-
-            if (userList.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
-                        <i class="fa-solid fa-user-slash text-4xl mb-3 text-theme-sub"></i>
-                        <p class="font-semibold text-sm">Aramanızla eşleşen öğrenci profili bulunamadı.</p>
-                    </div>`;
-                return;
-            }
-
-            grid.innerHTML = '';
-            userList.forEach(u => {
-                const isMe = u.username === state.currentUser;
-                const initial = u.username.charAt(0).toUpperCase();
-                const avatarHtml = u.profile_image ?
-                    `<img src="${u.profile_image}" class="w-full h-full object-cover" alt="${u.username}">` :
-                    `<span>${initial}</span>`;
-
-                const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
-
-                card.innerHTML = `
-                    <div class="flex items-start gap-3.5">
-                        <div class="w-12 h-12 rounded-2xl neu-btn-accent text-slate-950 font-black text-xl flex items-center justify-center uppercase shrink-0 overflow-hidden">
-                            ${avatarHtml}
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <h4 class="font-bold text-theme-main text-base truncate cursor-pointer hover:underline" onclick="openUserProfilePage('${u.username}')">${u.username}</h4>
-                                    ${isMe ? `<span class="px-2 py-0.5 rounded-full neu-pressed text-emerald-400 text-[10px] font-bold">Sen</span>` : ''}
-                                </div>
-                                ${!isMe ? `
-                                    <button onclick="openReportModal('kullanici', '${u.username}')" class="text-theme-sub hover:text-amber-400 transition-colors p-1" title="Kullanıcıyı Rapor Et">
-                                        <i class="fa-solid fa-flag text-xs"></i>
-                                    </button>` : ''}
-                            </div>
-                            <p class="text-xs text-theme-accent font-medium truncate">${u.faculty || 'Fakülte Belirtilmemiş'}</p>
-                            <p class="text-[11px] text-theme-sub truncate">${u.department || 'Bölüm Belirtilmemiş'}</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-2 py-2.5 neu-pressed rounded-xl text-center">
-                        <div>
-                            <div class="text-sm font-bold text-theme-main">${u.total_notes || 0}</div>
-                            <div class="text-[10px] text-theme-sub">Notlar</div>
-                        </div>
-                        <div>
-                            <div class="text-sm font-bold text-rose-400">❤️ ${u.total_likes || 0}</div>
-                            <div class="text-[10px] text-theme-sub">Beğeni</div>
-                        </div>
-                        <div>
-                            <div class="text-sm font-bold text-amber-400">${u.total_teams || 0}</div>
-                            <div class="text-[10px] text-theme-sub">Takımlar</div>
-                        </div>
-                    </div>
-
-                    <button onclick="openUserProfilePage('${u.username}')" class="w-full py-2.5 rounded-xl neu-btn text-theme-main text-xs font-semibold flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-address-card text-theme-accent"></i>
-                        <span>Profili İncele</span>
-                    </button>`;
-                grid.appendChild(card);
-            });
-        }
-
-        /* DİĞER KULLANICI PROFİLİ */
-        async function openUserProfilePage(targetUsername) {
-            if (targetUsername === state.currentUser) {
-                switchTab('profile');
-                return;
-            }
-
-            if (state.activeTab !== 'user-profile') {
-                state.previousTab = state.activeTab;
-            }
-
-            const res = await apiCall({ command: 'GET_USER_PROFILE', target_username: targetUsername });
-            if (res.status === 'success' && res.profile) {
-                const p = res.profile;
-
-                document.getElementById('viewProfileUsername').innerText = p.username;
-                updateAvatarDisplay('viewProfileLargeAvatarContainer', 'viewProfileLargeAvatar', p.username, p.profile_image, 'w-24 h-24 text-4xl');
-
-                document.getElementById('viewProfileFacultyText').innerText = p.faculty || 'Fakülte Belirtilmemiş';
-                document.getElementById('viewProfileDepartmentText').innerText = p.department || 'Bölüm Belirtilmemiş';
-
-                const aboutText = document.getElementById('viewProfileAboutText');
-                if (p.about) {
-                    aboutText.innerText = p.about;
-                    aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed font-normal";
-                } else {
-                    aboutText.innerText = 'Henüz bir biyografi eklenmemiş.';
-                    aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed italic";
-                }
-
-                document.getElementById('viewStatNotesCount').innerText = p.total_notes || 0;
-                document.getElementById('viewStatLikesCount').innerText = p.total_likes || 0;
-                document.getElementById('viewStatTeamsCount').innerText = p.total_teams || 0;
-
-                const notesContainer = document.getElementById('viewUserNotesList');
-                notesContainer.innerHTML = '';
-                if (!p.notes || p.notes.length === 0) {
-                    notesContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Paylaştığı ders notu bulunmuyor.</p>`;
-                } else {
-                    p.notes.forEach(n => {
-                        const item = document.createElement('div');
-                        item.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
-                        item.innerHTML = `
-                            <div class="min-w-0 pr-3 space-y-1">
-                                <div class="font-bold text-theme-main truncate">${n.title}</div>
-                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
-                            </div>
-                            <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main text-xs font-semibold shrink-0">
-                                Detay
-                            </button>`;
-                        notesContainer.appendChild(item);
-                    });
-                }
-
-                const teamsContainer = document.getElementById('viewUserTeamsList');
-                teamsContainer.innerHTML = '';
-                if (!p.teams || p.teams.length === 0) {
-                    teamsContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Oluşturduğu takım ilanı bulunmuyor.</p>`;
-                } else {
-                    p.teams.forEach(t => {
-                        const item = document.createElement('div');
-                        item.className = "p-4 rounded-xl neu-pressed space-y-2 text-xs";
-                        item.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold text-theme-main text-sm">${t.title}</span>
-                                <span class="px-2.5 py-1 rounded-full neu-btn text-emerald-400 text-[10px] font-bold">${t.current_members}/${t.target_members} Üye</span>
-                            </div>
-                            <p class="text-theme-sub text-xs line-clamp-2 leading-relaxed">${t.description}</p>
-                            <div class="text-[11px] text-theme-accent font-semibold pt-1">Gerekli: ${t.skills}</div>`;
-                        teamsContainer.appendChild(item);
-                    });
-                }
-
-                switchTabToSection('user-profile', `Öğrenci Profili: ${p.username}`);
-            } else {
-                showToast(res.message || 'Kullanıcı profili yüklenemedi', 'error');
-            }
-        }
-
-        function switchTabToSection(sectionName, customTitle) {
-            state.activeTab = sectionName;
-            const sections = ['notes', 'teams', 'social', 'profile', 'settings', 'user-profile'];
-            sections.forEach(s => {
-                const el = document.getElementById(`section-${s}`);
-                const nav = document.getElementById(`nav-${s}`);
-                if (s === sectionName) {
-                    if (el) el.classList.remove('hidden');
-                    if (nav) {
-                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm text-left transition-all neu-pressed text-theme-accent";
-                    }
-                } else {
-                    if (el) el.classList.add('hidden');
-                    if (nav) {
-                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn";
-                    }
-                }
-            });
-
-            if (customTitle) {
-                document.getElementById('currentTabTitle').innerText = customTitle;
-            }
-        }
-
-        function goBackFromUserProfile() {
-            const target = state.previousTab || 'social';
-            switchTab(target);
-        }
-
-        /* NOT DETAY VE DİĞER İŞLEMLER */
         async function openNoteDetailModal(noteId) {
             const res = await apiCall({ command: 'GET_NOTE', note_id: noteId, username: state.currentUser });
             if (res.status === 'success' && res.note) {
@@ -2863,6 +2058,7 @@
                 document.getElementById('modalNoteTitle').innerText = n.title;
                 document.getElementById('modalNoteAuthor').innerText = n.author;
                 document.getElementById('modalNoteDate').innerText = n.date || 'Bilinmiyor';
+                document.getElementById('modalNoteViews').innerText = `${n.views || 0} Görüntülenme`;
                 document.getElementById('modalNoteContent').innerText = n.content;
 
                 document.getElementById('modalLikeCount').innerText = `${n.likes || 0} Beğeni`;
@@ -2884,6 +2080,7 @@
                 }
 
                 openModal('noteDetailModal');
+                await silentReloadNotes();
             } else {
                 showToast(res.message || 'Not detayları alınamadı', 'error');
             }
@@ -3074,6 +2271,86 @@
             openModal('confirmDeleteModal');
         }
 
+        function renderRequestsList(requestsList) {
+            const list = document.getElementById('requestsList');
+            if (!list) return;
+
+            if (requestsList.length === 0) {
+                list.innerHTML = `
+                    <div class="py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
+                        <i class="fa-solid fa-comments text-4xl mb-3 text-theme-sub"></i>
+                        <p class="font-semibold text-sm">Henüz bir not isteği açılmamış.</p>
+                    </div>`;
+                return;
+            }
+
+            list.innerHTML = '';
+            requestsList.forEach(r => {
+                const isAuthor = r.author === state.currentUser;
+                const card = document.createElement('div');
+                card.className = "p-6 rounded-2xl neu-flat space-y-4";
+
+                let commentsHtml = '';
+                if (r.comments && r.comments.length > 0) {
+                    r.comments.forEach(c => {
+                        commentsHtml += `
+                            <div class="p-3 rounded-xl neu-pressed text-xs space-y-1">
+                                <div class="flex justify-between font-semibold text-theme-sub">
+                                    <span class="text-theme-accent cursor-pointer hover:underline" onclick="openUserProfilePage('${c.author}')">@${c.author}</span>
+                                    <span class="text-[10px]">${c.date || ''}</span>
+                                </div>
+                                <p class="text-theme-main">${c.content}</p>
+                            </div>`;
+                    });
+                } else {
+                    commentsHtml = `<p class="text-xs text-theme-sub italic">Henüz yorum yapılmamış.</p>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <span class="px-3 py-1 rounded-full neu-pressed text-amber-400 text-[11px] font-semibold">Not İstegi</span>
+                            <h4 class="font-bold text-theme-main text-base">${r.title}</h4>
+                            <div class="flex items-center gap-3 text-xs text-theme-sub">
+                                <span class="cursor-pointer hover:underline" onclick="openUserProfilePage('${r.author}')"><i class="fa-solid fa-user text-theme-accent mr-1"></i>${r.author}</span>
+                                <span>•</span>
+                                <span>${r.date || ''}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="openReportModal('gonderi', '${r.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl neu-btn text-amber-400 text-xs font-semibold" title="İsteği Rapor Et">
+                                <i class="fa-solid fa-flag mr-1"></i> Rapor Et
+                            </button>
+                            ${isAuthor ? `
+                                <button onclick="confirmDeleteRequest(${r.id})" class="px-3 py-1.5 rounded-xl neu-btn text-red-400 text-xs font-semibold">
+                                    <i class="fa-solid fa-trash mr-1"></i>Sonlandır
+                                </button>` : ''}
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-theme-sub leading-relaxed">${r.content}</p>
+
+                    <div class="pt-3 border-t border-theme/40 space-y-3">
+                        <h5 class="text-xs font-bold text-theme-main flex items-center gap-1.5">
+                            <i class="fa-solid fa-comments text-theme-accent"></i>
+                            <span>Yorumlar ve Yanıtlar (${r.comments ? r.comments.length : 0})</span>
+                        </h5>
+
+                        <div class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                            ${commentsHtml}
+                        </div>
+
+                        <div class="flex gap-2.5 pt-2">
+                            <input type="text" id="commentInput-${r.id}" class="flex-1 px-3.5 py-2 rounded-xl neu-pressed text-xs text-theme-main focus:outline-none" placeholder="Yanıt yazın...">
+                            <button onclick="submitComment(${r.id})" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">Gönder</button>
+                        </div>
+                    </div>`;
+
+                list.appendChild(card);
+            });
+        }
+
         function confirmDeleteRequest(reqId) {
             document.getElementById('confirmDeleteText').innerText = `Bu not isteğini sonlandırmak istediğinizden emin misiniz?`;
 
@@ -3089,6 +2366,776 @@
             };
 
             openModal('confirmDeleteModal');
+        }
+
+        function filterAndRenderTeams() {
+            const query = (document.getElementById('teamSearchInput')?.value || '').toLowerCase();
+            let filtered = state.teams.filter(t =>
+                (t.title && t.title.toLowerCase().includes(query)) ||
+                (t.description && t.description.toLowerCase().includes(query)) ||
+                (t.skills && t.skills.toLowerCase().includes(query)) ||
+                (t.author && t.author.toLowerCase().includes(query))
+            );
+            renderTeamsGrid(filtered);
+        }
+
+        function renderTeamsGrid(teamsList) {
+            const grid = document.getElementById('teamsGrid');
+            if (!grid) return;
+
+            if (teamsList.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
+                        <i class="fa-solid fa-users-slash text-4xl mb-3 text-theme-sub"></i>
+                        <p class="font-semibold text-sm">Gösterilebilecek takım ilanı bulunamadı.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            teamsList.forEach(t => {
+                const isFull = t.current_members >= t.target_members;
+                const capacityRatio = `${t.current_members}/${t.target_members} Üye`;
+                const isOwner = t.author === state.currentUser;
+                const reqCount = (t.join_requests && isOwner) ? t.join_requests.length : 0;
+
+                const card = document.createElement('div');
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
+
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 neu-pressed ${isFull ? 'text-red-400' : 'text-emerald-400'}">
+                                <i class="fa-solid fa-users"></i> ${capacityRatio}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-theme-sub">${t.date || ''}</span>
+                                <button onclick="openReportModal('gonderi', '${t.title.replace(/'/g, "\\'")}')" class="text-theme-sub hover:text-amber-400 transition-colors text-xs" title="İlanı Rapor Et">
+                                    <i class="fa-solid fa-flag"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-theme-main text-base line-clamp-1">${t.title}</h4>
+                            <p class="text-xs text-theme-sub cursor-pointer hover:underline pt-0.5" onclick="openUserProfilePage('${t.author}')">
+                                <i class="fa-solid fa-user-pen text-theme-accent mr-1"></i>${t.author}
+                            </p>
+                        </div>
+
+                        <div class="p-3 rounded-xl neu-pressed text-xs space-y-1">
+                            <div class="font-bold text-theme-accent flex items-center gap-1 text-[11px]">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Gerekli Yetenekler & Deneyimler:</span>
+                            </div>
+                            <p class="text-theme-main font-semibold line-clamp-2">${t.skills}</p>
+                        </div>
+
+                        <p class="text-xs text-theme-sub line-clamp-2 leading-relaxed">${t.description}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-theme/40 flex items-center justify-between">
+                        <div>
+                            ${reqCount > 0 ? `<span class="px-2.5 py-1 rounded-full neu-pressed text-amber-400 text-[11px] font-bold animate-pulse"><i class="fa-solid fa-bell mr-1"></i>${reqCount} İstek Var</span>` : `<span class="text-[11px] text-theme-sub">${isFull ? '⚠️ Kontenjan Dolu' : '✅ Başvuruya Açık'}</span>`}
+                        </div>
+                        <button onclick="openTeamDetailModal(${t.id})" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">
+                            Detay & İstek Yönetimi
+                        </button>
+                    </div>`;
+
+                grid.appendChild(card);
+            });
+        }
+
+        async function submitNewTeam(e) {
+            e.preventDefault();
+            const title = document.getElementById('newTeamTitle').value.trim();
+            const skills = document.getElementById('newTeamSkills').value.trim();
+            const currentMembers = parseInt(document.getElementById('newTeamCurrentMembers').value) || 1;
+            const targetMembers = parseInt(document.getElementById('newTeamTargetMembers').value) || 5;
+            const description = document.getElementById('newTeamDescription').value.trim();
+
+            const res = await apiCall({
+                command: 'CREATE_TEAM',
+                username: state.currentUser,
+                title: title,
+                skills: skills,
+                current_members: currentMembers,
+                target_members: targetMembers,
+                description: description
+            });
+
+            if (res.status === 'success') {
+                closeModal('addTeamModal');
+                document.getElementById('newTeamTitle').value = '';
+                document.getElementById('newTeamSkills').value = '';
+                document.getElementById('newTeamDescription').value = '';
+                await silentReloadTeams();
+            } else {
+                showToast(res.message || 'İlan oluşturma hatası', 'error');
+            }
+        }
+
+        function switchTeamModalTab(tabName) {
+            state.activeTeamModalTab = tabName;
+            const btnMain = document.getElementById('btnTeamTabMain');
+            const btnChat = document.getElementById('btnTeamTabChat');
+            const btnRequests = document.getElementById('btnTeamTabRequests');
+
+            const contentMain = document.getElementById('teamTabContent-main');
+            const contentChat = document.getElementById('teamTabContent-chat');
+            const contentRequests = document.getElementById('teamTabContent-requests');
+
+            const activeClass = "flex-1 py-2 rounded-xl font-bold text-xs transition-all neu-btn-accent text-slate-950 flex items-center justify-center gap-1.5";
+            const inactiveClass = "flex-1 py-2 rounded-xl font-semibold text-xs transition-all text-theme-sub neu-btn flex items-center justify-center gap-1.5";
+
+            if (tabName === 'main') {
+                btnMain.className = activeClass;
+                btnChat.className = inactiveClass;
+                btnRequests.className = btnRequests.classList.contains('hidden') ? inactiveClass + ' hidden' : inactiveClass;
+
+                contentMain.classList.remove('hidden');
+                contentChat.classList.add('hidden');
+                contentRequests.classList.add('hidden');
+            } else if (tabName === 'chat') {
+                btnChat.className = activeClass;
+                btnMain.className = inactiveClass;
+                btnRequests.className = btnRequests.classList.contains('hidden') ? inactiveClass + ' hidden' : inactiveClass;
+
+                contentChat.classList.remove('hidden');
+                contentMain.classList.add('hidden');
+                contentRequests.classList.add('hidden');
+            } else if (tabName === 'requests') {
+                btnRequests.className = activeClass;
+                btnMain.className = inactiveClass;
+                btnChat.className = inactiveClass;
+
+                contentRequests.classList.remove('hidden');
+                contentMain.classList.add('hidden');
+                contentChat.classList.add('hidden');
+            }
+        }
+
+        function openTeamDetailModal(teamId) {
+            const team = state.teams.find(t => t.id === teamId);
+            if (!team) return;
+            if (!team.join_requests) team.join_requests = [];
+            if (!team.messages) team.messages = [];
+            state.currentSelectedTeam = team;
+
+            document.getElementById('modalTeamTitle').innerText = team.title;
+            document.getElementById('modalTeamAuthor').innerText = team.author;
+            document.getElementById('modalTeamAuthor').onclick = () => { closeModal('teamDetailModal'); openUserProfilePage(team.author); };
+            document.getElementById('modalTeamDate').innerText = team.date || '';
+            document.getElementById('modalTeamSkills').innerText = team.skills;
+            document.getElementById('modalTeamDescription').innerText = team.description;
+
+            const current = team.current_members || (team.members ? team.members.length : 1);
+            const target = team.target_members || 5;
+            const percent = Math.min(100, Math.round((current / target) * 100));
+
+            document.getElementById('modalTeamCapacityText').innerText = `${current}/${target} Üye (${percent}%)`;
+            document.getElementById('modalTeamCapacityPercent').innerText = `%${percent} Dolu`;
+
+            const progressBar = document.getElementById('modalTeamProgress');
+            if (progressBar) progressBar.style.width = `${percent}%`;
+
+            const isAuthor = team.author === state.currentUser;
+            const isMember = team.members && team.members.includes(state.currentUser);
+
+            const btnRequests = document.getElementById('btnTeamTabRequests');
+            if (isAuthor) {
+                btnRequests.classList.remove('hidden');
+                renderTeamModalRequestsList(team);
+            } else {
+                btnRequests.classList.add('hidden');
+            }
+
+            renderTeamMembersList(team);
+
+            const chatSection = document.getElementById('modalTeamChatSection');
+            const nonMemberNotice = document.getElementById('modalTeamChatNonMemberNotice');
+
+            if (isMember) {
+                if (chatSection) chatSection.classList.remove('hidden');
+                if (nonMemberNotice) nonMemberNotice.classList.add('hidden');
+                renderTeamChatMessages(team.messages || []);
+            } else {
+                if (chatSection) chatSection.classList.add('hidden');
+                if (nonMemberNotice) nonMemberNotice.classList.remove('hidden');
+            }
+
+            const actionBtn = document.getElementById('modalTeamActionBtn');
+            const deleteBtn = document.getElementById('modalTeamDeleteBtn');
+            const reqUsernames = team.join_requests.map(r => typeof r === 'string' ? r : r.username);
+            const hasRequested = reqUsernames.includes(state.currentUser);
+
+            if (isAuthor) {
+                deleteBtn.classList.remove('hidden');
+                actionBtn.innerText = "Siz Kurucusunuz";
+                actionBtn.disabled = true;
+                actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
+            } else {
+                deleteBtn.classList.add('hidden');
+                if (isMember) {
+                    actionBtn.innerText = "Takımdan Ayrıl";
+                    actionBtn.disabled = false;
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-red-400 text-xs font-bold transition-all";
+                } else if (hasRequested) {
+                    actionBtn.innerText = "İsteği İptal Et";
+                    actionBtn.disabled = false;
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-amber-400 text-xs font-bold transition-all";
+                } else {
+                    if (current >= target) {
+                        actionBtn.innerText = "Kontenjan Dolu";
+                        actionBtn.disabled = true;
+                        actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
+                    } else {
+                        actionBtn.innerText = "Katılma İsteği Gönder";
+                        actionBtn.disabled = false;
+                        actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn-accent text-slate-950 text-xs font-bold transition-all";
+                    }
+                }
+            }
+
+            switchTeamModalTab('main');
+            openModal('teamDetailModal');
+        }
+
+        function renderTeamMembersList(team) {
+            const membersList = document.getElementById('modalTeamMembersList');
+            if (!membersList) return;
+            membersList.innerHTML = '';
+            const isAuthor = team.author === state.currentUser;
+
+            if (team.members && team.members.length > 0) {
+                team.members.forEach(m => {
+                    const badge = document.createElement('div');
+                    badge.className = "px-3 py-1.5 rounded-xl neu-pressed text-xs font-semibold text-theme-main flex items-center gap-2";
+
+                    let kickBtnHtml = '';
+                    if (isAuthor && m !== team.author) {
+                        kickBtnHtml = `<button onclick="kickTeamMember(${team.id}, '${m}')" title="Takımdan Çıkar" class="text-red-400 hover:text-red-300 ml-1 font-bold text-xs"><i class="fa-solid fa-xmark"></i></button>`;
+                    }
+
+                    badge.innerHTML = `
+                        <span class="cursor-pointer hover:underline flex items-center gap-1.5" onclick="closeModal('teamDetailModal'); openUserProfilePage('${m}');">
+                            <i class="fa-solid fa-user-circle text-theme-accent"></i> @${m} ${m === team.author ? '<span class="text-[10px] text-amber-400 font-bold">(Kurucu)</span>' : ''}
+                        </span>
+                        ${kickBtnHtml}`;
+                    membersList.appendChild(badge);
+                });
+            }
+        }
+
+        function renderTeamModalRequestsList(team) {
+            const reqBadge = document.getElementById('teamModalReqBadge');
+            const requestsList = document.getElementById('modalTeamRequestsList');
+            if (!requestsList) return;
+
+            requestsList.innerHTML = '';
+            const reqCount = team.join_requests.length;
+
+            if (reqCount > 0) {
+                reqBadge.innerText = reqCount;
+                reqBadge.classList.remove('hidden');
+            } else {
+                reqBadge.classList.add('hidden');
+            }
+
+            if (reqCount === 0) {
+                requestsList.innerHTML = `<p class="text-xs text-theme-sub italic p-4 text-center">Bekleyen katılım isteği bulunmuyor.</p>`;
+            } else {
+                team.join_requests.forEach(candidate => {
+                    const candidateUser = typeof candidate === 'string' ? candidate : candidate.username;
+                    const candidateMsg = (typeof candidate === 'object' && candidate.message) ? candidate.message : 'Açıklama belirtilmemiş.';
+                    const candidateDate = (typeof candidate === 'object' && candidate.date) ? candidate.date : '';
+
+                    const item = document.createElement('div');
+                    item.className = "p-4 rounded-2xl neu-pressed space-y-2.5 text-xs";
+                    item.innerHTML = `
+                        <div class="flex items-center justify-between border-b border-theme/40 pb-2">
+                            <div class="flex items-center gap-2 cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${candidateUser}');">
+                                <i class="fa-solid fa-user-circle text-amber-400 text-base"></i>
+                                <span class="font-bold text-theme-main text-sm">@${candidateUser}</span>
+                            </div>
+                            <span class="text-[10px] text-theme-sub">${candidateDate}</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-[11px] font-bold text-theme-accent">Başvuru Notu:</div>
+                            <p class="text-theme-main leading-relaxed italic bg-theme-base/50 p-2.5 rounded-xl border border-theme/30">${candidateMsg}</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2 pt-1">
+                            <button onclick="acceptJoinRequest(${team.id}, '${candidateUser}')" class="px-3.5 py-1.5 rounded-xl neu-btn text-emerald-400 font-bold text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-check"></i> Kabul Et
+                            </button>
+                            <button onclick="rejectJoinRequest(${team.id}, '${candidateUser}')" class="px-3.5 py-1.5 rounded-xl neu-btn text-red-400 font-bold text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-xmark"></i> Reddet
+                            </button>
+                        </div>`;
+                    requestsList.appendChild(item);
+                });
+            }
+        }
+
+        function renderTeamChatMessages(messages) {
+            const container = document.getElementById('modalTeamChatMessages');
+            if (!container) return;
+
+            container.innerHTML = '';
+            if (!messages || messages.length === 0) {
+                container.innerHTML = `<p class="text-xs text-theme-sub italic p-4 text-center">Henüz takıma mesaj atılmamış.</p>`;
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isMe = msg.author === state.currentUser;
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `p-3 rounded-xl neu-pressed text-xs space-y-1 ${isMe ? 'border-l-2 border-theme-accent' : ''}`;
+                msgDiv.innerHTML = `
+                    <div class="flex justify-between font-semibold text-theme-sub">
+                        <span class="text-theme-accent cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${msg.author}')">@${msg.author} ${isMe ? '(Sen)' : ''}</span>
+                        <span class="text-[10px]">${msg.date || ''}</span>
+                    </div>
+                    <p class="text-theme-main">${msg.content}</p>
+                `;
+                container.appendChild(msgDiv);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function submitTeamMessage(e) {
+            e.preventDefault();
+            if (!state.currentSelectedTeam) return;
+            const input = document.getElementById('modalTeamChatInput');
+            const content = input.value.trim();
+            if (!content) return;
+
+            const res = await apiCall({
+                command: 'ADD_TEAM_MESSAGE',
+                username: state.currentUser,
+                team_id: state.currentSelectedTeam.id,
+                content: content
+            });
+
+            if (res.status === 'success') {
+                input.value = '';
+                state.currentSelectedTeam.messages = res.messages || [];
+                renderTeamChatMessages(state.currentSelectedTeam.messages);
+            } else {
+                showToast(res.message || 'Mesaj gönderilemedi', 'error');
+            }
+        }
+
+        async function acceptJoinRequest(teamId, candidateUsername) {
+            const res = await apiCall({
+                command: 'ACCEPT_JOIN_REQUEST',
+                username: state.currentUser,
+                team_id: teamId,
+                target_username: candidateUsername
+            });
+
+            if (res.status === 'success') {
+                await silentUpdateCurrentTeamModal();
+                await silentReloadTeams();
+            } else {
+                showToast(res.message || 'Onay hatası', 'error');
+            }
+        }
+
+        async function rejectJoinRequest(teamId, candidateUsername) {
+            const res = await apiCall({
+                command: 'REJECT_JOIN_REQUEST',
+                username: state.currentUser,
+                team_id: teamId,
+                target_username: candidateUsername
+            });
+
+            if (res.status === 'success') {
+                await silentUpdateCurrentTeamModal();
+                await silentReloadTeams();
+            } else {
+                showToast(res.message || 'Reddetme hatası', 'error');
+            }
+        }
+
+        async function kickTeamMember(teamId, targetUsername) {
+            const res = await apiCall({
+                command: 'KICK_MEMBER',
+                username: state.currentUser,
+                team_id: teamId,
+                target_username: targetUsername
+            });
+
+            if (res.status === 'success') {
+                await silentUpdateCurrentTeamModal();
+                await silentReloadTeams();
+            } else {
+                showToast(res.message || 'Çıkarma işlemi başarısız', 'error');
+            }
+        }
+
+        async function handleTeamAction() {
+            if (!state.currentSelectedTeam) return;
+            const team = state.currentSelectedTeam;
+            const isMember = team.members && team.members.includes(state.currentUser);
+            const reqUsernames = (team.join_requests || []).map(r => typeof r === 'string' ? r : r.username);
+            const hasRequested = reqUsernames.includes(state.currentUser);
+
+            if (isMember) {
+                const res = await apiCall({ command: 'LEAVE_TEAM', username: state.currentUser, team_id: team.id });
+                if (res.status === 'success') {
+                    closeModal('teamDetailModal');
+                    await silentReloadTeams();
+                } else {
+                    showToast(res.message || 'İşlem hatası', 'error');
+                }
+            } else if (hasRequested) {
+                const res = await apiCall({ command: 'REJECT_JOIN_REQUEST', username: state.currentUser, team_id: team.id, target_username: state.currentUser });
+                if (res.status === 'success') {
+                    closeModal('teamDetailModal');
+                    await silentReloadTeams();
+                } else {
+                    showToast(res.message || 'İptal hatası', 'error');
+                }
+            } else {
+                closeModal('teamDetailModal');
+                document.getElementById('joinTeamMessageInput').value = '';
+                openModal('joinTeamRequestModal');
+            }
+        }
+
+        async function submitJoinTeamRequest(e) {
+            e.preventDefault();
+            if (!state.currentSelectedTeam) return;
+            const msgInput = document.getElementById('joinTeamMessageInput');
+            const message = msgInput.value.trim();
+
+            if (!message) {
+                showToast('Lütfen kendinizden ve yeteneklerinizden bahsedin!', 'error');
+                return;
+            }
+
+            const res = await apiCall({
+                command: 'JOIN_TEAM',
+                username: state.currentUser,
+                team_id: state.currentSelectedTeam.id,
+                message: message
+            });
+
+            if (res.status === 'success') {
+                closeModal('joinTeamRequestModal');
+                await silentReloadTeams();
+            } else {
+                showToast(res.message || 'Katılma isteği gönderilemedi', 'error');
+            }
+        }
+
+        function confirmDeleteCurrentTeam() {
+            if (!state.currentSelectedTeam) return;
+            document.getElementById('confirmDeleteText').innerText = `"${state.currentSelectedTeam.title}" ilanını silmek istediğinizden emin misiniz?`;
+
+            const submitBtn = document.getElementById('confirmDeleteSubmitBtn');
+            submitBtn.onclick = async () => {
+                const res = await apiCall({ command: 'DELETE_TEAM', username: state.currentUser, team_id: state.currentSelectedTeam.id });
+                if (res.status === 'success') {
+                    closeModal('confirmDeleteModal');
+                    closeModal('teamDetailModal');
+                    await silentReloadTeams();
+                } else {
+                    showToast(res.message || 'Silme hatası', 'error');
+                }
+            };
+
+            openModal('confirmDeleteModal');
+        }
+
+        function filterAndRenderSocial() {
+            const query = (document.getElementById('socialSearchInput')?.value || '').toLowerCase();
+            const sortMode = document.getElementById('socialSortSelect')?.value || 'likes_desc';
+
+            let filtered = state.socialUsers.filter(u =>
+                (u.username && u.username.toLowerCase().includes(query)) ||
+                (u.faculty && u.faculty.toLowerCase().includes(query)) ||
+                (u.department && u.department.toLowerCase().includes(query))
+            );
+
+            if (sortMode === 'likes_desc') filtered.sort((a,b) => (b.total_likes || 0) - (a.total_likes || 0));
+            else if (sortMode === 'notes_desc') filtered.sort((a,b) => (b.total_notes || 0) - (a.total_notes || 0));
+            else if (sortMode === 'reqs_desc') filtered.sort((a,b) => (b.total_requests || 0) - (a.total_requests || 0));
+            else if (sortMode === 'alpha_asc') filtered.sort((a,b) => (a.username || '').localeCompare(b.username || ''));
+
+            renderSocialUsersGrid(filtered);
+        }
+
+        function renderSocialUsersGrid(userList) {
+            const grid = document.getElementById('socialUsersGrid');
+            if (!grid) return;
+
+            if (userList.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-theme-sub border border-dashed border-theme rounded-3xl neu-pressed">
+                        <i class="fa-solid fa-user-slash text-4xl mb-3 text-theme-sub"></i>
+                        <p class="font-semibold text-sm">Aramanızla eşleşen öğrenci profili bulunamadı.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            userList.forEach(u => {
+                const isMe = u.username === state.currentUser;
+                const initial = u.username.charAt(0).toUpperCase();
+                const avatarHtml = u.profile_image ?
+                    `<img src="${u.profile_image}" class="w-full h-full object-cover" alt="${u.username}">` :
+                    `<span>${initial}</span>`;
+
+                const card = document.createElement('div');
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
+
+                card.innerHTML = `
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-12 h-12 rounded-2xl neu-btn-accent text-slate-950 font-black text-xl flex items-center justify-center uppercase shrink-0 overflow-hidden">
+                            ${avatarHtml}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <h4 class="font-bold text-theme-main text-base truncate cursor-pointer hover:underline" onclick="openUserProfilePage('${u.username}')">${u.username}</h4>
+                                    ${isMe ? `<span class="px-2 py-0.5 rounded-full neu-pressed text-emerald-400 text-[10px] font-bold">Sen</span>` : ''}
+                                </div>
+                                ${!isMe ? `
+                                    <button onclick="openReportModal('kullanici', '${u.username}')" class="text-theme-sub hover:text-amber-400 transition-colors p-1" title="Kullanıcıyı Rapor Et">
+                                        <i class="fa-solid fa-flag text-xs"></i>
+                                    </button>` : ''}
+                            </div>
+                            <p class="text-xs text-theme-accent font-medium truncate">${u.faculty || 'Fakülte Belirtilmemiş'}</p>
+                            <p class="text-[11px] text-theme-sub truncate">${u.department || 'Bölüm Belirtilmemiş'}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 py-2.5 neu-pressed rounded-xl text-center">
+                        <div>
+                            <div class="text-sm font-bold text-theme-main">${u.total_notes || 0}</div>
+                            <div class="text-[10px] text-theme-sub">Notlar</div>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-rose-400">❤️ ${u.total_likes || 0}</div>
+                            <div class="text-[10px] text-theme-sub">Beğeni</div>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-amber-400">${u.total_teams || 0}</div>
+                            <div class="text-[10px] text-theme-sub">Takımlar</div>
+                        </div>
+                    </div>
+
+                    <button onclick="openUserProfilePage('${u.username}')" class="w-full py-2.5 rounded-xl neu-btn text-theme-main text-xs font-semibold flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-address-card text-theme-accent"></i>
+                        <span>Profili İncele</span>
+                    </button>`;
+                grid.appendChild(card);
+            });
+        }
+
+        async function openUserProfilePage(targetUsername) {
+            if (targetUsername === state.currentUser) {
+                switchTab('profile');
+                return;
+            }
+
+            if (state.activeTab !== 'user-profile') {
+                state.previousTab = state.activeTab;
+            }
+
+            const res = await apiCall({ command: 'GET_USER_PROFILE', target_username: targetUsername });
+            if (res.status === 'success' && res.profile) {
+                const p = res.profile;
+
+                document.getElementById('viewProfileUsername').innerText = p.username;
+                updateAvatarDisplay('viewProfileLargeAvatarContainer', 'viewProfileLargeAvatar', p.username, p.profile_image, 'w-24 h-24 text-4xl');
+
+                document.getElementById('viewProfileFacultyText').innerText = p.faculty || 'Fakülte Belirtilmemiş';
+                document.getElementById('viewProfileDepartmentText').innerText = p.department || 'Bölüm Belirtilmemiş';
+
+                const aboutText = document.getElementById('viewProfileAboutText');
+                if (p.about) {
+                    aboutText.innerText = p.about;
+                    aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed font-normal";
+                } else {
+                    aboutText.innerText = 'Henüz bir biyografi eklenmemiş.';
+                    aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed italic";
+                }
+
+                document.getElementById('viewStatNotesCount').innerText = p.total_notes || 0;
+                document.getElementById('viewStatLikesCount').innerText = p.total_likes || 0;
+                document.getElementById('viewStatTeamsCount').innerText = p.total_teams || 0;
+
+                const notesContainer = document.getElementById('viewUserNotesList');
+                notesContainer.innerHTML = '';
+                if (!p.notes || p.notes.length === 0) {
+                    notesContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Paylaştığı ders notu bulunmuyor.</p>`;
+                } else {
+                    p.notes.forEach(n => {
+                        const item = document.createElement('div');
+                        item.className = "p-3.5 rounded-xl neu-pressed flex items-center justify-between text-xs";
+                        item.innerHTML = `
+                            <div class="min-w-0 pr-3 space-y-1">
+                                <div class="font-bold text-theme-main truncate">${n.title}</div>
+                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni • 👁️ ${n.views || 0} Görüntülenme</div>
+                            </div>
+                            <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main text-xs font-semibold shrink-0">
+                                Detay
+                            </button>`;
+                        notesContainer.appendChild(item);
+                    });
+                }
+
+                const teamsContainer = document.getElementById('viewUserTeamsList');
+                teamsContainer.innerHTML = '';
+                if (!p.teams || p.teams.length === 0) {
+                    teamsContainer.innerHTML = `<p class="text-xs text-theme-sub italic">Oluşturduğu takım ilanı bulunmuyor.</p>`;
+                } else {
+                    p.teams.forEach(t => {
+                        const item = document.createElement('div');
+                        item.className = "p-4 rounded-xl neu-pressed space-y-2 text-xs";
+                        item.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-theme-main text-sm">${t.title}</span>
+                                <span class="px-2.5 py-1 rounded-full neu-btn text-emerald-400 text-[10px] font-bold">${t.current_members}/${t.target_members} Üye</span>
+                            </div>
+                            <p class="text-theme-sub text-xs line-clamp-2 leading-relaxed">${t.description}</p>
+                            <div class="text-[11px] text-theme-accent font-semibold pt-1">Gerekli: ${t.skills}</div>`;
+                        teamsContainer.appendChild(item);
+                    });
+                }
+
+                switchTabToSection('user-profile', `Öğrenci Profili: ${p.username}`);
+            } else {
+                showToast(res.message || 'Kullanıcı profili yüklenemedi', 'error');
+            }
+        }
+
+        function switchTabToSection(sectionName, customTitle) {
+            state.activeTab = sectionName;
+            const sections = ['notes', 'teams', 'social', 'profile', 'settings', 'user-profile'];
+            sections.forEach(s => {
+                const el = document.getElementById(`section-${s}`);
+                const nav = document.getElementById(`nav-${s}`);
+                if (s === sectionName) {
+                    if (el) el.classList.remove('hidden');
+                    if (nav) {
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-sm text-left transition-all neu-pressed text-theme-accent";
+                    }
+                } else {
+                    if (el) el.classList.add('hidden');
+                    if (nav) {
+                        nav.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn";
+                    }
+                }
+            });
+
+            if (customTitle) {
+                document.getElementById('currentTabTitle').innerText = customTitle;
+            }
+        }
+
+        function goBackFromUserProfile() {
+            const target = state.previousTab || 'social';
+            switchTab(target);
+        }
+
+        function openReportModal(type, targetName) {
+            const titleEl = document.getElementById('reportModalTitle');
+            const targetEl = document.getElementById('reportModalTargetText');
+            const inputEl = document.getElementById('reportReasonInput');
+
+            if (inputEl) inputEl.value = '';
+
+            if (type === 'kullanici') {
+                titleEl.innerText = 'Kullanıcıyı Rapor Et';
+                targetEl.innerHTML = `<strong>@${targetName}</strong> isimli kullanıcı hakkında şikayet ve ihlal bildiriminde bulunuyorsunuz.`;
+            } else {
+                titleEl.innerText = 'Gönderiyi / İçeriği Rapor Et';
+                targetEl.innerHTML = `<strong>"${targetName}"</strong> başlıklı gönderi / içerik hakkında bildirimde bulunuyorsunuz.`;
+            }
+
+            openModal('reportModal');
+        }
+
+        function submitReportDummy(e) {
+            e.preventDefault();
+            const reason = document.getElementById('reportReasonInput').value.trim();
+            if (!reason) return;
+
+            closeModal('reportModal');
+            document.getElementById('reportReasonInput').value = '';
+
+            showToastSuccess('Raporunuz başarıyla alındı ve moderatör ekibine iletildi. Teşekkürler!');
+        }
+
+        function renderUserProfileDetails() {
+            document.getElementById('profileFacultyText').innerText = state.userFaculty || 'Fakülte Belirtilmemiş';
+            document.getElementById('profileDepartmentText').innerText = state.userDepartment || 'Bölüm Belirtilmemiş';
+
+            const aboutText = document.getElementById('profileAboutText');
+            if (state.userAbout) {
+                aboutText.innerText = state.userAbout;
+                aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-main leading-relaxed font-normal";
+            } else {
+                aboutText.innerText = 'Henüz bir biyografi eklenmedi. "Profili Düzenle" butonunu kullanarak hakkınızda bilgi ekleyebilirsiniz.';
+                aboutText.className = "p-4 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed italic";
+            }
+        }
+
+        function openEditProfileModal() {
+            document.getElementById('editFaculty').value = state.userFaculty;
+            document.getElementById('editDepartment').value = state.userDepartment;
+            document.getElementById('editAbout').value = state.userAbout;
+            openModal('editProfileModal');
+        }
+
+        async function submitUpdateProfile(e) {
+            e.preventDefault();
+            const f = document.getElementById('editFaculty').value.trim();
+            const d = document.getElementById('editDepartment').value.trim();
+            const a = document.getElementById('editAbout').value.trim();
+            const imgInput = document.getElementById('editProfileImageInput');
+
+            let imgData = state.userProfileImage;
+            if (imgInput.files && imgInput.files.length > 0) {
+                const file = imgInput.files[0];
+                const b64 = await convertFileToBase64(file);
+                imgData = `data:${file.type || 'image/png'};base64,${b64}`;
+            }
+
+            const res = await apiCall({
+                command: 'UPDATE_PROFILE',
+                username: state.currentUser,
+                faculty: f,
+                department: d,
+                about: a,
+                profile_image: imgData
+            });
+
+            if (res.status === 'success') {
+                state.userFaculty = f;
+                state.userDepartment = d;
+                state.userAbout = a;
+                if (imgData) state.userProfileImage = imgData;
+
+                localStorage.setItem('sau_user_faculty', f);
+                localStorage.setItem('sau_user_dept', d);
+                localStorage.setItem('sau_user_about', a);
+                localStorage.setItem('sau_user_image', state.userProfileImage);
+
+                updateAvatarDisplay('headerAvatarContainer', 'userAvatar', state.currentUser, state.userProfileImage, 'w-7 h-7');
+                updateAvatarDisplay('profileLargeAvatarContainer', 'profileLargeAvatar', state.currentUser, state.userProfileImage, 'w-24 h-24 text-4xl');
+
+                renderUserProfileDetails();
+                closeModal('editProfileModal');
+                silentReloadSocial();
+            } else {
+                showToast(res.message || 'Güncelleme hatası', 'error');
+            }
         }
 
         function updateProfileStats() {
@@ -3114,7 +3161,7 @@
                         row.innerHTML = `
                             <div class="space-y-0.5 min-w-0 pr-2">
                                 <div class="font-bold text-theme-main truncate">${n.title}</div>
-                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni</div>
+                                <div class="text-theme-sub text-[11px]">${n.date || ''} • ❤️ ${n.likes || 0} Beğeni • 👁️ ${n.views || 0} Görüntülenme</div>
                             </div>
                             <button onclick="openNoteDetailModal(${n.id})" class="px-3 py-1.5 rounded-xl neu-btn text-theme-main shrink-0">
                                 Görüntüle
@@ -3166,7 +3213,6 @@
             });
         }
 
-        /* HATALAR İÇİN BİLDİRİM TOAST */
         function showToast(message, type = 'info') {
             if (type !== 'error') return;
 
@@ -3185,7 +3231,6 @@
             }, 3000);
         }
 
-        /* GÖRSEL BAŞARI BİLDİRİMİ TOAST */
         function showToastSuccess(message) {
             const container = document.getElementById('toastContainer');
             if (!container) return;

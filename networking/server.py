@@ -28,6 +28,7 @@ os.makedirs(UPLOADS_DIR, exist_ok=True)
 
 ACCOUNTS_FILE = os.path.join(DATA_DIR, 'accounts.txt')
 NOTES_FILE = os.path.join(DATA_DIR, 'notes.txt')
+NOTE_VIEWS_FILE = os.path.join(DATA_DIR, 'note_views.json')
 NEXT_ID_FILE = os.path.join(DATA_DIR, 'next_id.txt')
 LIKES_FILE = os.path.join(DATA_DIR, 'likes.txt')
 PROFILES_FILE = os.path.join(DATA_DIR, 'user_profiles.txt')
@@ -37,6 +38,7 @@ REPORTS_FILE = os.path.join(DATA_DIR, 'reports.json')
 
 users = {}
 notes = {}
+note_views = {}
 user_likes = {}
 requests_data = {}
 teams_data = {}
@@ -61,7 +63,7 @@ def get_formatted_file_size(file_path):
 
 
 def load_data():
-    global next_note_id, next_request_id, next_team_id, next_report_id, users, notes, user_likes, requests_data, teams_data, reports_data
+    global next_note_id, next_request_id, next_team_id, next_report_id, users, notes, note_views, user_likes, requests_data, teams_data, reports_data
 
     if os.path.exists(ACCOUNTS_FILE):
         with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
@@ -84,11 +86,19 @@ def load_data():
             except ValueError:
                 next_note_id = 1
 
+    if os.path.exists(NOTE_VIEWS_FILE):
+        try:
+            with open(NOTE_VIEWS_FILE, 'r', encoding='utf-8') as f:
+                note_views = {int(k): int(v) for k, v in json.load(f).items()}
+        except Exception as e:
+            print(f"[LOAD NOTE VIEWS ERROR] {e}")
+
     if os.path.exists(NOTES_FILE):
         with open(NOTES_FILE, 'r', encoding='utf-8') as f:
             for line in f:
                 note = Note.from_string(line)
                 if note:
+                    note.views = note_views.get(note.id, getattr(note, 'views', 0))
                     notes[note.id] = note
 
     if os.path.exists(LIKES_FILE):
@@ -146,6 +156,14 @@ def save_notes():
     with open(NOTES_FILE, 'w', encoding='utf-8') as f:
         for note in notes.values():
             f.write(note.to_string() + '\n')
+
+
+def save_note_views():
+    try:
+        with open(NOTE_VIEWS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(note_views, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[SAVE NOTE VIEWS ERROR] {e}")
 
 
 def save_next_id():
@@ -364,7 +382,6 @@ def handle_create_note(data):
 
         if file_name and file_b64:
             try:
-                # Gelen veride Data URL başlığı varsa temizle
                 if ',' in file_b64:
                     file_b64 = file_b64.split(',', 1)[1]
 
@@ -378,12 +395,16 @@ def handle_create_note(data):
                 print(f"[FILE SAVE ERROR] {e}")
 
         note = Note(next_note_id, title, content, username, date=now_str, file_name=saved_file_name)
+        note.views = 0
         notes[next_note_id] = note
+        note_views[next_note_id] = 0
+
         users[username].profile.add_note(next_note_id)
         next_note_id += 1
 
         save_notes()
         save_next_id()
+        save_note_views()
         save_profiles()
 
         return {"status": "success", "message": "Not paylaşıldı", "note_id": note.id}
@@ -403,6 +424,11 @@ def handle_get_note(data):
             return {"status": "error", "message": "Not bulunamadı"}
 
         note = notes[note_id]
+        current_views = note_views.get(note_id, getattr(note, 'views', 0)) + 1
+        note_views[note_id] = current_views
+        note.views = current_views
+        save_note_views()
+
         is_liked = (username, note_id) in user_likes if username else False
 
         file_name = getattr(note, 'file_name', '')
@@ -419,6 +445,7 @@ def handle_get_note(data):
                 "content": note.content,
                 "author": note.author,
                 "likes": note.likes,
+                "views": current_views,
                 "date": getattr(note, 'date', 'Bilinmiyor'),
                 "file_name": file_name,
                 "file_size": file_size,
@@ -452,12 +479,15 @@ def handle_delete_note(data):
                     print(f"[FILE REMOVE ERROR] {e}")
 
         del notes[note_id]
+        if note_id in note_views:
+            del note_views[note_id]
 
         to_del = [k for k in user_likes.keys() if k[1] == note_id]
         for k in to_del:
             del user_likes[k]
 
         save_notes()
+        save_note_views()
         save_likes()
         return {"status": "success", "message": "Not silindi"}
 
@@ -544,12 +574,15 @@ def handle_get_all_notes(data):
                 file_path = os.path.join(UPLOADS_DIR, f"{note.id}_{file_name}")
                 file_size = get_formatted_file_size(file_path)
 
+            v_count = note_views.get(note.id, getattr(note, 'views', 0))
+
             notes_list.append({
                 "id": note.id,
                 "title": note.title,
                 "content": note.content,
                 "author": note.author,
                 "likes": note.likes,
+                "views": v_count,
                 "date": getattr(note, 'date', 'Bilinmiyor'),
                 "file_name": file_name,
                 "file_size": file_size
@@ -745,7 +778,7 @@ def handle_accept_join_request(data):
         team.setdefault("join_requests", [])
 
         if str(team["author"]).strip() != str(username).strip():
-            return {"status": "error", "message": "Sadece takım sahibi katılma isteklerini kabul edebilir!"}
+            return {"status": "error", "message": "Sadece takım sahibi katılma isteklerini kabul edabilir!"}
 
         req_usernames = [r if isinstance(r, str) else r.get("username") for r in team["join_requests"]]
         if target_username not in req_usernames:
@@ -998,12 +1031,15 @@ def handle_get_user_profile(data):
                 file_path = os.path.join(UPLOADS_DIR, f"{note.id}_{file_name}")
                 file_size = get_formatted_file_size(file_path)
 
+            v_count = note_views.get(note.id, getattr(note, 'views', 0))
+
             formatted_notes.append({
                 "id": note.id,
                 "title": note.title,
                 "content": note.content,
                 "author": note.author,
                 "likes": note.likes,
+                "views": v_count,
                 "date": getattr(note, 'date', 'Bilinmiyor'),
                 "file_name": file_name,
                 "file_size": file_size
