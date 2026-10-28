@@ -1,3 +1,4 @@
 7|Türk Dili 1. Hafta Ders Notu|Türk Dili Dersinin 1. Hafta ders notları|Ayşe Yılmaz|2|28.10.2026 07:25|Türk Dili 1. Hafta.pdf
 8|Bilgisayar Mühendisliği 1. Ders Notları|.|Ahmet Öztürk|1|28.10.2026 07:28|1_ders_tan t m .pdf
 9|Bilgisayar Mühendisliği 5. Ders Notları|Sayı ve kodlama sistemleri notları|Ahmet Öztürk|1|28.10.2026 07:28|5.1_say &kodlama_sistemleri.pdf
+11|Fizik 1 Hareket Örnek Sorular|.|Eren bozkurt|0|28.10.2026 09:07|2a_CalismaSorulari_Hareket1 (2).pdf

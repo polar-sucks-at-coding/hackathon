@@ -397,7 +397,7 @@
 
                         <!-- SEÇİLEN SIRALAMAYA GÖRE LİSTE -->
                         <div class="space-y-3 pt-2">
-                            <h3 class="text-xs font-bold text-theme-sub uppercase tracking-wider flex items-center gap-2 pl-1">
+                            <h3 id="notesGridTitle" class="text-xs font-bold text-theme-sub uppercase tracking-wider flex items-center gap-2 pl-1">
                                 <i class="fa-solid fa-list-ul text-theme-accent"></i>
                                 <span>Tüm Ders Notları (Seçilen Sıralamaya Göre)</span>
                             </h3>
@@ -1537,18 +1537,34 @@
             filterAndRender();
         }
 
+        /* DİNAMİK ARAMA VE FİLTRELEME MANTIĞI */
         function filterAndRender() {
-            const query = (document.getElementById('searchInput').value || '').toLowerCase();
+            const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
             const sortMode = document.getElementById('sortSelect').value;
 
             if (state.activeNoteSubTab === 'notes') {
+                const topLikedSec = document.getElementById('topLikedSection');
+                const topViewedSec = document.getElementById('topViewedSection');
+                const gridTitle = document.getElementById('notesGridTitle');
+
+                if (query !== '') {
+                    // Arama yapılıyorsa en çok beğenilenler ve görüntülenenler gizlenir
+                    if (topLikedSec) topLikedSec.classList.add('hidden');
+                    if (topViewedSec) topViewedSec.classList.add('hidden');
+                    if (gridTitle) gridTitle.innerHTML = `<i class="fa-solid fa-magnifying-glass text-theme-accent"></i> <span>Arama Sonuçları ("${query}")</span>`;
+                } else {
+                    // Arama kutusu boşsa popüler bölümler tekrar gösterilir
+                    if (topLikedSec) topLikedSec.classList.remove('hidden');
+                    if (topViewedSec) topViewedSec.classList.remove('hidden');
+                    if (gridTitle) gridTitle.innerHTML = `<i class="fa-solid fa-list-ul text-theme-accent"></i> <span>Tüm Ders Notları (Seçilen Sıralamaya Göre)</span>`;
+                    renderTopWeeklyNotes();
+                }
+
                 let filtered = state.notes.filter(n =>
                     (n.title && n.title.toLowerCase().includes(query)) ||
                     (n.content && n.content.toLowerCase().includes(query)) ||
                     (n.author && n.author.toLowerCase().includes(query))
                 );
-
-                renderTopWeeklyNotes();
 
                 if (sortMode === 'likes') filtered.sort((a,b) => (b.likes || 0) - (a.likes || 0));
                 else if (sortMode === 'views') filtered.sort((a,b) => (b.views || 0) - (a.views || 0));
