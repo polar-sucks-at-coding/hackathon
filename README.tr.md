@@ -123,3 +123,7 @@ Bu proje bir hackathon çalışması olarak başladı ve henüz canlıya almaya 
 ## Lisans
 
 Henüz bir lisans dosyası eklenmedi. Başkalarının kodu kullanmasını istiyorsan bir tane ekle.
+## Geliştirici Ekip
+
+- **Melih Ekinci**
+- **Mehmet Yusuf Yöndem**
