@@ -1,1 +1,0 @@
-Giriş(kullanıcı adı,şifre,hesap oluşturma,Beni hatırla ticki)

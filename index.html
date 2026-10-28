@@ -1931,7 +1931,9 @@
 
             let imgData = state.userProfileImage;
             if (imgInput.files && imgInput.files.length > 0) {
-                imgData = await convertFileToBase64(imgInput.files[0]);
+                const file = imgInput.files[0];
+                const b64 = await convertFileToBase64(file);
+                imgData = `data:${file.type || 'image/png'};base64,${b64}`;
             }
 
             const res = await apiCall({
@@ -1985,7 +1987,6 @@
             const grid = document.getElementById('teamsGrid');
             if (!grid) return;
 
-            // AKILLI AKIŞ: Veri aynıysa ekrana dokunma (Kırpışmayı ve animasyon resetlenmesini önler)
             const jsonStr = JSON.stringify(teamsList);
             if (grid.dataset.lastState === jsonStr) return;
             grid.dataset.lastState = jsonStr;
@@ -2296,7 +2297,7 @@
             if (!container) return;
 
             const jsonStr = JSON.stringify(messages || []);
-            if (container.dataset.lastState === jsonStr) return; // Mesajlar değişmediyse ekrana dokunma
+            if (container.dataset.lastState === jsonStr) return;
             container.dataset.lastState = jsonStr;
 
             container.innerHTML = '';
@@ -3159,7 +3160,7 @@
                     if ((encoded.length % 4) !== 0) {
                         encoded += '='.repeat((4 - encoded.length % 4) % 4);
                     }
-                    resolve(reader.result.toString());
+                    resolve(encoded);
                 };
                 reader.onerror = error => reject(error);
             });

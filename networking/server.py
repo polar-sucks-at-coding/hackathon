@@ -364,6 +364,10 @@ def handle_create_note(data):
 
         if file_name and file_b64:
             try:
+                # Gelen veride Data URL başlığı varsa temizle
+                if ',' in file_b64:
+                    file_b64 = file_b64.split(',', 1)[1]
+
                 file_bytes = base64.b64decode(file_b64)
                 disk_file_name = f"{next_note_id}_{file_name}"
                 file_path = os.path.join(UPLOADS_DIR, disk_file_name)
