@@ -100,8 +100,13 @@ def send_create_team(username, title, description, skills, current_members=1, ta
 def send_get_all_teams():
     return send_command({"command": "GET_ALL_TEAMS"})
 
-def send_join_team(username, team_id):
-    return send_command({"command": "JOIN_TEAM", "username": username, "team_id": team_id})
+def send_join_team(username, team_id, message=""):
+    return send_command({
+        "command": "JOIN_TEAM",
+        "username": username,
+        "team_id": team_id,
+        "message": message
+    })
 
 def send_leave_team(username, team_id):
     return send_command({"command": "LEAVE_TEAM", "username": username, "team_id": team_id})
@@ -116,6 +121,14 @@ def send_kick_member(username, team_id, target_username):
 
 def send_delete_team(username, team_id):
     return send_command({"command": "DELETE_TEAM", "username": username, "team_id": team_id})
+
+def send_add_team_message(username, team_id, content):
+    return send_command({
+        "command": "ADD_TEAM_MESSAGE",
+        "username": username,
+        "team_id": team_id,
+        "content": content
+    })
 
 def send_get_all_users():
     return send_command({"command": "GET_ALL_USERS"})

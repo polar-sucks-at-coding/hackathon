@@ -687,9 +687,13 @@ def handle_get_all_teams(data):
 def handle_join_team(data):
     username = data.get('username')
     team_id = data.get('team_id')
+    message = data.get('message', '').strip()
 
     if not username or team_id is None:
         return {"status": "error", "message": "Parametreler eksik"}
+
+    if not message:
+        return {"status": "error", "message": "Lütfen katılma isteği gönderirken kendinizden ve yeteneklerinizden bahsedin!"}
 
     team_id = int(team_id)
     with lock:
@@ -702,13 +706,20 @@ def handle_join_team(data):
         if username in team["members"]:
             return {"status": "error", "message": "Zaten bu takımın üyesiniz."}
 
-        if username in team["join_requests"]:
+        req_usernames = [r if isinstance(r, str) else r.get("username") for r in team["join_requests"]]
+        if username in req_usernames:
             return {"status": "error", "message": "Zaten bu takıma katılım isteği gönderdiniz."}
 
         if team["current_members"] >= team["target_members"]:
             return {"status": "error", "message": "Takım kontenjanı dolu!"}
 
-        team["join_requests"].append(username)
+        now_str = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+        req_obj = {
+            "username": username,
+            "message": message,
+            "date": now_str
+        }
+        team["join_requests"].append(req_obj)
         save_teams()
         return {"status": "success", "message": "Katılma isteği takım sahibine iletildi."}
 
@@ -732,13 +743,14 @@ def handle_accept_join_request(data):
         if str(team["author"]).strip() != str(username).strip():
             return {"status": "error", "message": "Sadece takım sahibi katılma isteklerini kabul edebilir!"}
 
-        if target_username not in team["join_requests"]:
+        req_usernames = [r if isinstance(r, str) else r.get("username") for r in team["join_requests"]]
+        if target_username not in req_usernames:
             return {"status": "error", "message": "Bu kullanıcının aktif bir katılma isteği bulunmuyor."}
 
         if team["current_members"] >= team["target_members"]:
             return {"status": "error", "message": "Takım kontenjanı dolu! Daha fazla üye kabul edilemez."}
 
-        team["join_requests"].remove(target_username)
+        team["join_requests"] = [r for r in team["join_requests"] if (r if isinstance(r, str) else r.get("username")) != target_username]
         if target_username not in team["members"]:
             team["members"].append(target_username)
         team["current_members"] = len(team["members"])
@@ -765,8 +777,7 @@ def handle_reject_join_request(data):
         if str(team["author"]).strip() != str(username).strip() and str(target_username).strip() != str(username).strip():
             return {"status": "error", "message": "Bu işlemi yapma yetkiniz yok!"}
 
-        if target_username in team["join_requests"]:
-            team["join_requests"].remove(target_username)
+        team["join_requests"] = [r for r in team["join_requests"] if (r if isinstance(r, str) else r.get("username")) != target_username]
 
         save_teams()
         return {"status": "success", "message": "Katılma isteği kaldırıldı."}
@@ -852,7 +863,6 @@ def handle_delete_team(data):
 
 
 def handle_add_team_message(data):
-    """Takım sohbetine yeni mesaj ekler"""
     username = data.get('username')
     team_id = data.get('team_id')
     content = data.get('content', '').strip()
@@ -884,9 +894,8 @@ def handle_add_team_message(data):
 
 
 def handle_create_report(data):
-    """Not, İstek, Yorum veya Takım Mesajını Rapor Eder"""
     username = data.get('username')
-    item_type = data.get('item_type') # 'note', 'request', 'comment', 'team_message'
+    item_type = data.get('item_type')
     item_id = data.get('item_id')
     reason = data.get('reason', '').strip()
 

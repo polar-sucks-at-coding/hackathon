@@ -1,0 +1,38 @@
+{
+  "requests": {
+    "1": {
+      "id": 1,
+      "title": "sdf",
+      "content": "sfd",
+      "author": "melih",
+      "date": "28.10.2026 05:42",
+      "comments": [
+        {
+          "id": 1,
+          "author": "melo",
+          "content": "pee",
+          "date": "28.10.2026 06:24"
+        },
+        {
+          "id": 2,
+          "author": "melo",
+          "content": "sucuk",
+          "date": "28.10.2026 06:25"
+        },
+        {
+          "id": 3,
+          "author": "melo",
+          "content": "sosis",
+          "date": "28.10.2026 06:31"
+        },
+        {
+          "id": 4,
+          "author": "melih",
+          "content": "salam",
+          "date": "28.10.2026 06:31"
+        }
+      ]
+    }
+  },
+  "next_id": 2
+}

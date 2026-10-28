@@ -88,6 +88,7 @@
         .bg-theme-base { background-color: var(--bg-base); }
         .bg-theme-card { background-color: var(--bg-card); }
         .bg-theme-input { background-color: var(--bg-input); }
+        .bg-theme-accent { background-color: var(--accent); }
         .border-theme { border-color: var(--border-color); }
         .text-theme-main { color: var(--text-main); }
         .text-theme-sub { color: var(--text-sub); }
@@ -117,7 +118,7 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white p-2 md:p-4">
 
-    <!-- Toast Bildirim Alanı (Yalnızca Hatalar İçin) -->
+    <!-- Toast Bildirim Alanı -->
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- =================================================================== -->
@@ -297,11 +298,6 @@
                         <span>Takımlar</span>
                     </button>
 
-                    <button onclick="switchTab('polls')" id="nav-polls" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
-                        <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                        <span>Anketler</span>
-                    </button>
-
                     <button onclick="switchTab('social')" id="nav-social" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-left text-theme-sub hover:text-theme-main transition-colors neu-btn">
                         <i class="fa-solid fa-users w-5 text-center"></i>
                         <span>Sosyal</span>
@@ -424,52 +420,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 3: ANKETLER -->
-                <section id="section-polls" class="hidden space-y-6">
-                    <div class="neu-flat p-6 rounded-3xl">
-                        <h3 class="text-xl font-bold text-theme-main mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-chart-pie text-theme-accent"></i>
-                            <span>Kampüs Anketleri</span>
-                        </h3>
-                        <p class="text-theme-sub text-sm mb-6">Sakarya Üniversitesi öğrencileri tarafından başlatılan güncel oylamalar.</p>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="p-5 rounded-2xl neu-pressed space-y-4">
-                                <span class="px-3 py-1 rounded-xl neu-btn text-blue-400 text-xs font-semibold">Kütüphane</span>
-                                <h4 class="font-bold text-theme-main">Merkez Kütüphane Vize Döneminde 24 Saat Açık Kalmalı mı?</h4>
-                                <div class="space-y-2.5">
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'info')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
-                                        <span>Evet, 24 saat açık olmalı</span>
-                                        <span class="text-theme-accent font-bold">%88</span>
-                                    </button>
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'info')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
-                                        <span>Hayır, mevcut çalışma saatleri yeterli</span>
-                                        <span class="text-theme-sub">%12</span>
-                                    </button>
-                                </div>
-                                <div class="text-xs text-theme-sub text-right">Toplam 342 Oy</div>
-                            </div>
-
-                            <div class="p-5 rounded-2xl neu-pressed space-y-4">
-                                <span class="px-3 py-1 rounded-xl neu-btn text-purple-400 text-xs font-semibold">Yemekhane</span>
-                                <h4 class="font-bold text-theme-main">Kampüs Yemekhanesindeki Öğle Menüsü Kalitesini Nasıl Buluyorsunuz?</h4>
-                                <div class="space-y-2.5">
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'info')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
-                                        <span>👍 Çok Başarılı</span>
-                                        <span class="text-theme-accent font-bold">%45</span>
-                                    </button>
-                                    <button onclick="showToast('Oyunuz kaydedildi!', 'info')" class="w-full p-3 rounded-xl neu-btn text-left text-sm font-medium flex justify-between">
-                                        <span>😐 Geliştirilebilir</span>
-                                        <span class="text-theme-sub">%55</span>
-                                    </button>
-                                </div>
-                                <div class="text-xs text-theme-sub text-right">Toplam 215 Oy</div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- TAB 4: SOSYAL (SOSYAL DİZİN) -->
+                <!-- TAB 3: SOSYAL (SOSYAL DİZİN) -->
                 <section id="section-social" class="hidden space-y-6">
                     <div class="neu-flat p-6 rounded-3xl space-y-6">
                         <div>
@@ -505,7 +456,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 5: KENDİ PROFİLİM -->
+                <!-- TAB 4: KENDİ PROFİLİM -->
                 <section id="section-profile" class="hidden space-y-6">
                     <div class="neu-flat p-6 rounded-3xl relative overflow-hidden">
                         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
@@ -604,14 +555,21 @@
                     </div>
                 </section>
 
-                <!-- TAB 6: DİĞER KULLANICI PROFİLİ -->
-                <section id="section-user-profile" class="hidden space-y-6 animate-fade-in">
+                <!-- TAB 5: DİĞER KULLANICI PROFİLİ -->
+                <section id="section-user-profile" class="hidden space-y-6">
                     <div class="flex items-center justify-between neu-flat p-4 rounded-2xl">
                         <button onclick="goBackFromUserProfile()" class="px-4 py-2 rounded-xl neu-btn text-theme-main transition-colors font-semibold text-xs flex items-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i>
                             <span>Geri Dön</span>
                         </button>
-                        <span class="text-xs text-theme-sub font-semibold">SAÜ Öğrenci Profili İnceleme</span>
+
+                        <div class="flex items-center gap-3">
+                            <button id="userProfileReportBtn" onclick="openReportModal('kullanici', document.getElementById('viewProfileUsername').innerText)" class="px-3 py-1.5 rounded-xl neu-btn text-amber-400 font-semibold text-xs flex items-center gap-1.5 transition-colors">
+                                <i class="fa-solid fa-flag"></i>
+                                <span>Kullanıcıyı Rapor Et</span>
+                            </button>
+                            <span class="text-xs text-theme-sub font-semibold hidden sm:inline">SAÜ Öğrenci Profili İnceleme</span>
+                        </div>
                     </div>
 
                     <div class="neu-flat p-6 rounded-3xl relative overflow-hidden space-y-5">
@@ -698,7 +656,7 @@
                     </div>
                 </section>
 
-                <!-- TAB 7: AYARLAR -->
+                <!-- TAB 6: AYARLAR -->
                 <section id="section-settings" class="hidden space-y-6">
                     <div class="neu-flat p-6 rounded-3xl space-y-6">
                         <div>
@@ -754,8 +712,41 @@
     <!-- MODALLAR -->
     <!-- =================================================================== -->
 
+    <!-- MODAL: RAPOR ET MODALI -->
+    <div id="reportModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+        <div class="w-full max-w-md neu-flat rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-theme/40 pb-3">
+                <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
+                    <i class="fa-solid fa-flag text-amber-400"></i>
+                    <span id="reportModalTitle">İçeriği Rapor Et</span>
+                </h3>
+                <button onclick="closeModal('reportModal')" class="text-theme-sub hover:text-theme-main"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="submitReportDummy(event)" class="space-y-4">
+                <div class="p-3.5 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-info text-amber-400 text-base shrink-0 mt-0.5"></i>
+                    <span id="reportModalTargetText">Bu öğe hakkında bildirimde bulunuyorsunuz.</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Rapor Sebebi *</label>
+                    <textarea id="reportReasonInput" required rows="4" class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-xs focus:outline-none" placeholder="Lütfen şikayet / rapor etme sebebinizi detaylı olarak açıklayın..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('reportModal')" class="px-4 py-2 rounded-xl neu-btn text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                        <span>Raporu Gönder</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL: PROFİLİ DÜZENLE MODALI -->
-    <div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div id="editProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-md neu-flat rounded-3xl p-6 space-y-5">
             <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
@@ -795,7 +786,7 @@
     </div>
 
     <!-- MODAL: TAKIM İLANI OLUŞTUR MODALI -->
-    <div id="addTeamModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div id="addTeamModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
             <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
@@ -841,8 +832,38 @@
         </div>
     </div>
 
-    <!-- MODAL: TAKIM İLANI DETAY MODALI (SADECE TAKIM SAHİBİNE ÖZEL İSTEK LİSTESİ) -->
-    <div id="teamDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <!-- MODAL: ZORUNLU KENDİNDEN BAHSETME İLE TAKIMA KATILMA İSTEĞİ MODALI -->
+    <div id="joinTeamRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+        <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-theme/40 pb-3">
+                <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-theme-accent"></i>
+                    <span>Takıma Katılma İsteği Gönder</span>
+                </h3>
+                <button onclick="closeModal('joinTeamRequestModal')" class="text-theme-sub hover:text-theme-main"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="submitJoinTeamRequest(event)" class="space-y-4">
+                <div class="p-3 rounded-2xl neu-pressed text-xs text-theme-sub leading-relaxed">
+                    <i class="fa-solid fa-circle-info text-theme-accent mr-1"></i>
+                    Takım kurucusuna katılma isteğinizi iletmek için kendinizden, yeteneklerinizden ve bu takıma nasıl katkı sunabileceğinizden bahsetmeniz zorunludur.
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-theme-sub mb-1.5">Kendinden & Yeteneklerinden Bahset *</label>
+                    <textarea id="joinTeamMessageInput" required rows="4" class="w-full px-4 py-2.5 rounded-xl neu-pressed text-theme-main text-xs focus:outline-none" placeholder="Örn: Merhaba, Yazılım Mühendisliği 3. sınıf öğrencisiyim. Python ve ROS2 alanlarında tecrübem var..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeModal('joinTeamRequestModal')" class="px-4 py-2 rounded-xl neu-btn text-sm font-semibold text-theme-sub">İptal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-sm">Başvuruyu Gönder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: TAKIM İLANI DETAY MODALI (SEKMELİ YAPI: ANA BİLGİLER | SOHBET | İSTEKLER) -->
+    <div id="teamDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-2xl neu-flat rounded-3xl p-6 space-y-5 max-h-[90vh] flex flex-col">
             <div class="flex items-start justify-between border-b border-theme/40 pb-4">
                 <div class="space-y-1.5">
@@ -857,52 +878,92 @@
                         <span><i class="fa-solid fa-clock mr-1"></i><span id="modalTeamDate">Tarih</span></span>
                     </div>
                 </div>
-                <button onclick="closeModal('teamDetailModal')" class="p-2 text-theme-sub hover:text-theme-main rounded-xl neu-btn">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <div class="flex items-center gap-2">
+                    <button onclick="openReportModal('gonderi', document.getElementById('modalTeamTitle').innerText)" class="px-3 py-1.5 rounded-xl neu-btn text-amber-400 font-semibold text-xs flex items-center gap-1.5" title="İlanı Rapor Et">
+                        <i class="fa-solid fa-flag"></i>
+                        <span>Rapor Et</span>
+                    </button>
+                    <button onclick="closeModal('teamDetailModal')" class="p-2 text-theme-sub hover:text-theme-main rounded-xl neu-btn">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SEKMELİ GEZİNTİ BUTONLARI -->
+            <div class="flex p-1.5 neu-pressed rounded-xl gap-1 border-b border-theme/40">
+                <button id="btnTeamTabMain" onclick="switchTeamModalTab('main')" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all neu-btn-accent text-slate-950 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <span>Ana Bilgiler</span>
+                </button>
+                <button id="btnTeamTabChat" onclick="switchTeamModalTab('chat')" class="flex-1 py-2 rounded-xl font-semibold text-xs transition-all text-theme-sub neu-btn flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Sohbet</span>
+                </button>
+                <button id="btnTeamTabRequests" onclick="switchTeamModalTab('requests')" class="flex-1 py-2 rounded-xl font-semibold text-xs transition-all text-theme-sub neu-btn flex items-center justify-center gap-1.5 hidden">
+                    <i class="fa-solid fa-user-clock"></i>
+                    <span>Katılma İstekleri <span id="teamModalReqBadge" class="ml-1 px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black hidden">0</span></span>
                 </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto space-y-4 pr-1">
-                <!-- Kontenjan İlerleme Çubuğu -->
-                <div class="p-4 rounded-2xl neu-pressed space-y-2">
-                    <div class="flex justify-between text-xs font-semibold">
-                        <span class="text-theme-sub">Takım Kontenjan Durumu:</span>
-                        <span id="modalTeamCapacityPercent" class="text-theme-accent">0% Dolu</span>
+            <!-- MODAL İÇERİK ALANI -->
+            <div class="flex-1 overflow-y-auto pr-1">
+
+                <!-- SEKME 1: ANA BİLGİLER -->
+                <div id="teamTabContent-main" class="space-y-4">
+                    <!-- Kontenjan İlerleme Çubuğu -->
+                    <div class="p-4 rounded-2xl neu-pressed space-y-2">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span class="text-theme-sub">Takım Kontenjan Durumu:</span>
+                            <span id="modalTeamCapacityPercent" class="text-theme-accent">0% Dolu</span>
+                        </div>
+                        <div class="w-full bg-theme-card h-2.5 rounded-full overflow-hidden neu-pressed p-0.5">
+                            <div id="modalTeamProgress" class="bg-theme-accent h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
                     </div>
-                    <div class="w-full bg-theme-card h-2.5 rounded-full overflow-hidden neu-pressed p-0.5">
-                        <div id="modalTeamProgress" class="bg-theme-accent h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+
+                    <!-- Gerekli Yetenekler -->
+                    <div class="p-4 rounded-2xl neu-pressed space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-theme-accent flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Gerekli Yetenekler ve Deneyimler</span>
+                        </h4>
+                        <p id="modalTeamSkills" class="text-sm font-semibold text-theme-main leading-relaxed">Yetenekler yükleniyor...</p>
+                    </div>
+
+                    <!-- Proje Açıklaması -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Proje ve Takım Açıklaması</h4>
+                        <p id="modalTeamDescription" class="text-xs text-theme-main leading-relaxed whitespace-pre-wrap">Açıklama...</p>
+                    </div>
+
+                    <!-- Mevcut Üyeler -->
+                    <div class="space-y-2 pt-2 border-t border-theme/40">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Mevcut Takım Üyeleri</h4>
+                        <div id="modalTeamMembersList" class="flex flex-wrap gap-2.5"></div>
                     </div>
                 </div>
 
-                <!-- Gerekli Yetenekler -->
-                <div class="p-4 rounded-2xl neu-pressed space-y-2">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-theme-accent flex items-center gap-2">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>Gerekli Yetenekler ve Deneyimler</span>
-                    </h4>
-                    <p id="modalTeamSkills" class="text-sm font-semibold text-theme-main leading-relaxed">Yetenekler yükleniyor...</p>
+                <!-- SEKME 2: SOHBET (SADECE TAKIM ÜYELERİ) -->
+                <div id="teamTabContent-chat" class="hidden space-y-3">
+                    <div id="modalTeamChatSection" class="space-y-3">
+                        <div id="modalTeamChatMessages" class="space-y-2.5 max-h-60 overflow-y-auto pr-1"></div>
+                        <form onsubmit="submitTeamMessage(event)" class="flex gap-2 pt-1">
+                            <input type="text" id="modalTeamChatInput" class="flex-1 px-3.5 py-2 rounded-xl neu-pressed text-xs text-theme-main focus:outline-none" placeholder="Takım arkadaşlarına mesaj yaz...">
+                            <button type="submit" class="px-4 py-2 rounded-xl neu-btn-accent text-slate-950 font-bold text-xs">Gönder</button>
+                        </form>
+                    </div>
+
+                    <div id="modalTeamChatNonMemberNotice" class="hidden p-4 rounded-2xl neu-pressed text-xs text-theme-sub italic flex items-center gap-3">
+                        <i class="fa-solid fa-lock text-amber-400 text-lg"></i>
+                        <span>Takım içi sohbet alanını yalnızca onaylı takım üyeleri görüntüleyebilir ve mesaj gönderebilir.</span>
+                    </div>
                 </div>
 
-                <!-- Proje Açıklaması -->
-                <div class="space-y-2">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Proje ve Takım Açıklaması</h4>
-                    <p id="modalTeamDescription" class="text-xs text-theme-main leading-relaxed whitespace-pre-wrap">Açıklama...</p>
+                <!-- SEKME 3: KATILMA İSTEKLERİ VE BAŞVURU METİNLERİ (SADECE KURUCU) -->
+                <div id="teamTabContent-requests" class="hidden space-y-3">
+                    <div id="modalTeamRequestsList" class="space-y-3 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
 
-                <!-- SADECE TAKIM SAHİBİNİN GÖREBİLDİĞİ KATILMA İSTEKLERİ -->
-                <div id="modalTeamRequestsSection" class="hidden space-y-3 pt-3 border-t border-theme/40">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                        <i class="fa-solid fa-user-clock"></i>
-                        <span>Gelen Katılma İstekleri (Sadece Takım Sahibi Görür)</span>
-                    </h4>
-                    <div id="modalTeamRequestsList" class="space-y-2"></div>
-                </div>
-
-                <!-- Mevcut Üyeler -->
-                <div class="space-y-2 pt-2 border-t border-theme/40">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-theme-sub">Mevcut Takım Üyeleri</h4>
-                    <div id="modalTeamMembersList" class="flex flex-wrap gap-2.5"></div>
-                </div>
             </div>
 
             <div class="flex items-center justify-between border-t border-theme/40 pt-4">
@@ -922,7 +983,7 @@
     </div>
 
     <!-- MODAL: NOT DETAY MODALI -->
-    <div id="noteDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div id="noteDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-2xl neu-flat rounded-3xl p-6 space-y-5 max-h-[90vh] flex flex-col">
             <div class="flex items-start justify-between border-b border-theme/40 pb-4">
                 <div class="space-y-1">
@@ -933,16 +994,22 @@
                         <span><i class="fa-solid fa-clock mr-1"></i><span id="modalNoteDate">Tarih</span></span>
                     </div>
                 </div>
-                <button onclick="closeModal('noteDetailModal')" class="p-2 text-theme-sub hover:text-theme-main rounded-xl neu-btn">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="openReportModal('gonderi', document.getElementById('modalNoteTitle').innerText)" class="px-3 py-1.5 rounded-xl neu-btn text-amber-400 font-semibold text-xs flex items-center gap-1.5" title="Notu Rapor Et">
+                        <i class="fa-solid fa-flag"></i>
+                        <span>Rapor Et</span>
+                    </button>
+                    <button onclick="closeModal('noteDetailModal')" class="p-2 text-theme-sub hover:text-theme-main rounded-xl neu-btn">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
             </div>
 
             <div id="modalNoteContent" class="flex-1 overflow-y-auto text-sm text-theme-main leading-relaxed whitespace-pre-wrap py-2">
                 Not İçeriği...
             </div>
 
-            <!-- Dosya Ekleri (İndir ve Sekmede Aç) -->
+            <!-- Dosya Ekleri -->
             <div id="modalFileContainer" class="p-4 rounded-2xl neu-pressed flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-xl neu-btn text-blue-400 flex items-center justify-center shrink-0">
@@ -983,7 +1050,7 @@
     </div>
 
     <!-- MODAL: NOT EKLE MODALI -->
-    <div id="addNoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div id="addNoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
             <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
@@ -1018,7 +1085,7 @@
     </div>
 
     <!-- MODAL: İSTEK EKLE MODALI -->
-    <div id="addRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div id="addRequestModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-lg neu-flat rounded-3xl p-6 space-y-5">
             <div class="flex items-center justify-between border-b border-theme/40 pb-3">
                 <h3 class="text-lg font-bold text-theme-main flex items-center gap-2">
@@ -1046,7 +1113,7 @@
     </div>
 
     <!-- MODAL: SİLME ONAY MODALI -->
-    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+    <div id="confirmDeleteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
         <div class="w-full max-w-sm neu-flat rounded-3xl p-6 space-y-4 text-center">
             <div class="w-12 h-12 rounded-2xl neu-pressed text-red-400 flex items-center justify-center text-xl font-bold mx-auto">
                 <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1116,6 +1183,7 @@
             activeTab: 'notes',
             previousTab: 'teams',
             activeNoteSubTab: 'notes',
+            activeTeamModalTab: 'main',
             notes: [],
             requests: [],
             teams: [],
@@ -1124,6 +1192,8 @@
             currentSelectedTeam: null,
             isOnlineMode: true
         };
+
+        let autoPollTimer = null;
 
         const INITIAL_DEMO_NOTES = [
             { id: 1, title: 'Yazılım Müh. - Algoritmalar Vize Özet', content: 'Ağaçlar, Grafik Teorisi, Sıralama Algoritmaları (QuickSort, MergeSort) detaylı anlatımı ve C++ örnekleri.', author: 'ahmet_sau', likes: 14, date: '28.10.2026 10:30', file_name: 'algoritmalar_vize_ozet.pdf', file_size: '1.2 MB' },
@@ -1141,7 +1211,12 @@
                 target_members: 5,
                 date: '28.10.2026 10:00',
                 members: ['ahmet_sau', 'zeynep_cs', 'mehmet_ee'],
-                join_requests: ['can_mkn']
+                join_requests: [
+                    { username: 'can_mkn', message: 'Merhaba, Makine mühendisliği 3. sınıf öğrencisiyim. SolidWorks ve mekanik tasarım tecrübem var.', date: '28.10.2026 10:15' }
+                ],
+                messages: [
+                    { id: 1, author: 'ahmet_sau', content: 'Arkadaşlar selamlar, haftalık toplantımızı Cuma günü saat 15:00\'te yapacağız.', date: '28.10.2026 10:05' }
+                ]
             },
             {
                 id: 2,
@@ -1153,7 +1228,8 @@
                 target_members: 6,
                 date: '28.10.2026 11:30',
                 members: ['mehmet_ee', 'can_mkn', 'ali_sau', 'zeynep_cs'],
-                join_requests: []
+                join_requests: [],
+                messages: []
             }
         ];
 
@@ -1183,7 +1259,6 @@
                 updateApiStatus(true);
                 return data;
             } catch (err) {
-                console.warn("[API FALLBACK LOCAL ETKİN]", err);
                 updateApiStatus(false);
                 return fallbackLocalApi(commandData);
             }
@@ -1210,7 +1285,10 @@
             let localRequests = JSON.parse(localStorage.getItem('sau_requests_local') || '[]');
             let localTeams = JSON.parse(localStorage.getItem('sau_teams_local') || JSON.stringify(INITIAL_DEMO_TEAMS));
 
-            localTeams.forEach(t => { if (!t.join_requests) t.join_requests = []; });
+            localTeams.forEach(t => {
+                if (!t.join_requests) t.join_requests = [];
+                if (!t.messages) t.messages = [];
+            });
 
             if (cmd === 'REGISTER') {
                 if (localUsers[req.username]) {
@@ -1297,7 +1375,8 @@
                     target_members: parseInt(req.target_members) || 5,
                     date: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'}),
                     members: [req.username],
-                    join_requests: []
+                    join_requests: [],
+                    messages: []
                 };
                 localTeams.unshift(newTeam);
                 localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
@@ -1308,11 +1387,19 @@
                 const target = localTeams.find(t => t.id === parseInt(req.team_id));
                 if (target) {
                     if (!target.join_requests) target.join_requests = [];
-                    if (target.members.includes(req.username)) return { status: 'error', message: 'Zaten takım üyesiniz' };
-                    if (target.join_requests.includes(req.username)) return { status: 'error', message: 'Zaten katılma isteği gönderdiniz' };
-                    if (target.current_members >= target.target_members) return { status: 'error', message: 'Kontenjan dolu!' };
+                    const reqUsernames = target.join_requests.map(r => typeof r === 'string' ? r : r.username);
 
-                    target.join_requests.push(req.username);
+                    if (target.members.includes(req.username)) return { status: 'error', message: 'Zaten takım üyesiniz' };
+                    if (reqUsernames.includes(req.username)) return { status: 'error', message: 'Zaten katılma isteği gönderdiniz' };
+                    if (target.current_members >= target.target_members) return { status: 'error', message: 'Kontenjan dolu!' };
+                    if (!req.message || !req.message.trim()) return { status: 'error', message: 'Lütfen kendinizden ve yeteneklerinizden bahsedin!' };
+
+                    const nowStr = new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                    target.join_requests.push({
+                        username: req.username,
+                        message: req.message.trim(),
+                        date: nowStr
+                    });
                     localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
                     return { status: 'success', message: 'Katılma isteği gönderildi.' };
                 }
@@ -1325,7 +1412,7 @@
                     if (target.current_members >= target.target_members) return { status: 'error', message: 'Kontenjan dolu!' };
                     if (!target.join_requests) target.join_requests = [];
 
-                    target.join_requests = target.join_requests.filter(m => m !== req.target_username);
+                    target.join_requests = target.join_requests.filter(r => (typeof r === 'string' ? r : r.username) !== req.target_username);
                     if (!target.members.includes(req.target_username)) {
                         target.members.push(req.target_username);
                     }
@@ -1339,7 +1426,7 @@
                 const target = localTeams.find(t => t.id === parseInt(req.team_id));
                 if (target) {
                     if (!target.join_requests) target.join_requests = [];
-                    target.join_requests = target.join_requests.filter(m => m !== req.target_username);
+                    target.join_requests = target.join_requests.filter(r => (typeof r === 'string' ? r : r.username) !== req.target_username);
                     localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
                     return { status: 'success', message: 'İstek kaldırıldı' };
                 }
@@ -1370,6 +1457,27 @@
                 localTeams = localTeams.filter(t => t.id !== parseInt(req.team_id));
                 localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
                 return { status: 'success', message: 'İlan silindi' };
+            }
+
+            if (cmd === 'ADD_TEAM_MESSAGE') {
+                const target = localTeams.find(t => t.id === parseInt(req.team_id));
+                if (target) {
+                    if (!target.members.includes(req.username)) {
+                        return { status: 'error', message: 'Sadece takım üyeleri takıma mesaj gönderebilir!' };
+                    }
+                    if (!target.messages) target.messages = [];
+                    const nowStr = new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'});
+                    const msgObj = {
+                        id: target.messages.length + 1,
+                        author: req.username,
+                        content: req.content,
+                        date: nowStr
+                    };
+                    target.messages.push(msgObj);
+                    localStorage.setItem('sau_teams_local', JSON.stringify(localTeams));
+                    return { status: 'success', message: 'Mesaj gönderildi', messages: target.messages };
+                }
+                return { status: 'error', message: 'Takım bulunamadı.' };
             }
 
             if (cmd === 'GET_ALL_USERS') {
@@ -1450,6 +1558,7 @@
         });
 
         function showAuthUI() {
+            stopAutoPolling();
             document.getElementById('authView').classList.remove('hidden');
             document.getElementById('mainView').classList.add('hidden');
         }
@@ -1470,6 +1579,108 @@
             loadAllRequests();
             loadAllTeams();
             loadAllSocialUsers();
+
+            startAutoPolling();
+        }
+
+        /* AKILLI ARKA PLAN POLLING SİSTEMİ (ÇAKIŞMAYI VE KIRPIŞMAYI ÖNLER) */
+        function startAutoPolling() {
+            stopAutoPolling();
+            autoPollTimer = setInterval(async () => {
+                if (state.activeTab === 'notes') {
+                    if (state.activeNoteSubTab === 'notes') await silentReloadNotes();
+                    else await silentReloadRequests();
+                } else if (state.activeTab === 'teams') {
+                    await silentReloadTeams();
+                } else if (state.activeTab === 'social') {
+                    await silentReloadSocial();
+                }
+
+                // Eğer Takım Detay Modalı açıksa chat/istek verisini arka planda canlı güncelle
+                const detailModal = document.getElementById('teamDetailModal');
+                if (detailModal && !detailModal.classList.contains('hidden')) {
+                    await silentUpdateCurrentTeamModal();
+                }
+            }, 2500);
+        }
+
+        function stopAutoPolling() {
+            if (autoPollTimer) {
+                clearInterval(autoPollTimer);
+                autoPollTimer = null;
+            }
+        }
+
+        async function silentReloadTeams() {
+            const res = await apiCall({ command: 'GET_ALL_TEAMS' });
+            if (res.status === 'success') {
+                state.teams = res.teams || [];
+                filterAndRenderTeams();
+            }
+        }
+
+        async function silentReloadNotes() {
+            const res = await apiCall({ command: 'GET_ALL_NOTES' });
+            if (res.status === 'success') {
+                state.notes = res.notes || [];
+                filterAndRender();
+            }
+        }
+
+        async function silentReloadRequests() {
+            const res = await apiCall({ command: 'GET_ALL_REQUESTS' });
+            if (res.status === 'success') {
+                state.requests = res.requests || [];
+                filterAndRender();
+            }
+        }
+
+        async function silentReloadSocial() {
+            const res = await apiCall({ command: 'GET_ALL_USERS' });
+            if (res.status === 'success') {
+                state.socialUsers = res.users || [];
+                filterAndRenderSocial();
+            }
+        }
+
+        async function silentUpdateCurrentTeamModal() {
+            if (!state.currentSelectedTeam) return;
+            const res = await apiCall({ command: 'GET_ALL_TEAMS' });
+            if (res.status === 'success') {
+                state.teams = res.teams || [];
+                const updatedTeam = state.teams.find(t => t.id === state.currentSelectedTeam.id);
+                if (updatedTeam) {
+                    state.currentSelectedTeam = updatedTeam;
+
+                    const current = updatedTeam.current_members || (updatedTeam.members ? updatedTeam.members.length : 1);
+                    const target = updatedTeam.target_members || 5;
+                    const percent = Math.min(100, Math.round((current / target) * 100));
+
+                    document.getElementById('modalTeamCapacityText').innerText = `${current}/${target} Üye (${percent}%)`;
+                    document.getElementById('modalTeamCapacityPercent').innerText = `%${percent} Dolu`;
+
+                    const progressBar = document.getElementById('modalTeamProgress');
+                    if (progressBar) progressBar.style.width = `${percent}%`;
+
+                    const isAuthor = updatedTeam.author === state.currentUser;
+                    const reqBadge = document.getElementById('teamModalReqBadge');
+                    if (isAuthor && updatedTeam.join_requests) {
+                        const reqCount = updatedTeam.join_requests.length;
+                        if (reqCount > 0) {
+                            reqBadge.innerText = reqCount;
+                            reqBadge.classList.remove('hidden');
+                        } else {
+                            reqBadge.classList.add('hidden');
+                        }
+                    }
+
+                    if (state.activeTeamModalTab === 'chat') {
+                        renderTeamChatMessages(updatedTeam.messages || []);
+                    } else if (state.activeTeamModalTab === 'requests' && isAuthor) {
+                        renderTeamModalRequestsList(updatedTeam);
+                    }
+                }
+            }
         }
 
         function updateAvatarDisplay(containerId, textSpanId, username, imageUrl, sizeClasses) {
@@ -1602,7 +1813,7 @@
             }
             state.activeTab = tabName;
 
-            const sections = ['notes', 'teams', 'polls', 'social', 'profile', 'settings', 'user-profile'];
+            const sections = ['notes', 'teams', 'social', 'profile', 'settings', 'user-profile'];
             sections.forEach(s => {
                 const el = document.getElementById(`section-${s}`);
                 const nav = document.getElementById(`nav-${s}`);
@@ -1622,7 +1833,6 @@
             const titles = {
                 notes: 'Ders Notları ve İstekler',
                 teams: 'Takım ve Proje İlanları',
-                polls: 'Kampüs Anketleri',
                 social: 'Kampüs Sosyal & Öğrenci Dizini',
                 profile: 'Profilim',
                 settings: 'Ayarlar'
@@ -1630,8 +1840,8 @@
             document.getElementById('currentTabTitle').innerText = titles[tabName] || 'Arayüz';
 
             if (tabName === 'profile') updateProfileStats();
-            if (tabName === 'teams') loadAllTeams();
-            if (tabName === 'social') loadAllSocialUsers();
+            if (tabName === 'teams') silentReloadTeams();
+            if (tabName === 'social') silentReloadSocial();
         }
 
         function switchNoteTab(subTab) {
@@ -1658,6 +1868,36 @@
             }
 
             filterAndRender();
+        }
+
+        /* RAPORLAMA FONKSİYONLARI */
+        function openReportModal(type, targetName) {
+            const titleEl = document.getElementById('reportModalTitle');
+            const targetEl = document.getElementById('reportModalTargetText');
+            const inputEl = document.getElementById('reportReasonInput');
+
+            if (inputEl) inputEl.value = '';
+
+            if (type === 'kullanici') {
+                titleEl.innerText = 'Kullanıcıyı Rapor Et';
+                targetEl.innerHTML = `<strong>@${targetName}</strong> isimli kullanıcı hakkında şikayet ve ihlal bildiriminde bulunuyorsunuz.`;
+            } else {
+                titleEl.innerText = 'Gönderiyi / İçeriği Rapor Et';
+                targetEl.innerHTML = `<strong>"${targetName}"</strong> başlıklı gönderi / içerik hakkında bildirimde bulunuyorsunuz.`;
+            }
+
+            openModal('reportModal');
+        }
+
+        function submitReportDummy(e) {
+            e.preventDefault();
+            const reason = document.getElementById('reportReasonInput').value.trim();
+            if (!reason) return;
+
+            closeModal('reportModal');
+            document.getElementById('reportReasonInput').value = '';
+
+            showToastSuccess('Raporunuz başarıyla alındı ve moderatör ekibine iletildi. Teşekkürler!');
         }
 
         /* PROFİL DÜZENLEME */
@@ -1719,7 +1959,7 @@
 
                 renderUserProfileDetails();
                 closeModal('editProfileModal');
-                loadAllSocialUsers();
+                silentReloadSocial();
             } else {
                 showToast(res.message || 'Güncelleme hatası', 'error');
             }
@@ -1727,11 +1967,7 @@
 
         /* TAKIM İLANLARI İŞLEMLERİ VE KATILMA İSTEĞİ ONAY SİSTEMİ */
         async function loadAllTeams() {
-            const res = await apiCall({ command: 'GET_ALL_TEAMS' });
-            if (res.status === 'success') {
-                state.teams = res.teams || [];
-                filterAndRenderTeams();
-            }
+            await silentReloadTeams();
         }
 
         function filterAndRenderTeams() {
@@ -1748,7 +1984,11 @@
         function renderTeamsGrid(teamsList) {
             const grid = document.getElementById('teamsGrid');
             if (!grid) return;
-            grid.innerHTML = '';
+
+            // AKILLI AKIŞ: Veri aynıysa ekrana dokunma (Kırpışmayı ve animasyon resetlenmesini önler)
+            const jsonStr = JSON.stringify(teamsList);
+            if (grid.dataset.lastState === jsonStr) return;
+            grid.dataset.lastState = jsonStr;
 
             if (teamsList.length === 0) {
                 grid.innerHTML = `
@@ -1759,6 +1999,7 @@
                 return;
             }
 
+            grid.innerHTML = '';
             teamsList.forEach(t => {
                 const isFull = t.current_members >= t.target_members;
                 const capacityRatio = `${t.current_members}/${t.target_members} Üye`;
@@ -1766,7 +2007,7 @@
                 const reqCount = (t.join_requests && isOwner) ? t.join_requests.length : 0;
 
                 const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
 
                 card.innerHTML = `
                     <div class="space-y-3">
@@ -1774,7 +2015,12 @@
                             <span class="px-3 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 neu-pressed ${isFull ? 'text-red-400' : 'text-emerald-400'}">
                                 <i class="fa-solid fa-users"></i> ${capacityRatio}
                             </span>
-                            <span class="text-xs text-theme-sub">${t.date || ''}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-theme-sub">${t.date || ''}</span>
+                                <button onclick="openReportModal('gonderi', '${t.title.replace(/'/g, "\\'")}')" class="text-theme-sub hover:text-amber-400 transition-colors text-xs" title="İlanı Rapor Et">
+                                    <i class="fa-solid fa-flag"></i>
+                                </button>
+                            </div>
                         </div>
 
                         <div>
@@ -1831,9 +2077,50 @@
                 document.getElementById('newTeamTitle').value = '';
                 document.getElementById('newTeamSkills').value = '';
                 document.getElementById('newTeamDescription').value = '';
-                loadAllTeams();
+                await silentReloadTeams();
             } else {
                 showToast(res.message || 'İlan oluşturma hatası', 'error');
+            }
+        }
+
+        /* TAKIM DETAY MODALINDA SEKMELER ARASI GEÇİŞ */
+        function switchTeamModalTab(tabName) {
+            state.activeTeamModalTab = tabName;
+            const btnMain = document.getElementById('btnTeamTabMain');
+            const btnChat = document.getElementById('btnTeamTabChat');
+            const btnRequests = document.getElementById('btnTeamTabRequests');
+
+            const contentMain = document.getElementById('teamTabContent-main');
+            const contentChat = document.getElementById('teamTabContent-chat');
+            const contentRequests = document.getElementById('teamTabContent-requests');
+
+            const activeClass = "flex-1 py-2 rounded-xl font-bold text-xs transition-all neu-btn-accent text-slate-950 flex items-center justify-center gap-1.5";
+            const inactiveClass = "flex-1 py-2 rounded-xl font-semibold text-xs transition-all text-theme-sub neu-btn flex items-center justify-center gap-1.5";
+
+            if (tabName === 'main') {
+                btnMain.className = activeClass;
+                btnChat.className = inactiveClass;
+                btnRequests.className = btnRequests.classList.contains('hidden') ? inactiveClass + ' hidden' : inactiveClass;
+
+                contentMain.classList.remove('hidden');
+                contentChat.classList.add('hidden');
+                contentRequests.classList.add('hidden');
+            } else if (tabName === 'chat') {
+                btnChat.className = activeClass;
+                btnMain.className = inactiveClass;
+                btnRequests.className = btnRequests.classList.contains('hidden') ? inactiveClass + ' hidden' : inactiveClass;
+
+                contentChat.classList.remove('hidden');
+                contentMain.classList.add('hidden');
+                contentRequests.classList.add('hidden');
+            } else if (tabName === 'requests') {
+                btnRequests.className = activeClass;
+                btnMain.className = inactiveClass;
+                btnChat.className = inactiveClass;
+
+                contentRequests.classList.remove('hidden');
+                contentMain.classList.add('hidden');
+                contentChat.classList.add('hidden');
             }
         }
 
@@ -1841,6 +2128,7 @@
             const team = state.teams.find(t => t.id === teamId);
             if (!team) return;
             if (!team.join_requests) team.join_requests = [];
+            if (!team.messages) team.messages = [];
             state.currentSelectedTeam = team;
 
             document.getElementById('modalTeamTitle').innerText = team.title;
@@ -1856,45 +2144,77 @@
 
             document.getElementById('modalTeamCapacityText').innerText = `${current}/${target} Üye (${percent}%)`;
             document.getElementById('modalTeamCapacityPercent').innerText = `%${percent} Dolu`;
-            document.getElementById('modalTeamProgress').style.width = `${percent}%`;
+
+            const progressBar = document.getElementById('modalTeamProgress');
+            if (progressBar) progressBar.style.width = `${percent}%`;
 
             const isAuthor = team.author === state.currentUser;
-            const requestsSection = document.getElementById('modalTeamRequestsSection');
-            const requestsList = document.getElementById('modalTeamRequestsList');
-            requestsList.innerHTML = '';
+            const isMember = team.members && team.members.includes(state.currentUser);
 
-            /* YALNIZCA VE YALNIZCA TAKIM SAHİBİ KATILMA İSTEKLERİNİ GÖREBİLİR */
+            const btnRequests = document.getElementById('btnTeamTabRequests');
             if (isAuthor) {
-                requestsSection.classList.remove('hidden');
-                if (team.join_requests.length === 0) {
-                    requestsList.innerHTML = `<p class="text-xs text-theme-sub italic">Bekleyen katılma isteği bulunmuyor.</p>`;
-                } else {
-                    team.join_requests.forEach(candidate => {
-                        const item = document.createElement('div');
-                        item.className = "p-3 rounded-xl neu-pressed flex items-center justify-between text-xs";
-                        item.innerHTML = `
-                            <div class="flex items-center gap-2 cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${candidate}');">
-                                <i class="fa-solid fa-user-clock text-amber-400"></i>
-                                <span class="font-bold text-theme-main">@${candidate}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="acceptJoinRequest(${team.id}, '${candidate}')" class="px-3 py-1.5 rounded-xl neu-btn text-emerald-400 font-bold text-xs flex items-center gap-1">
-                                    <i class="fa-solid fa-check"></i> Kabul Et
-                                </button>
-                                <button onclick="rejectJoinRequest(${team.id}, '${candidate}')" class="px-3 py-1.5 rounded-xl neu-btn text-red-400 font-bold text-xs flex items-center gap-1">
-                                    <i class="fa-solid fa-xmark"></i> Reddet
-                                </button>
-                            </div>`;
-                        requestsList.appendChild(item);
-                    });
-                }
+                btnRequests.classList.remove('hidden');
+                renderTeamModalRequestsList(team);
             } else {
-                requestsSection.classList.add('hidden');
+                btnRequests.classList.add('hidden');
             }
 
-            // Mevcut Üyeler Listesi
+            renderTeamMembersList(team);
+
+            const chatSection = document.getElementById('modalTeamChatSection');
+            const nonMemberNotice = document.getElementById('modalTeamChatNonMemberNotice');
+
+            if (isMember) {
+                if (chatSection) chatSection.classList.remove('hidden');
+                if (nonMemberNotice) nonMemberNotice.classList.add('hidden');
+                renderTeamChatMessages(team.messages || []);
+            } else {
+                if (chatSection) chatSection.classList.add('hidden');
+                if (nonMemberNotice) nonMemberNotice.classList.remove('hidden');
+            }
+
+            const actionBtn = document.getElementById('modalTeamActionBtn');
+            const deleteBtn = document.getElementById('modalTeamDeleteBtn');
+            const reqUsernames = team.join_requests.map(r => typeof r === 'string' ? r : r.username);
+            const hasRequested = reqUsernames.includes(state.currentUser);
+
+            if (isAuthor) {
+                deleteBtn.classList.remove('hidden');
+                actionBtn.innerText = "Siz Kurucusunuz";
+                actionBtn.disabled = true;
+                actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
+            } else {
+                deleteBtn.classList.add('hidden');
+                if (isMember) {
+                    actionBtn.innerText = "Takımdan Ayrıl";
+                    actionBtn.disabled = false;
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-red-400 text-xs font-bold transition-all";
+                } else if (hasRequested) {
+                    actionBtn.innerText = "İsteği İptal Et";
+                    actionBtn.disabled = false;
+                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-amber-400 text-xs font-bold transition-all";
+                } else {
+                    if (current >= target) {
+                        actionBtn.innerText = "Kontenjan Dolu";
+                        actionBtn.disabled = true;
+                        actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
+                    } else {
+                        actionBtn.innerText = "Katılma İsteği Gönder";
+                        actionBtn.disabled = false;
+                        actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn-accent text-slate-950 text-xs font-bold transition-all";
+                    }
+                }
+            }
+
+            switchTeamModalTab('main');
+            openModal('teamDetailModal');
+        }
+
+        function renderTeamMembersList(team) {
             const membersList = document.getElementById('modalTeamMembersList');
+            if (!membersList) return;
             membersList.innerHTML = '';
+            const isAuthor = team.author === state.currentUser;
 
             if (team.members && team.members.length > 0) {
                 team.members.forEach(m => {
@@ -1914,43 +2234,119 @@
                     membersList.appendChild(badge);
                 });
             }
+        }
 
-            const actionBtn = document.getElementById('modalTeamActionBtn');
-            const deleteBtn = document.getElementById('modalTeamDeleteBtn');
-            const isMember = team.members && team.members.includes(state.currentUser);
-            const hasRequested = team.join_requests && team.join_requests.includes(state.currentUser);
+        function renderTeamModalRequestsList(team) {
+            const reqBadge = document.getElementById('teamModalReqBadge');
+            const requestsList = document.getElementById('modalTeamRequestsList');
+            if (!requestsList) return;
 
-            if (isAuthor) {
-                deleteBtn.classList.remove('hidden');
+            const jsonStr = JSON.stringify(team.join_requests || []);
+            if (requestsList.dataset.lastState === jsonStr) return;
+            requestsList.dataset.lastState = jsonStr;
+
+            requestsList.innerHTML = '';
+
+            const reqCount = team.join_requests.length;
+            if (reqCount > 0) {
+                reqBadge.innerText = reqCount;
+                reqBadge.classList.remove('hidden');
             } else {
-                deleteBtn.classList.add('hidden');
+                reqBadge.classList.add('hidden');
             }
 
-            if (isAuthor) {
-                actionBtn.innerText = "Siz Kurucusunuz";
-                actionBtn.disabled = true;
-                actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
-            } else if (isMember) {
-                actionBtn.innerText = "Takımdan Ayrıl";
-                actionBtn.disabled = false;
-                actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-red-400 text-xs font-bold transition-all";
-            } else if (hasRequested) {
-                actionBtn.innerText = "İsteği İptal Et";
-                actionBtn.disabled = false;
-                actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn text-amber-400 text-xs font-bold transition-all";
+            if (reqCount === 0) {
+                requestsList.innerHTML = `<p class="text-xs text-theme-sub italic p-4 text-center">Bekleyen katılım isteği bulunmuyor.</p>`;
             } else {
-                if (current >= target) {
-                    actionBtn.innerText = "Kontenjan Dolu";
-                    actionBtn.disabled = true;
-                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-pressed text-theme-sub text-xs font-bold cursor-not-allowed";
-                } else {
-                    actionBtn.innerText = "Katılma İsteği Gönder";
-                    actionBtn.disabled = false;
-                    actionBtn.className = "px-5 py-2.5 rounded-xl neu-btn-accent text-slate-950 text-xs font-bold transition-all";
+                team.join_requests.forEach(candidate => {
+                    const candidateUser = typeof candidate === 'string' ? candidate : candidate.username;
+                    const candidateMsg = (typeof candidate === 'object' && candidate.message) ? candidate.message : 'Açıklama belirtilmemiş.';
+                    const candidateDate = (typeof candidate === 'object' && candidate.date) ? candidate.date : '';
+
+                    const item = document.createElement('div');
+                    item.className = "p-4 rounded-2xl neu-pressed space-y-2.5 text-xs";
+                    item.innerHTML = `
+                        <div class="flex items-center justify-between border-b border-theme/40 pb-2">
+                            <div class="flex items-center gap-2 cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${candidateUser}');">
+                                <i class="fa-solid fa-user-circle text-amber-400 text-base"></i>
+                                <span class="font-bold text-theme-main text-sm">@${candidateUser}</span>
+                            </div>
+                            <span class="text-[10px] text-theme-sub">${candidateDate}</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-[11px] font-bold text-theme-accent">Kendinden Bahsetme / Başvuru Notu:</div>
+                            <p class="text-theme-main leading-relaxed italic bg-theme-base/50 p-2.5 rounded-xl border border-theme/30">${candidateMsg}</p>
+                        </div>
+                        <div class="flex items-center justify-end gap-2 pt-1">
+                            <button onclick="acceptJoinRequest(${team.id}, '${candidateUser}')" class="px-3.5 py-1.5 rounded-xl neu-btn text-emerald-400 font-bold text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-check"></i> Kabul Et
+                            </button>
+                            <button onclick="rejectJoinRequest(${team.id}, '${candidateUser}')" class="px-3.5 py-1.5 rounded-xl neu-btn text-red-400 font-bold text-xs flex items-center gap-1.5">
+                                <i class="fa-solid fa-xmark"></i> Reddet
+                            </button>
+                        </div>`;
+                    requestsList.appendChild(item);
+                });
+            }
+        }
+
+        /* TAKIM SOHBETİ RENDER & AKILLI CANLI SOHBET AKIŞI */
+        function renderTeamChatMessages(messages) {
+            const container = document.getElementById('modalTeamChatMessages');
+            if (!container) return;
+
+            const jsonStr = JSON.stringify(messages || []);
+            if (container.dataset.lastState === jsonStr) return; // Mesajlar değişmediyse ekrana dokunma
+            container.dataset.lastState = jsonStr;
+
+            container.innerHTML = '';
+
+            if (!messages || messages.length === 0) {
+                container.innerHTML = `<p class="text-xs text-theme-sub italic p-4 text-center">Henüz takıma mesaj atılmamış. İlk mesajı siz gönderin!</p>`;
+                return;
+            }
+
+            messages.forEach(msg => {
+                const isMe = msg.author === state.currentUser;
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `p-3 rounded-xl neu-pressed text-xs space-y-1 ${isMe ? 'border-l-2 border-theme-accent' : ''}`;
+                msgDiv.innerHTML = `
+                    <div class="flex justify-between font-semibold text-theme-sub">
+                        <span class="text-theme-accent cursor-pointer hover:underline" onclick="closeModal('teamDetailModal'); openUserProfilePage('${msg.author}')">@${msg.author} ${isMe ? '(Sen)' : ''}</span>
+                        <span class="text-[10px]">${msg.date || ''}</span>
+                    </div>
+                    <p class="text-theme-main">${msg.content}</p>
+                `;
+                container.appendChild(msgDiv);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function submitTeamMessage(e) {
+            e.preventDefault();
+            if (!state.currentSelectedTeam) return;
+            const input = document.getElementById('modalTeamChatInput');
+            const content = input.value.trim();
+            if (!content) return;
+
+            const res = await apiCall({
+                command: 'ADD_TEAM_MESSAGE',
+                username: state.currentUser,
+                team_id: state.currentSelectedTeam.id,
+                content: content
+            });
+
+            if (res.status === 'success') {
+                input.value = '';
+                state.currentSelectedTeam.messages = res.messages || [];
+                const teamInState = state.teams.find(t => t.id === state.currentSelectedTeam.id);
+                if (teamInState) {
+                    teamInState.messages = res.messages || [];
                 }
+                renderTeamChatMessages(state.currentSelectedTeam.messages);
+            } else {
+                showToast(res.message || 'Mesaj gönderilemedi', 'error');
             }
-
-            openModal('teamDetailModal');
         }
 
         async function acceptJoinRequest(teamId, candidateUsername) {
@@ -1962,8 +2358,8 @@
             });
 
             if (res.status === 'success') {
-                closeModal('teamDetailModal');
-                loadAllTeams();
+                await silentUpdateCurrentTeamModal();
+                await silentReloadTeams();
             } else {
                 showToast(res.message || 'Onay hatası', 'error');
             }
@@ -1978,8 +2374,8 @@
             });
 
             if (res.status === 'success') {
-                closeModal('teamDetailModal');
-                loadAllTeams();
+                await silentUpdateCurrentTeamModal();
+                await silentReloadTeams();
             } else {
                 showToast(res.message || 'Reddetme hatası', 'error');
             }
@@ -1994,8 +2390,8 @@
             });
 
             if (res.status === 'success') {
-                closeModal('teamDetailModal');
-                loadAllTeams();
+                await silentUpdateCurrentTeamModal();
+                await silentReloadTeams();
             } else {
                 showToast(res.message || 'Çıkarma işlemi başarısız', 'error');
             }
@@ -2005,13 +2401,14 @@
             if (!state.currentSelectedTeam) return;
             const team = state.currentSelectedTeam;
             const isMember = team.members && team.members.includes(state.currentUser);
-            const hasRequested = team.join_requests && team.join_requests.includes(state.currentUser);
+            const reqUsernames = (team.join_requests || []).map(r => typeof r === 'string' ? r : r.username);
+            const hasRequested = reqUsernames.includes(state.currentUser);
 
             if (isMember) {
                 const res = await apiCall({ command: 'LEAVE_TEAM', username: state.currentUser, team_id: team.id });
                 if (res.status === 'success') {
                     closeModal('teamDetailModal');
-                    loadAllTeams();
+                    await silentReloadTeams();
                 } else {
                     showToast(res.message || 'İşlem hatası', 'error');
                 }
@@ -2019,18 +2416,40 @@
                 const res = await apiCall({ command: 'REJECT_JOIN_REQUEST', username: state.currentUser, team_id: team.id, target_username: state.currentUser });
                 if (res.status === 'success') {
                     closeModal('teamDetailModal');
-                    loadAllTeams();
+                    await silentReloadTeams();
                 } else {
                     showToast(res.message || 'İptal hatası', 'error');
                 }
             } else {
-                const res = await apiCall({ command: 'JOIN_TEAM', username: state.currentUser, team_id: team.id });
-                if (res.status === 'success') {
-                    closeModal('teamDetailModal');
-                    loadAllTeams();
-                } else {
-                    showToast(res.message || 'Katılma isteği gönderilemedi', 'error');
-                }
+                closeModal('teamDetailModal');
+                document.getElementById('joinTeamMessageInput').value = '';
+                openModal('joinTeamRequestModal');
+            }
+        }
+
+        async function submitJoinTeamRequest(e) {
+            e.preventDefault();
+            if (!state.currentSelectedTeam) return;
+            const msgInput = document.getElementById('joinTeamMessageInput');
+            const message = msgInput.value.trim();
+
+            if (!message) {
+                showToast('Lütfen kendinizden ve yeteneklerinizden bahsedin!', 'error');
+                return;
+            }
+
+            const res = await apiCall({
+                command: 'JOIN_TEAM',
+                username: state.currentUser,
+                team_id: state.currentSelectedTeam.id,
+                message: message
+            });
+
+            if (res.status === 'success') {
+                closeModal('joinTeamRequestModal');
+                await silentReloadTeams();
+            } else {
+                showToast(res.message || 'Katılma isteği gönderilemedi', 'error');
             }
         }
 
@@ -2044,7 +2463,7 @@
                 if (res.status === 'success') {
                     closeModal('confirmDeleteModal');
                     closeModal('teamDetailModal');
-                    loadAllTeams();
+                    await silentReloadTeams();
                 } else {
                     showToast(res.message || 'Silme hatası', 'error');
                 }
@@ -2055,19 +2474,11 @@
 
         /* VERİ YÜKLEME VE FİLTRELEME */
         async function loadAllNotes() {
-            const res = await apiCall({ command: 'GET_ALL_NOTES' });
-            if (res.status === 'success') {
-                state.notes = res.notes || [];
-                filterAndRender();
-            }
+            await silentReloadNotes();
         }
 
         async function loadAllRequests() {
-            const res = await apiCall({ command: 'GET_ALL_REQUESTS' });
-            if (res.status === 'success') {
-                state.requests = res.requests || [];
-                filterAndRender();
-            }
+            await silentReloadRequests();
         }
 
         function filterAndRender() {
@@ -2099,7 +2510,11 @@
 
         function renderNotesGrid(notesList) {
             const grid = document.getElementById('notesGrid');
-            grid.innerHTML = '';
+            if (!grid) return;
+
+            const jsonStr = JSON.stringify(notesList);
+            if (grid.dataset.lastState === jsonStr) return;
+            grid.dataset.lastState = jsonStr;
 
             if (notesList.length === 0) {
                 grid.innerHTML = `
@@ -2110,10 +2525,11 @@
                 return;
             }
 
+            grid.innerHTML = '';
             notesList.forEach(n => {
                 const hasFile = !!n.file_name;
                 const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
 
                 card.innerHTML = `
                     <div class="space-y-2">
@@ -2121,7 +2537,12 @@
                             <span class="font-semibold text-theme-accent flex items-center gap-1 cursor-pointer hover:underline" onclick="openUserProfilePage('${n.author}')">
                                 <i class="fa-solid fa-user-pen"></i> ${n.author}
                             </span>
-                            <span>${n.date || 'Tarih Yok'}</span>
+                            <div class="flex items-center gap-2">
+                                <span>${n.date || 'Tarih Yok'}</span>
+                                <button onclick="openReportModal('gonderi', '${n.title.replace(/'/g, "\\'")}')" class="text-theme-sub hover:text-amber-400 transition-colors" title="Notu Rapor Et">
+                                    <i class="fa-solid fa-flag"></i>
+                                </button>
+                            </div>
                         </div>
                         <h4 class="font-bold text-theme-main text-base line-clamp-2">${n.title}</h4>
                         <p class="text-xs text-theme-sub line-clamp-3 leading-relaxed">${n.content}</p>
@@ -2146,7 +2567,11 @@
 
         function renderRequestsList(requestsList) {
             const list = document.getElementById('requestsList');
-            list.innerHTML = '';
+            if (!list) return;
+
+            const jsonStr = JSON.stringify(requestsList);
+            if (list.dataset.lastState === jsonStr) return;
+            list.dataset.lastState = jsonStr;
 
             if (requestsList.length === 0) {
                 list.innerHTML = `
@@ -2157,10 +2582,11 @@
                 return;
             }
 
+            list.innerHTML = '';
             requestsList.forEach(r => {
                 const isAuthor = r.author === state.currentUser;
                 const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat space-y-4";
 
                 let commentsHtml = '';
                 if (r.comments && r.comments.length > 0) {
@@ -2190,10 +2616,15 @@
                             </div>
                         </div>
 
-                        ${isAuthor ? `
-                            <button onclick="confirmDeleteRequest(${r.id})" class="px-3 py-1.5 rounded-xl neu-btn text-red-400 text-xs font-semibold">
-                                <i class="fa-solid fa-trash mr-1"></i>Sonlandır
-                            </button>` : ''}
+                        <div class="flex items-center gap-2">
+                            <button onclick="openReportModal('gonderi', '${r.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-xl neu-btn text-amber-400 text-xs font-semibold" title="İsteği Rapor Et">
+                                <i class="fa-solid fa-flag mr-1"></i> Rapor Et
+                            </button>
+                            ${isAuthor ? `
+                                <button onclick="confirmDeleteRequest(${r.id})" class="px-3 py-1.5 rounded-xl neu-btn text-red-400 text-xs font-semibold">
+                                    <i class="fa-solid fa-trash mr-1"></i>Sonlandır
+                                </button>` : ''}
+                        </div>
                     </div>
 
                     <p class="text-xs text-theme-sub leading-relaxed">${r.content}</p>
@@ -2220,11 +2651,7 @@
 
         /* SOSYAL DİZİN */
         async function loadAllSocialUsers() {
-            const res = await apiCall({ command: 'GET_ALL_USERS' });
-            if (res.status === 'success') {
-                state.socialUsers = res.users || [];
-                filterAndRenderSocial();
-            }
+            await silentReloadSocial();
         }
 
         function filterAndRenderSocial() {
@@ -2248,7 +2675,10 @@
         function renderSocialUsersGrid(userList) {
             const grid = document.getElementById('socialUsersGrid');
             if (!grid) return;
-            grid.innerHTML = '';
+
+            const jsonStr = JSON.stringify(userList);
+            if (grid.dataset.lastState === jsonStr) return;
+            grid.dataset.lastState = jsonStr;
 
             if (userList.length === 0) {
                 grid.innerHTML = `
@@ -2259,6 +2689,7 @@
                 return;
             }
 
+            grid.innerHTML = '';
             userList.forEach(u => {
                 const isMe = u.username === state.currentUser;
                 const initial = u.username.charAt(0).toUpperCase();
@@ -2267,7 +2698,7 @@
                     `<span>${initial}</span>`;
 
                 const card = document.createElement('div');
-                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4 animate-fade-in";
+                card.className = "p-6 rounded-2xl neu-flat glow-hover flex flex-col justify-between space-y-4";
 
                 card.innerHTML = `
                     <div class="flex items-start gap-3.5">
@@ -2275,9 +2706,15 @@
                             ${avatarHtml}
                         </div>
                         <div class="min-w-0 flex-1">
-                            <div class="flex items-center gap-2">
-                                <h4 class="font-bold text-theme-main text-base truncate cursor-pointer hover:underline" onclick="openUserProfilePage('${u.username}')">${u.username}</h4>
-                                ${isMe ? `<span class="px-2 py-0.5 rounded-full neu-pressed text-emerald-400 text-[10px] font-bold">Sen</span>` : ''}
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <h4 class="font-bold text-theme-main text-base truncate cursor-pointer hover:underline" onclick="openUserProfilePage('${u.username}')">${u.username}</h4>
+                                    ${isMe ? `<span class="px-2 py-0.5 rounded-full neu-pressed text-emerald-400 text-[10px] font-bold">Sen</span>` : ''}
+                                </div>
+                                ${!isMe ? `
+                                    <button onclick="openReportModal('kullanici', '${u.username}')" class="text-theme-sub hover:text-amber-400 transition-colors p-1" title="Kullanıcıyı Rapor Et">
+                                        <i class="fa-solid fa-flag text-xs"></i>
+                                    </button>` : ''}
                             </div>
                             <p class="text-xs text-theme-accent font-medium truncate">${u.faculty || 'Fakülte Belirtilmemiş'}</p>
                             <p class="text-[11px] text-theme-sub truncate">${u.department || 'Bölüm Belirtilmemiş'}</p>
@@ -2388,7 +2825,7 @@
 
         function switchTabToSection(sectionName, customTitle) {
             state.activeTab = sectionName;
-            const sections = ['notes', 'teams', 'polls', 'social', 'profile', 'settings', 'user-profile'];
+            const sections = ['notes', 'teams', 'social', 'profile', 'settings', 'user-profile'];
             sections.forEach(s => {
                 const el = document.getElementById(`section-${s}`);
                 const nav = document.getElementById(`nav-${s}`);
@@ -2457,8 +2894,8 @@
             if (res.status === 'success') {
                 state.currentSelectedNote.likes = res.likes;
                 document.getElementById('modalLikeCount').innerText = `${res.likes} Beğeni`;
-                loadAllNotes();
-                loadAllSocialUsers();
+                await silentReloadNotes();
+                await silentReloadSocial();
             } else {
                 showToast(res.message || 'Beğeni güncelleme hatası', 'error');
             }
@@ -2467,8 +2904,8 @@
         async function quickLikeNote(noteId) {
             const res = await apiCall({ command: 'LIKE_NOTE', username: state.currentUser, note_id: noteId });
             if (res.status === 'success') {
-                loadAllNotes();
-                loadAllSocialUsers();
+                await silentReloadNotes();
+                await silentReloadSocial();
             } else {
                 showToast(res.message || 'Beğeni hatası', 'error');
             }
@@ -2566,8 +3003,8 @@
                 document.getElementById('newNoteTitle').value = '';
                 document.getElementById('newNoteContent').value = '';
                 document.getElementById('newNoteFile').value = '';
-                loadAllNotes();
-                loadAllSocialUsers();
+                await silentReloadNotes();
+                await silentReloadSocial();
             } else {
                 showToast(res.message || 'Not yükleme hatası', 'error');
             }
@@ -2589,7 +3026,7 @@
                 closeModal('addRequestModal');
                 document.getElementById('newReqTitle').value = '';
                 document.getElementById('newReqContent').value = '';
-                loadAllRequests();
+                await silentReloadRequests();
             } else {
                 showToast(res.message || 'İstek açma hatası', 'error');
             }
@@ -2610,7 +3047,7 @@
 
             if (res.status === 'success') {
                 input.value = '';
-                loadAllRequests();
+                await silentReloadRequests();
             } else {
                 showToast(res.message || 'Yorum hatası', 'error');
             }
@@ -2626,8 +3063,8 @@
                 if (res.status === 'success') {
                     closeModal('confirmDeleteModal');
                     closeModal('noteDetailModal');
-                    loadAllNotes();
-                    loadAllSocialUsers();
+                    await silentReloadNotes();
+                    await silentReloadSocial();
                 } else {
                     showToast(res.message || 'Silme hatası', 'error');
                 }
@@ -2644,7 +3081,7 @@
                 const res = await apiCall({ command: 'DELETE_REQUEST', username: state.currentUser, request_id: reqId });
                 if (res.status === 'success') {
                     closeModal('confirmDeleteModal');
-                    loadAllRequests();
+                    await silentReloadRequests();
                 } else {
                     showToast(res.message || 'Silme hatası', 'error');
                 }
@@ -2728,15 +3165,33 @@
             });
         }
 
-        /* YALNIZCA HATALAR İÇİN BİLDİRİM GÖSTEREN TOAST FONKSİYONU */
+        /* HATALAR İÇİN BİLDİRİM TOAST */
         function showToast(message, type = 'info') {
             if (type !== 'error') return;
 
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
 
-            toast.className = `px-4 py-3 rounded-2xl neu-flat font-semibold text-xs flex items-center gap-2.5 animate-fade-in pointer-events-auto bg-red-600 text-white`;
+            toast.className = `px-4 py-3 rounded-2xl neu-flat font-semibold text-xs flex items-center gap-2.5 pointer-events-auto bg-red-600 text-white`;
             toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-sm"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        /* GÖRSEL BAŞARI BİLDİRİMİ TOAST */
+        function showToastSuccess(message) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toast = document.createElement('div');
+
+            toast.className = `px-4 py-3 rounded-2xl neu-flat font-semibold text-xs flex items-center gap-2.5 pointer-events-auto bg-emerald-600 text-white shadow-lg`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i><span>${message}</span>`;
 
             container.appendChild(toast);
 
