@@ -123,3 +123,8 @@ This started as a hackathon project and is not production-ready.
 ## License
 
 No license file is included yet. Add one if you want others to reuse the code.
+
+## Developer Team
+
+- **Melih Ekinci**
+- **Mehmet Yusuf Yöndem**
