@@ -33,15 +33,18 @@ LIKES_FILE = os.path.join(DATA_DIR, 'likes.txt')
 PROFILES_FILE = os.path.join(DATA_DIR, 'user_profiles.txt')
 REQUESTS_FILE = os.path.join(DATA_DIR, 'requests.json')
 TEAMS_FILE = os.path.join(DATA_DIR, 'teams.json')
+REPORTS_FILE = os.path.join(DATA_DIR, 'reports.json')
 
 users = {}
 notes = {}
 user_likes = {}
 requests_data = {}
 teams_data = {}
+reports_data = []
 next_note_id = 1
 next_request_id = 1
 next_team_id = 1
+next_report_id = 1
 lock = threading.Lock()
 
 
@@ -58,7 +61,7 @@ def get_formatted_file_size(file_path):
 
 
 def load_data():
-    global next_note_id, next_request_id, next_team_id, users, notes, user_likes, requests_data, teams_data
+    global next_note_id, next_request_id, next_team_id, next_report_id, users, notes, user_likes, requests_data, teams_data, reports_data
 
     if os.path.exists(ACCOUNTS_FILE):
         with open(ACCOUNTS_FILE, 'r', encoding='utf-8') as f:
@@ -109,9 +112,21 @@ def load_data():
             with open(TEAMS_FILE, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 teams_data = {int(k): v for k, v in data.get("teams", {}).items()}
+                for t in teams_data.values():
+                    t.setdefault("join_requests", [])
+                    t.setdefault("messages", [])
                 next_team_id = data.get("next_id", 1)
         except Exception as e:
             print(f"[LOAD TEAMS ERROR] {e}")
+
+    if os.path.exists(REPORTS_FILE):
+        try:
+            with open(REPORTS_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                reports_data = data.get("reports", [])
+                next_report_id = data.get("next_id", 1)
+        except Exception as e:
+            print(f"[LOAD REPORTS ERROR] {e}")
 
 
 def save_accounts():
@@ -158,6 +173,14 @@ def save_teams():
             json.dump({"teams": teams_data, "next_id": next_team_id}, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"[SAVE TEAMS ERROR] {e}")
+
+
+def save_reports():
+    try:
+        with open(REPORTS_FILE, 'w', encoding='utf-8') as f:
+            json.dump({"reports": reports_data, "next_id": next_report_id}, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[SAVE REPORTS ERROR] {e}")
 
 
 @app.route('/')
@@ -207,12 +230,20 @@ def handle_command():
         return jsonify(handle_get_all_teams(request_data))
     elif command == 'JOIN_TEAM':
         return jsonify(handle_join_team(request_data))
+    elif command == 'ACCEPT_JOIN_REQUEST':
+        return jsonify(handle_accept_join_request(request_data))
+    elif command == 'REJECT_JOIN_REQUEST':
+        return jsonify(handle_reject_join_request(request_data))
     elif command == 'LEAVE_TEAM':
         return jsonify(handle_leave_team(request_data))
     elif command == 'KICK_MEMBER':
         return jsonify(handle_kick_member(request_data))
     elif command == 'DELETE_TEAM':
         return jsonify(handle_delete_team(request_data))
+    elif command == 'ADD_TEAM_MESSAGE':
+        return jsonify(handle_add_team_message(request_data))
+    elif command == 'CREATE_REPORT':
+        return jsonify(handle_create_report(request_data))
     elif command == 'GET_ALL_USERS':
         return jsonify(handle_get_all_users(request_data))
     elif command == 'GET_USER_PROFILE':
@@ -588,7 +619,9 @@ def handle_add_comment(data):
             return {"status": "error", "message": "İstek bulunamadı"}
 
         now_str = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+        comment_id = len(requests_data[request_id]["comments"]) + 1
         comment_obj = {
+            "id": comment_id,
             "author": username,
             "content": comment,
             "date": now_str
@@ -631,7 +664,9 @@ def handle_create_team(data):
             "current_members": current_members,
             "target_members": target_members,
             "date": now_str,
-            "members": [username]
+            "members": [username],
+            "join_requests": [],
+            "messages": []
         }
         teams_data[next_team_id] = team
         next_team_id += 1
@@ -642,6 +677,9 @@ def handle_create_team(data):
 def handle_get_all_teams(data):
     with lock:
         t_list = list(teams_data.values())
+        for t in t_list:
+            t.setdefault("join_requests", [])
+            t.setdefault("messages", [])
         t_list.sort(key=lambda x: x["id"], reverse=True)
         return {"status": "success", "teams": t_list}
 
@@ -659,16 +697,79 @@ def handle_join_team(data):
             return {"status": "error", "message": "Takım ilanı bulunamadı"}
 
         team = teams_data[team_id]
+        team.setdefault("join_requests", [])
+
         if username in team["members"]:
-            return {"status": "error", "message": "Zaten bu takıma katılmışsınız."}
+            return {"status": "error", "message": "Zaten bu takımın üyesiniz."}
+
+        if username in team["join_requests"]:
+            return {"status": "error", "message": "Zaten bu takıma katılım isteği gönderdiniz."}
 
         if team["current_members"] >= team["target_members"]:
             return {"status": "error", "message": "Takım kontenjanı dolu!"}
 
-        team["members"].append(username)
+        team["join_requests"].append(username)
+        save_teams()
+        return {"status": "success", "message": "Katılma isteği takım sahibine iletildi."}
+
+
+def handle_accept_join_request(data):
+    username = data.get('username')
+    team_id = data.get('team_id')
+    target_username = data.get('target_username')
+
+    if not username or team_id is None or not target_username:
+        return {"status": "error", "message": "Parametreler eksik"}
+
+    team_id = int(team_id)
+    with lock:
+        if team_id not in teams_data:
+            return {"status": "error", "message": "Takım ilanı bulunamadı"}
+
+        team = teams_data[team_id]
+        team.setdefault("join_requests", [])
+
+        if str(team["author"]).strip() != str(username).strip():
+            return {"status": "error", "message": "Sadece takım sahibi katılma isteklerini kabul edebilir!"}
+
+        if target_username not in team["join_requests"]:
+            return {"status": "error", "message": "Bu kullanıcının aktif bir katılma isteği bulunmuyor."}
+
+        if team["current_members"] >= team["target_members"]:
+            return {"status": "error", "message": "Takım kontenjanı dolu! Daha fazla üye kabul edilemez."}
+
+        team["join_requests"].remove(target_username)
+        if target_username not in team["members"]:
+            team["members"].append(target_username)
         team["current_members"] = len(team["members"])
         save_teams()
-        return {"status": "success", "message": "Takıma katıldınız!", "current_members": team["current_members"]}
+        return {"status": "success", "message": "Katılma isteği kabul edildi.", "current_members": team["current_members"]}
+
+
+def handle_reject_join_request(data):
+    username = data.get('username')
+    team_id = data.get('team_id')
+    target_username = data.get('target_username')
+
+    if not username or team_id is None or not target_username:
+        return {"status": "error", "message": "Parametreler eksik"}
+
+    team_id = int(team_id)
+    with lock:
+        if team_id not in teams_data:
+            return {"status": "error", "message": "Takım ilanı bulunamadı"}
+
+        team = teams_data[team_id]
+        team.setdefault("join_requests", [])
+
+        if str(team["author"]).strip() != str(username).strip() and str(target_username).strip() != str(username).strip():
+            return {"status": "error", "message": "Bu işlemi yapma yetkiniz yok!"}
+
+        if target_username in team["join_requests"]:
+            team["join_requests"].remove(target_username)
+
+        save_teams()
+        return {"status": "success", "message": "Katılma isteği kaldırıldı."}
 
 
 def handle_leave_team(data):
@@ -748,6 +849,65 @@ def handle_delete_team(data):
         del teams_data[team_id]
         save_teams()
         return {"status": "success", "message": "Takım ilanı silindi"}
+
+
+def handle_add_team_message(data):
+    """Takım sohbetine yeni mesaj ekler"""
+    username = data.get('username')
+    team_id = data.get('team_id')
+    content = data.get('content', '').strip()
+
+    if not username or team_id is None or not content:
+        return {"status": "error", "message": "Parametreler eksik veya mesaj boş!"}
+
+    team_id = int(team_id)
+    with lock:
+        if team_id not in teams_data:
+            return {"status": "error", "message": "Takım bulunamadı."}
+
+        team = teams_data[team_id]
+        if username not in team.get("members", []):
+            return {"status": "error", "message": "Sadece takım üyeleri takıma mesaj gönderebilir!"}
+
+        team.setdefault("messages", [])
+        msg_id = len(team["messages"]) + 1
+        now_str = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+        msg_obj = {
+            "id": msg_id,
+            "author": username,
+            "content": content,
+            "date": now_str
+        }
+        team["messages"].append(msg_obj)
+        save_teams()
+        return {"status": "success", "message": "Mesaj gönderildi", "messages": team["messages"]}
+
+
+def handle_create_report(data):
+    """Not, İstek, Yorum veya Takım Mesajını Rapor Eder"""
+    username = data.get('username')
+    item_type = data.get('item_type') # 'note', 'request', 'comment', 'team_message'
+    item_id = data.get('item_id')
+    reason = data.get('reason', '').strip()
+
+    if not username or not item_type or item_id is None or not reason:
+        return {"status": "error", "message": "Tüm rapor alanları doldurulmalıdır."}
+
+    with lock:
+        global next_report_id
+        now_str = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+        report = {
+            "id": next_report_id,
+            "reporter": username,
+            "item_type": item_type,
+            "item_id": item_id,
+            "reason": reason,
+            "date": now_str
+        }
+        reports_data.append(report)
+        next_report_id += 1
+        save_reports()
+        return {"status": "success", "message": "Rapor başarıyla iletildi."}
 
 
 def handle_get_all_users(data):

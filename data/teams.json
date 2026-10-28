@@ -11,8 +11,26 @@
       "date": "28.10.2026 04:25",
       "members": [
         "melodelomelo"
+      ],
+      "join_requests": [
+        "melo"
       ]
+    },
+    "4": {
+      "id": 4,
+      "title": "dasdas",
+      "description": "asdadsads",
+      "skills": "dadsadsa",
+      "author": "melih",
+      "current_members": 2,
+      "target_members": 5,
+      "date": "28.10.2026 05:13",
+      "members": [
+        "melih",
+        "melo"
+      ],
+      "join_requests": []
     }
   },
-  "next_id": 4
+  "next_id": 5
 }
